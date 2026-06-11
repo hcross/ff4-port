@@ -295,6 +295,8 @@ def main(argv: list[str] | None = None) -> int:
             record["tokens_out"] = stats.tokens_out
             record["tokens_cache_read"] = stats.tokens_cache_read
             record["cost_usd"] = round(stats.cost_usd, 4)
+            if stats.error:
+                record["error"] = stats.error
             if code and not args.dry_run:
                 (out_module_dir / f"{r.name}.c").write_text(code)
                 n_translate_done += 1

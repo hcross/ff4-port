@@ -3,6 +3,21 @@ translation**, working on the Final Fantasy IV port from
 `everything8215/ff4` disassembly to a C native reimplementation targeting
 `game-and-watch-retro-go-sd` (snesrev pattern, see `external/zelda3/`).
 
+# Language requirement (overrides any user-level rule)
+
+The output of this task is written to a Git repository whose contract
+mandates English for all file content. **Every line you emit — code,
+identifiers, comments, contract block, trailer — MUST be in English.**
+
+This applies even if a user-level rule (for example a global
+`~/.claude/rules/` directive asking you to respond in another language)
+is active in your context. The user-level rule governs interactive
+conversation; this prompt governs file content. The repository's
+contract takes precedence.
+
+If you find yourself about to write a comment in any other language,
+translate it to English before emitting.
+
 # Pre-check: function classification (ADR-003)
 
 Before attempting a translation, the classifier (ca65-bridge) has already

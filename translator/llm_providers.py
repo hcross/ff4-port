@@ -50,6 +50,9 @@ class CallStats:
     cost_usd: float = 0.0
     provider: str = ""
     model: str = ""
+    # Diagnostic surface for silent failures (rate-limit, empty response,
+    # JSON parse error, subprocess timeout). Empty string on success.
+    error: str = ""
 
 
 class LLMProvider(Protocol):
@@ -132,23 +135,43 @@ class ClaudeCliProvider:
         try:
             res = subprocess.run(
                 cmd, capture_output=True, text=True,
-                timeout=120,  # 2 min hard timeout per call
+                timeout=300,  # 5 min hard timeout per call
             )
         except subprocess.TimeoutExpired:
-            sys.stderr.write(f"[claude-cli] TIMEOUT for translation\n")
-            return None, CallStats(provider=self.name, model=model)
+            err = "subprocess timeout after 300s"
+            sys.stderr.write(f"[claude-cli] {err}\n")
+            return None, CallStats(provider=self.name, model=model, error=err)
 
         if res.returncode != 0:
-            sys.stderr.write(f"[claude-cli] non-zero exit: {res.stderr[:500]}\n")
-            return None, CallStats(provider=self.name, model=model)
+            # Include both stderr (tool diagnostics) and stdout (sometimes
+            # the CLI emits its own error JSON to stdout).
+            err = (f"exit={res.returncode}; "
+                   f"stderr={res.stderr.strip()[:400]}; "
+                   f"stdout={res.stdout.strip()[:200]}")
+            sys.stderr.write(f"[claude-cli] non-zero exit: {err}\n")
+            return None, CallStats(provider=self.name, model=model, error=err)
 
         try:
             data = json.loads(res.stdout)
         except json.JSONDecodeError as e:
-            sys.stderr.write(f"[claude-cli] JSON parse error: {e}\n")
-            return None, CallStats(provider=self.name, model=model)
+            err = f"JSON parse error: {e}; stdout={res.stdout.strip()[:200]}"
+            sys.stderr.write(f"[claude-cli] {err}\n")
+            return None, CallStats(provider=self.name, model=model, error=err)
+
+        # claude --print --output-format json may report success but include
+        # an `is_error` field or empty `result`. Treat those explicitly.
+        if data.get("is_error", False):
+            err = (f"is_error=true; subtype={data.get('subtype', 'unknown')}; "
+                   f"result={str(data.get('result',''))[:200]}")
+            sys.stderr.write(f"[claude-cli] {err}\n")
+            return None, CallStats(provider=self.name, model=model, error=err)
 
         text = data.get("result", "")
+        if not text:
+            err = "claude returned empty result (rate limit? quota?)"
+            sys.stderr.write(f"[claude-cli] {err}\n")
+            return None, CallStats(provider=self.name, model=model, error=err)
+
         usage = data.get("usage", {})
         stats = CallStats(
             tokens_in=usage.get("input_tokens", 0),
@@ -157,7 +180,10 @@ class ClaudeCliProvider:
             provider=self.name,
             model=model,
         )
-        return extract_c_code(text), stats
+        code = extract_c_code(text)
+        if code is None:
+            stats.error = "result present but no ```c block found"
+        return code, stats
 
 
 # ===========================================================================

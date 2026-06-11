@@ -99,3 +99,7 @@ ff4-spike-auto-calchits: src/spike_calchits_auto.c $(CORE_SRC)
 # AUTO: spike for AITarget_17
 ff4-spike-auto-aitarget_17: src/spike_aitarget_17_auto.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_17_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AICond_02
+ff4-spike-auto-aicond_02: src/spike_aicond_02_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_auto.c $(CORE_SRC) $(LDFLAGS)
