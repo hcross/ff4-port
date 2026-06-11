@@ -307,7 +307,7 @@ class OpenAiCompatProvider:
                 headers=headers,
                 method="POST",
             )
-            with urllib.request.urlopen(req, timeout=120) as resp:
+            with urllib.request.urlopen(req, timeout=300) as resp:
                 data = json.loads(resp.read())
         except Exception as e:
             sys.stderr.write(f"[openai-compat] HTTP error: {e}\n")

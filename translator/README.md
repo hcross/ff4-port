@@ -9,7 +9,18 @@ control and a strict non-interactive mode.
 |-------------------|-----------------|---------------|--------|----------------------------------------|
 | **Claude Code CLI** (default) | `--llm claude-cli`    | Pro/Max subscription  | (auto) | No API key, `claude --print` non-interactive mode |
 | Anthropic SDK     | `--llm anthropic-sdk` | pay-per-token         | 90% off | `ANTHROPIC_API_KEY` required, native prompt caching |
-| OpenAI-compatible | `--llm openai-compat` | depends on server     | no    | Local Ollama (free), OpenRouter, LM Studio, vLLM |
+| OpenAI-compatible | `--llm openai-compat` | depends on server     | no    | Local Ollama (free), Ollama Cloud, OpenRouter, LM Studio, vLLM |
+
+**Performance note** — see [`BENCH_RESULTS.md`](BENCH_RESULTS.md) for a
+side-by-side comparison of 15 cloud models on the same translation task.
+Highlights:
+- `qwen3-coder:480b` via Ollama Cloud: 5 s, 346 tokens, 100/100 parity PASS.
+- `gemma4:31b` via Ollama Cloud: 5 s, 572 tokens, 100/100 PASS.
+- Claude Sonnet 4.5 via subscription CLI: ~30 s, 5 486 tokens, PASS — but
+  hit the per-session quota after ~3 translations.
+- The smaller models are dominating the bench because the system prompt's
+  "concise output" guideline is largely ignored by the larger Anthropic
+  models, which dump several thousand tokens of line-by-line commentary.
 
 ## Cost model
 
