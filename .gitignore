@@ -1,0 +1,85 @@
+# ============================================================================
+# ROMs — copyright Square Enix, must NEVER be committed
+# ============================================================================
+*.bin
+*.sfc
+*.smc
+*.srm
+*.fig
+
+# Vanilla ROM source directory (provided by user, not tracked)
+vanilla/Final*Fantasy*
+vanilla/ff4-*
+
+# Built ROMs and derived assets inside the upstream submodule
+upstream/rom/
+upstream/vanilla/ff4-*
+
+# ============================================================================
+# Build artifacts
+# ============================================================================
+# C/clang
+*.o
+*.d
+*.dSYM/
+
+# Parity binaries (compiled artifacts)
+parity/ff4-parity
+parity/ff4-parity-compare
+parity/ff4-spike-*
+
+# cc65 listings + map files
+**/*.lst
+**/*.map
+
+# LakeSnes desktop binary
+LakeSnes/lakesnes
+LakeSnes/lakesnes_app
+LakeSnes/lakesnes.exe
+LakeSnes/LakeSnes.app/
+
+# ============================================================================
+# Python
+# ============================================================================
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/.venv/
+**/venv/
+**/*.egg-info/
+**/build/
+**/dist/
+
+# ============================================================================
+# Node (upstream tooling)
+# ============================================================================
+**/node_modules/
+
+# ============================================================================
+# Translator runtime logs (may contain prompts/responses)
+# ============================================================================
+translator/batch_log.jsonl
+translator/_failed/
+
+# ============================================================================
+# Generated C port (LLM output not yet reviewed)
+# ============================================================================
+# Note: keep port/ structure tracked via .gitkeep, but ignore unreviewed
+# generated files. Reviewed wrappers can be committed individually.
+port/**/_pending/
+port/**/_failed/
+
+# ============================================================================
+# Editor / OS
+# ============================================================================
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+.zed/
+
+# ============================================================================
+# Workspace-specific (not for public repo)
+# ============================================================================
+# (none for now)

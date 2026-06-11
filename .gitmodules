@@ -1,0 +1,6 @@
+[submodule "upstream"]
+	path = upstream
+	url = https://github.com/everything8215/ff4.git
+[submodule "LakeSnes"]
+	path = LakeSnes
+	url = https://github.com/elzo-d/LakeSnes.git
