@@ -21,6 +21,13 @@ static inline uint16_t read16(const uint8_t *ram, int addr);
 static inline void write16(uint8_t *ram, int addr, uint16_t v);
 
 // ---------------------------------------------------------------------------
+// Auto-emitted *_emu delegation helpers (one per stub referenced by the
+// translation but not defined in port/battle/CalcHits.c).
+// ---------------------------------------------------------------------------
+
+// (no auto-emitted helpers)
+
+// ---------------------------------------------------------------------------
 // LLM-translated C function (verbatim copy from port/battle/CalcHits.c)
 // ---------------------------------------------------------------------------
 

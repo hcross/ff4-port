@@ -35,6 +35,41 @@ ROOT = HERE.parent
 PORT_DIR = ROOT / "port"
 PARITY_SRC = ROOT / "parity" / "src"
 PARITY_MAKEFILE = ROOT / "parity" / "Makefile"
+BRIDGE_BIN = ROOT / "ca65-bridge" / ".venv" / "bin" / "ca65-bridge"
+UPSTREAM = ROOT / "upstream"
+
+# Module → SNES bank (must match translator/batch_translate.py MODULE_BANK).
+MODULE_BANK = {
+    "battle":   0x03,
+    "btlgfx":   0x02,
+    "menu":     0x01,
+    "field":    0x00,
+    "sound":    0x04,
+    "cutscene": 0x13,
+}
+
+
+def bridge_get_address(module: str, func_name: str) -> Optional[int]:
+    """Ground-truth address for `module::func_name` via ca65-bridge.
+
+    Returns the full 24-bit SNES address (bank << 16 | offset_in_bank).
+    """
+    res = subprocess.run(
+        [str(BRIDGE_BIN), "--root", str(UPSTREAM), "get-asm", func_name],
+        capture_output=True, text=True,
+    )
+    if res.returncode != 0:
+        return None
+    # First line: "# address_hint: XXXX  instr=N  calls=N"
+    first = res.stdout.splitlines()[0] if res.stdout else ""
+    m = re.match(r"^# address_hint:\s*([0-9A-Fa-f]+)", first)
+    if not m:
+        return None
+    offset = int(m.group(1), 16) & 0xFFFF
+    bank = MODULE_BANK.get(module)
+    if bank is None:
+        return None
+    return (bank << 16) | offset
 
 
 # ---------------------------------------------------------------------------
@@ -66,18 +101,58 @@ _DELEGATED_RE = re.compile(
 )
 
 
-def parse_contract(text: str) -> Optional[Contract]:
-    """Parse the C source's CONTRACT block. Returns None if missing or delegated."""
+def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Contract]:
+    """Parse the C source's CONTRACT block.
+
+    Returns None if missing or the file is a delegated wrapper.
+
+    The 24-bit address is resolved via ca65-bridge from
+    `port/<module>/<func_name>.c` (the file path is the ground truth for
+    module and function name). The LLM-emitted REVERSED_FUNCTION value is
+    cross-checked: if it disagrees with the bridge, we warn and trust the
+    bridge. This prevents the bank/offset confusion observed in the first
+    real run (see ff4-port::phase-4-4-first-real-run).
+    """
     if _DELEGATED_RE.search(text):
         # Delegated wrapper — no asm-vs-C parity to test, smoke is enough.
         return None
 
+    # Ground truth: module + name from the file path (preferred over the LLM line).
+    module: Optional[str] = None
+    name: Optional[str] = None
+    if source_path is not None and source_path.parent.parent.name == "port":
+        module = source_path.parent.name
+        name = source_path.stem
+
     m_rev = _REVERSED_RE.search(text)
-    if not m_rev:
+    if m_rev:
+        rev_module, rev_name = m_rev.group(1), m_rev.group(2)
+        rev_bank, rev_offset = int(m_rev.group(3), 16), int(m_rev.group(4), 16)
+        rev_addr = (rev_bank << 16) | rev_offset
+        # Use the LLM module/name only if the file path didn't disambiguate.
+        module = module or rev_module
+        name = name or rev_name
+    else:
+        rev_addr = None
+
+    if module is None or name is None:
+        sys.stderr.write("[gen] could not determine module/function from file path "
+                         "and no REVERSED_FUNCTION line found.\n")
         return None
-    module, name = m_rev.group(1), m_rev.group(2)
-    bank, offset = int(m_rev.group(3), 16), int(m_rev.group(4), 16)
-    addr24 = (bank << 16) | offset
+
+    true_addr = bridge_get_address(module, name)
+    if true_addr is None:
+        sys.stderr.write(f"[gen] ca65-bridge could not resolve {module}::{name}\n")
+        return None
+
+    if rev_addr is not None and rev_addr != true_addr:
+        sys.stderr.write(
+            f"[gen] WARNING: REVERSED_FUNCTION says ${rev_addr >> 16:02X}:"
+            f"{rev_addr & 0xFFFF:04X} but ca65-bridge says "
+            f"${true_addr >> 16:02X}:{true_addr & 0xFFFF:04X}. "
+            f"Trusting the bridge.\n"
+        )
+    addr24 = true_addr
 
     m_block = _CONTRACT_RE.search(text)
     if not m_block:
@@ -163,6 +238,78 @@ def parse_contract(text: str) -> Optional[Contract]:
 
 
 # ---------------------------------------------------------------------------
+# Helper auto-emission
+# ---------------------------------------------------------------------------
+
+# An identifier ending in `_emu` called as `name_emu(snes, ...)`.
+_EMU_CALL_RE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)_emu\s*\(")
+
+# Helpers that are pre-defined inside the spike skeleton itself (NOT something
+# we need to auto-emit, even if the translation references them).
+_SKELETON_BUILTINS = set()  # currently empty; the skeleton defines no *_emu
+
+# Translation between asm function names and the *_emu helper name we emit.
+# Names from the CONTRACT block use the C identifier convention, so the
+# corresponding ca65 label has the same characters minus the `_emu` suffix
+# AND with the first letter uppercased (mult8_emu → Mult8). We try both forms.
+def _candidate_asm_names(helper_stub: str) -> list[str]:
+    """Possible ca65 labels for a `<stub>_emu` helper."""
+    # mult8 → Mult8, rand99 → Rand99, mult16 → Mult16, apply_dmg_mult → ApplyDmgMult
+    parts = helper_stub.split("_")
+    pascal = "".join(p[:1].upper() + p[1:] for p in parts if p)
+    return [pascal, helper_stub, helper_stub.upper(), helper_stub.lower()]
+
+
+def collect_required_helpers(c_body: str) -> list[str]:
+    """Return the list of `<name>_emu` helper stubs used by the translation."""
+    seen: dict[str, None] = {}
+    for m in _EMU_CALL_RE.finditer(c_body):
+        stub = m.group(1)
+        if stub in _SKELETON_BUILTINS:
+            continue
+        # If the translation already defines the helper itself (e.g. a static
+        # `<name>_emu` body inside port/<module>/<name>.c), skip.
+        defn_re = re.compile(
+            rf"(?:^|\n)\s*static\s+\S+\s+{re.escape(stub)}_emu\s*\(", re.MULTILINE
+        )
+        if defn_re.search(c_body):
+            continue
+        seen[stub] = None
+    return list(seen.keys())
+
+
+def emit_helper(stub: str, module: str) -> Optional[str]:
+    """Resolve a stub's asm address and emit a trivial delegation wrapper."""
+    for cand in _candidate_asm_names(stub):
+        addr = bridge_get_address(module, cand)
+        if addr is not None:
+            return _EMU_HELPER_TEMPLATE.format(stub=stub, asm_name=cand, addr24=addr)
+    return None
+
+
+_EMU_HELPER_TEMPLATE = """\
+// Auto-emitted delegation wrapper for {asm_name} @ ${addr24:06X} (referenced as {stub}_emu)
+static uint16_t {stub}_emu(Snes *snes) {{
+    Cpu *c = snes->cpu;
+    uint16_t saved_a=c->a, saved_x=c->x, saved_y=c->y, saved_sp=c->sp;
+    uint16_t saved_pc=c->pc, saved_dp=c->dp;
+    uint8_t saved_k=c->k, saved_db=c->db;
+    bool saved_mf=c->mf, saved_xf=c->xf;
+    c->dp = 0; c->db = 0x7E;
+    c->mf = true; c->xf = false;
+    run_emulated_func(snes, 0x{addr24:06X}u);
+    uint16_t result = c->a;
+    c->x=saved_x; c->y=saved_y;
+    c->sp=saved_sp; c->pc=saved_pc; c->dp=saved_dp;
+    c->k=saved_k; c->db=saved_db;
+    c->mf=saved_mf; c->xf=saved_xf;
+    c->a = saved_a;
+    return result;
+}}
+"""
+
+
+# ---------------------------------------------------------------------------
 # Spike generation
 # ---------------------------------------------------------------------------
 
@@ -187,6 +334,13 @@ SPIKE_SKELETON = r"""// AUTO-GENERATED parity spike for {module}::{func_name} @ 
 static void run_emulated_func(Snes *snes, uint32_t pc24);
 static inline uint16_t read16(const uint8_t *ram, int addr);
 static inline void write16(uint8_t *ram, int addr, uint16_t v);
+
+// ---------------------------------------------------------------------------
+// Auto-emitted *_emu delegation helpers (one per stub referenced by the
+// translation but not defined in port/{module}/{func_name}.c).
+// ---------------------------------------------------------------------------
+
+{auto_emu_helpers}
 
 // ---------------------------------------------------------------------------
 // LLM-translated C function (verbatim copy from port/{module}/{func_name}.c)
@@ -353,6 +507,20 @@ def render_spike(c_translation: str, contract: Contract) -> str:
     bank = (contract.addr24 >> 16) & 0xFF
     offset = contract.addr24 & 0xFFFF
 
+    # Auto-emit *_emu helpers referenced by the translation but not defined.
+    required = collect_required_helpers(c_translation)
+    helpers: list[str] = []
+    for stub in required:
+        h = emit_helper(stub, contract.module)
+        if h is None:
+            sys.stderr.write(
+                f"[gen] WARNING: could not resolve `{stub}_emu` to an asm label "
+                f"via ca65-bridge — leaving it unresolved (compile will fail).\n"
+            )
+        else:
+            helpers.append(h)
+    auto_emu_helpers = "\n".join(helpers) if helpers else "// (no auto-emitted helpers)"
+
     # Build asm args declaration / passing.
     asm_args_decl = ""
     asm_args_pass = ""
@@ -433,6 +601,7 @@ def render_spike(c_translation: str, contract: Contract) -> str:
         offset=offset,
         addr24=contract.addr24,
         c_translation=c_translation,
+        auto_emu_helpers=auto_emu_helpers,
         asm_args_decl=asm_args_decl,
         asm_args_pass=asm_args_pass,
         asm_reg_setup="\n".join(asm_reg_setup_lines) or "    // no register inputs",
@@ -489,7 +658,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     text = args.source.read_text()
-    contract = parse_contract(text)
+    contract = parse_contract(text, source_path=args.source.resolve())
     if contract is None:
         if _DELEGATED_RE.search(text):
             sys.stderr.write(f"[gen] {args.source} is a delegate wrapper — no spike to generate.\n")
@@ -500,6 +669,10 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write(f"[gen] could not parse a CONTRACT block in {args.source}.\n"
                           "       Add // CONTRACT: ... per prompts/reverser_system.md.\n")
         return 1
+
+    if contract.custom_spike:
+        sys.stderr.write(f"[gen] {args.source} marked CUSTOM_SPIKE: yes — skipping auto-gen.\n")
+        return 0
 
     spike_src = PARITY_SRC / f"spike_{contract.func_name.lower()}_auto.c"
     spike_src.write_text(render_spike(text, contract))

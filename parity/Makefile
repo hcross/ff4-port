@@ -95,3 +95,7 @@ clean:
 # AUTO: spike for CalcHits
 ff4-spike-auto-calchits: src/spike_calchits_auto.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_calchits_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_17
+ff4-spike-auto-aitarget_17: src/spike_aitarget_17_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_17_auto.c $(CORE_SRC) $(LDFLAGS)

@@ -240,3 +240,25 @@ See `reverser_examples.md` for two complete asm→C translations
 
 For delegation examples, see the spike harnesses M5 (CalcDmg) and M6
 (ApplyDmg) which validated the pattern.
+
+# Output policy (concise mode)
+
+The output is consumed by an automated pipeline. Optimise for **brevity
+and clarity over narration**. Specifically:
+
+- Do NOT translate the asm line-by-line in comments. The asm source is
+  already in the prompt; the human reviewer can look at it.
+- Keep comments to:
+  1. A 2-3 line summary of what the function does (purpose, not transcript).
+  2. Pitfall annotations on the lines that triggered them, one short
+     phrase each.
+  3. The `// PITFALLS:`, `// HELPERS:`, `// CONTRACT:` and
+     `REVERSED_FUNCTION:` trailers as specified.
+- Do NOT emit decorative ASCII banners, version headers, or "this
+  function reimplements XXX" boilerplate.
+- A 16-instruction routine should produce well under 1500 output tokens.
+  A 40-instruction routine should produce well under 3000.
+
+The pipeline will reject excessive verbosity in a future iteration; for
+now, the budget-monitoring layer measures token use and the human
+reviewer audits the result.
