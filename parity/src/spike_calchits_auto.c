@@ -77,16 +77,6 @@ static uint8_t rand99_emu(Snes *snes) {
     return r;
 }
 
-// PITFALLS: 3 (CMP/BCS inversion)
-// HELPERS: rand99_emu (delegates Rand99 @ $03:858B)
-// CONTRACT:
-//   inputs_reg:  a=none, x=none, y=none
-//   inputs_ram:  0x38FA=1, 0x38FB=1
-//   output_ram:  0x38FD=1
-//   entry_mode:  mf=true, xf=true, dp=0x0, db=0x7E
-//   entry_flags: z=auto, n=auto
-// REVERSED_FUNCTION: battle::CalcHits ($03:C987)
-
 
 // ---------------------------------------------------------------------------
 // Common helpers (same shape as the manual M2/M3/M4 spikes)

@@ -48,6 +48,15 @@ MODULE_BANK = {
     "cutscene": 0x13,
 }
 
+# Indexed-store opcode: `sta/stx/sty/stz $XXXX,x` or `,y`.
+# When present, the output address is dynamic — auto-spike must declare
+# CUSTOM_SPIKE: yes to avoid a vacuous comparison (where both implementations
+# write to an unobserved address and the harness reads a third, unchanged one).
+_INDEXED_STORE_RE = re.compile(
+    r"^\s*(?:@[A-Za-z0-9_]+:\s*)?(?:sta|stx|sty|stz)\s+[^\s,]+,[xy]\b",
+    re.IGNORECASE | re.MULTILINE,
+)
+
 
 def bridge_get_address(module: str, func_name: str) -> Optional[int]:
     """Ground-truth address for `module::func_name` via ca65-bridge.
@@ -70,6 +79,20 @@ def bridge_get_address(module: str, func_name: str) -> Optional[int]:
     if bank is None:
         return None
     return (bank << 16) | offset
+
+
+def bridge_asm_has_indexed_store(func_name: str) -> bool:
+    """True if the asm body of `func_name` contains an indexed store
+    (sta/stx/sty/stz $XXXX,(x|y)). Such functions have a dynamic output
+    address and cannot be tested by a fixed-slot parity harness.
+    """
+    res = subprocess.run(
+        [str(BRIDGE_BIN), "--root", str(UPSTREAM), "get-asm", func_name],
+        capture_output=True, text=True,
+    )
+    if res.returncode != 0:
+        return False
+    return bool(_INDEXED_STORE_RE.search(res.stdout))
 
 
 # ---------------------------------------------------------------------------
@@ -182,6 +205,8 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
 
     def parse_ram(spec: str) -> list[tuple[int, int]]:
         # "0x38FA=1, 0x38FB=1"
+        # Strip any trailing `#` comment (LLMs sometimes add inline notes).
+        spec = re.sub(r"#.*$", "", spec).strip()
         out: list[tuple[int, int]] = []
         if not spec or spec.lower() == "none":
             return out
@@ -189,8 +214,14 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
             part = part.strip()
             if "=" not in part:
                 continue
-            addr, width = [s.strip() for s in part.split("=", 1)]
-            out.append((int(addr, 16), int(width)))
+            addr_s, width_s = [s.strip() for s in part.split("=", 1)]
+            # Also strip any inline `#` per-value comment, in case the LLM
+            # put one mid-spec rather than at the end.
+            width_s = re.sub(r"#.*$", "", width_s).strip()
+            try:
+                out.append((int(addr_s, 16), int(width_s)))
+            except ValueError:
+                sys.stderr.write(f"[gen] skipping malformed RAM spec part: {part!r}\n")
         return out
 
     def parse_single_ram(spec: str) -> Optional[tuple[int, int]]:
@@ -503,9 +534,33 @@ int main(int argc, char **argv) {{
 """
 
 
+def _strip_trailers(c_translation: str) -> str:
+    """Remove the trailing metadata block (// PITFALLS:, // HELPERS:,
+    // CONTRACT:, REVERSED_FUNCTION:, DELEGATED_FUNCTION:) before inlining.
+
+    LLMs sometimes emit `REVERSED_FUNCTION:` without a leading `//`, which
+    breaks the C compile when the translation is inlined verbatim. We cut
+    at the first trailer marker we recognise.
+    """
+    lines = c_translation.splitlines()
+    cut_at = len(lines)
+    trailer_pat = re.compile(
+        r"^\s*(?://\s*)?(PITFALLS:|HELPERS:|CONTRACT:|REVERSED_FUNCTION:|DELEGATED_FUNCTION:)",
+        re.IGNORECASE,
+    )
+    for i, line in enumerate(lines):
+        if trailer_pat.match(line):
+            cut_at = i
+            break
+    return "\n".join(lines[:cut_at]).rstrip() + "\n"
+
+
 def render_spike(c_translation: str, contract: Contract) -> str:
     bank = (contract.addr24 >> 16) & 0xFF
     offset = contract.addr24 & 0xFFFF
+
+    # Strip the metadata trailers (they would break the C compile).
+    c_translation = _strip_trailers(c_translation)
 
     # Auto-emit *_emu helpers referenced by the translation but not defined.
     required = collect_required_helpers(c_translation)
@@ -672,6 +727,16 @@ def main(argv: list[str] | None = None) -> int:
 
     if contract.custom_spike:
         sys.stderr.write(f"[gen] {args.source} marked CUSTOM_SPIKE: yes — skipping auto-gen.\n")
+        return 0
+
+    # Safety net: the asm has an indexed store → the output address is
+    # dynamic, the contract is necessarily wrong, force a manual spike.
+    if bridge_asm_has_indexed_store(contract.func_name):
+        sys.stderr.write(
+            f"[gen] {args.source}: asm contains an indexed store "
+            "(sta/stx/sty/stz $XXXX,x|y) so the output address is dynamic. "
+            "The LLM contract is overridden — treating this as CUSTOM_SPIKE.\n"
+        )
         return 0
 
     spike_src = PARITY_SRC / f"spike_{contract.func_name.lower()}_auto.c"
