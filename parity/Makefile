@@ -1,5 +1,5 @@
 # FF4 parity harness — Phase 2 scaffold
-# Headless build (no SDL): on consomme directement le core LakeSnes en static.
+# Headless build (no SDL): we link the LakeSnes core directly as static sources.
 
 LAKESNES := ../LakeSnes
 ROM       := ../upstream/rom/ff4-jp1.sfc
@@ -81,11 +81,11 @@ $(BIN_COMPARE): src/parity_compare.c $(CORE_SRC)
 run: $(BIN_SAMPLE)
 	./$(BIN_SAMPLE) $(ROM) 600
 
-# Self-consistency : ROM vanilla vs ROM vanilla → DOIT donner 0 divergence
+# Self-consistency: vanilla ROM vs vanilla ROM → MUST report zero divergence
 run-self: $(BIN_COMPARE)
 	./$(BIN_COMPARE) $(ROM) $(ROM) 600
 
-# Sensibilité : flip 1 octet du ROM test → DOIT diverger rapidement
+# Sensitivity: flip one byte in the test ROM → MUST diverge quickly
 run-patch: $(BIN_COMPARE)
 	./$(BIN_COMPARE) $(ROM) $(ROM) 600 --patch 0x8000:00
 

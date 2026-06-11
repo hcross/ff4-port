@@ -1,20 +1,20 @@
-"""LLM providers — abstraction pluggable pour batch_translate.
+"""LLM providers — pluggable abstraction for batch_translate.
 
-Trois implémentations :
-  * ClaudeCliProvider — invocation `claude --print` non-interactif (DEFAULT)
-    Coût : inclus dans l'abonnement Claude Code, pas de billing API marginal.
-  * AnthropicSdkProvider — SDK Python anthropic, API pay-as-you-go au token
-    Avantage : prompt caching natif, contrôle fin du budget.
-  * OpenAiCompatProvider — compatible OpenAI Chat Completions
-    Pour Ollama local (no key), OpenRouter, LM Studio, vLLM, etc.
+Three implementations:
+  * ClaudeCliProvider — non-interactive `claude --print` invocation (DEFAULT)
+    Cost: included in the Claude Code subscription, no marginal API billing.
+  * AnthropicSdkProvider — Python anthropic SDK, pay-as-you-go per token
+    Advantage: native prompt caching, fine-grained budget control.
+  * OpenAiCompatProvider — OpenAI Chat Completions-compatible
+    For local Ollama (no key), OpenRouter, LM Studio, vLLM, etc.
 
-Toutes les implementations exposent :
+All implementations expose:
     translate(system, examples, user_prompt, model) -> (code_or_None, CallStats)
 
-Où :
-    system, examples : strings (mis en cache si supporté)
-    user_prompt : string (varie par fonction)
-    model : string (ex. "claude-sonnet-4-5", "gpt-4o-mini", "llama3:8b")
+Where:
+    system, examples : strings (cached if supported)
+    user_prompt : string (varies per function)
+    model : string (e.g. "claude-sonnet-4-5", "gpt-4o-mini", "llama3:8b")
 """
 from __future__ import annotations
 
@@ -27,14 +27,14 @@ import sys
 from typing import Optional, Protocol
 
 
-# Tarifs par modèle, $/M tokens (à jour 2026-06)
+# Per-model pricing, $/M tokens (as of 2026-06)
 PRICING = {
     # Anthropic
     "claude-haiku-4-5":  {"in": 1.0,  "out": 5.0,  "cache_read": 0.10},
     "claude-sonnet-4-5": {"in": 3.0,  "out": 15.0, "cache_read": 0.30},
     "claude-sonnet-4-6": {"in": 3.0,  "out": 15.0, "cache_read": 0.30},
     "claude-opus-4-7":   {"in": 15.0, "out": 75.0, "cache_read": 1.50},
-    # OpenAI / OpenAI-compat (à compléter ou ignorer pour local)
+    # OpenAI / OpenAI-compat (extend as needed; safe to ignore for local models)
     "gpt-4o":      {"in": 2.5,  "out": 10.0, "cache_read": 1.25},
     "gpt-4o-mini": {"in": 0.15, "out": 0.6,  "cache_read": 0.075},
     "default":     {"in": 0.0,  "out": 0.0,  "cache_read": 0.0},
@@ -53,7 +53,7 @@ class CallStats:
 
 
 class LLMProvider(Protocol):
-    """Contrat minimal d'un provider LLM."""
+    """Minimal contract for an LLM provider."""
     name: str
 
     def translate(
@@ -105,10 +105,9 @@ class ClaudeCliProvider:
         max_output_tokens: int,
         dry_run: bool,
     ) -> tuple[Optional[str], CallStats]:
-        # Combine system + examples en un seul system prompt (claude CLI
-        # n'a pas de notion de prompt caching exposée — il en fait peut-être
-        # silencieusement, peu importe pour le billing utilisateur côté
-        # abonnement).
+        # Combine system + examples into a single system prompt. The claude
+        # CLI does not expose a prompt-caching API (it may apply it silently;
+        # this is irrelevant for the user's subscription billing).
         combined_system = f"{system}\n\n# Reference examples\n\n{examples}"
 
         if dry_run:
@@ -118,11 +117,11 @@ class ClaudeCliProvider:
                 provider=self.name,
                 model=model,
             )
-            # Pas de cost — abonnement Claude Code
+            # No cost — Claude Code subscription
             return None, stats
 
-        # Invocation : user prompt via stdin, system via flag, JSON en sortie
-        # `--tools ""` désactive Read/Edit/Bash (pure text-to-text)
+        # Invocation: user prompt as argument, system via flag, JSON output.
+        # `--tools ""` disables Read/Edit/Bash (pure text-to-text).
         cmd = [
             self.bin, "-p", user_prompt,
             "--append-system-prompt", combined_system,
@@ -133,7 +132,7 @@ class ClaudeCliProvider:
         try:
             res = subprocess.run(
                 cmd, capture_output=True, text=True,
-                timeout=120,  # 2 min hard timeout par appel
+                timeout=120,  # 2 min hard timeout per call
             )
         except subprocess.TimeoutExpired:
             sys.stderr.write(f"[claude-cli] TIMEOUT for translation\n")
@@ -235,7 +234,7 @@ class OpenAiCompatProvider:
 
     def __init__(self, api_base: str, api_key: Optional[str] = None):
         self.api_base = api_base.rstrip("/")
-        self.api_key = api_key  # peut être None (Ollama local)
+        self.api_key = api_key  # may be None (local Ollama)
 
     def translate(
         self,
@@ -258,7 +257,7 @@ class OpenAiCompatProvider:
             stats.cost_usd = _price_anthropic_style(stats, model)
             return None, stats
 
-        # Pas de prompt caching standardisé — on combine system+examples
+        # No standardised prompt caching — combine system+examples
         combined_system = f"{system}\n\n# Reference examples\n\n{examples}"
         payload = {
             "model": model,
@@ -267,13 +266,13 @@ class OpenAiCompatProvider:
                 {"role": "user",   "content": user_prompt},
             ],
             "max_tokens": max_output_tokens,
-            "temperature": 0.0,  # déterministe pour reproductibilité
+            "temperature": 0.0,  # deterministic for reproducibility
         }
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
-        # Utilise urllib pour éviter dépendance requests
+        # Use urllib to avoid a `requests` dependency
         try:
             import urllib.request
             req = urllib.request.Request(

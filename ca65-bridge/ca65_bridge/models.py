@@ -1,8 +1,8 @@
-"""Data models — réplique des dataclasses de re_agent.core.models.
+"""Data models — replica of the relevant re_agent.core.models dataclasses.
 
-Réplique plutôt qu'import pour rester standalone (pas de dépendance hard sur
-re-agent). Les noms et signatures sont strictement identiques pour rester
-compatibles avec le protocol REBackend.
+We replicate rather than import these to stay standalone (no hard dependency
+on re-agent). The names and signatures are kept strictly identical so the
+backend remains compatible with the REBackend protocol.
 """
 from __future__ import annotations
 

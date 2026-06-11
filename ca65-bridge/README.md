@@ -1,26 +1,28 @@
 # ca65-bridge
 
-Backend bridge pour projets de disassembly **ca65 / 65816** (Super NES, Apple II,
-NES via cc65, etc.). API compatible avec le protocol
-[`re_agent.backend.protocol.REBackend`](https://github.com/Dryxio/auto-re-agent).
+Backend bridge for **ca65 / 65816** disassembly projects (Super NES,
+Apple II, NES via cc65, etc.). API compatible with the
+[`re_agent.backend.protocol.REBackend`](https://github.com/Dryxio/auto-re-agent)
+protocol.
 
-Construit dans le cadre du port FF4 → retro-go-sd Game & Watch. Conçu pour être
-**réutilisable** par tout projet de réimplémentation C natif basé sur une
-disassembly ca65 commentée.
+Built as part of the FF4 → retro-go-sd Game & Watch port. Designed to be
+**reusable** for any native C reimplementation project based on a
+commented ca65 disassembly.
 
-## Statut
+## Status
 
-Phase 3 / scaffold initial. Implémente :
+Phase 3 / initial scaffold. Implements:
 
-- `get_asm(label)` — extrait le body d'une routine asm par son label
-- `xrefs_from(label)` — `jsr`/`jmp`/`bra` sortants d'une routine
-- `xrefs_to(label)` — recherche regex sur l'ensemble des `.asm`
-- `search(pattern)` — labels matchant un motif
+- `get_asm(label)` — extracts an asm routine body by its label
+- `xrefs_from(label)` — `jsr`/`jmp`/`bra` outgoing from a routine
+- `xrefs_to(label)` — regex search across all `.asm` sources
+- `search(pattern)` — labels matching a pattern
+- `classify_routine(label)` — ADR-003 classification (translate vs delegate)
 
-Pas encore implémenté :
+Not yet implemented:
 
-- Résolution adresse 24-bit ↔ label via `.map` / `.lst` (Phase 3.5)
-- `decompile()` / `get_struct()` / `get_enum()` — non applicables (65816, pas de Ghidra)
+- 24-bit address ↔ label resolution via `.map` / `.lst` (Phase 3.5)
+- `decompile()` / `get_struct()` / `get_enum()` — not applicable (65816, no Ghidra)
 
 ## Usage
 
@@ -28,15 +30,17 @@ Pas encore implémenté :
 ca65-bridge get-asm CalcHits --root ../upstream
 ca65-bridge xrefs-from CalcHits --root ../upstream
 ca65-bridge search '^Calc' --root ../upstream
+ca65-bridge classify CalcDmg --root ../upstream
+ca65-bridge classify-module battle --root ../upstream
 ```
 
 ## Capabilities
 
-| Capability     | Supporté |
-|----------------|---------|
-| has_decompile  | non — pas de pseudo-C |
-| has_asm        | oui — asm 65816 commentée verbatim |
-| has_xrefs      | oui — depuis sources |
-| has_search     | oui |
-| has_structs    | non |
-| has_enums      | non |
+| Capability     | Supported |
+|----------------|-----------|
+| has_decompile  | no — no pseudo-C |
+| has_asm        | yes — verbatim 65816 asm with comments |
+| has_xrefs      | yes — parsed from sources |
+| has_search     | yes |
+| has_structs    | no |
+| has_enums      | no |

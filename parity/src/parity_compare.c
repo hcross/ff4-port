@@ -1,20 +1,20 @@
 // FF4 parity harness — double-instance comparator.
-// Charge deux ROMs (vanilla "or" vs test), les run en lock-step via LakeSnes,
-// et fait `memcmp` frame-par-frame sur WRAM(128KB) + SRAM(dyn) + VRAM(64KB)
-// + OAM(512B) + CGRAM(512B).
+// Loads two ROMs (vanilla "or" vs test), runs them in lock-step through
+// LakeSnes, and `memcmp`s WRAM(128KB) + SRAM(dyn) + VRAM(64KB) + OAM(512B)
+// + CGRAM(512B) frame by frame.
 //
-// Modèle d'archi : external/zelda3/zelda_cpu_infra.c VerifySnapshotsEq.
-// Pas de whitelist d'octets exclus ici — c'est l'outil qui permettra DE LA
-// CONSTRUIRE en observant les divergences réelles.
+// Architecture reference: external/zelda3/zelda_cpu_infra.c VerifySnapshotsEq.
+// No whitelist of excluded bytes here — this tool is exactly what lets us
+// BUILD one by observing real divergences.
 //
 // Usage:
 //   ff4-parity-compare <rom_or.sfc> <rom_test.sfc> [frames] [--patch OFFSET:HEX]
 //
 // Flags:
-//   --patch OFF:HH  Avant le load de rom_test, écraser l'octet à OFF par HH
-//                   (utile pour tester la sensibilité du harness).
+//   --patch OFF:HH  Before loading rom_test, overwrite the byte at OFF
+//                   with HH (useful for testing the harness's sensitivity).
 //
-// Exit: 0 si zéro divergence sur la run, 1 sinon.
+// Exit: 0 if zero divergence over the run, 1 otherwise.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,7 +34,7 @@ typedef struct {
   const void *a;
   const void *b;
   size_t size;
-  size_t elem_size;       // 1 ou 2 (byte vs word)
+  size_t elem_size;       // 1 or 2 (byte vs word)
 } Region;
 
 static int g_total_divergences = 0;
@@ -118,13 +118,13 @@ int main(int argc, char **argv) {
 
   if (patch_off >= 0) {
     if ((size_t)patch_off >= len_test) {
-      fprintf(stderr, "patch offset 0x%lX hors ROM (taille 0x%zX)\n",
+      fprintf(stderr, "patch offset 0x%lX out of ROM bounds (size 0x%zX)\n",
               patch_off, len_test);
       return 1;
     }
     uint8_t before = rom_test[patch_off];
     rom_test[patch_off] = patch_val;
-    fprintf(stderr, "patch: rom_test[0x%lX] %02X → %02X\n",
+    fprintf(stderr, "patch: rom_test[0x%lX] %02X -> %02X\n",
             patch_off, before, patch_val);
   }
 
@@ -138,9 +138,9 @@ int main(int argc, char **argv) {
   snes_reset(snes_or, true);
   snes_reset(snes_test, true);
 
-  // sanity : les deux carts doivent avoir la même taille SRAM
+  // Sanity: both carts must share the same SRAM size.
   if (snes_or->cart->ramSize != snes_test->cart->ramSize) {
-    fprintf(stderr, "WARN: SRAM size mismatch or=%u test=%u — skipping SRAM compare\n",
+    fprintf(stderr, "WARN: SRAM size mismatch or=%u test=%u -- skipping SRAM compare\n",
             snes_or->cart->ramSize, snes_test->cart->ramSize);
   }
   uint32_t sram_size = snes_or->cart->ramSize;
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "frame=%5d: %d divergences\n", f, div_this_frame);
     }
     if (g_total_divergences >= MAX_DIVERGENCES_TOTAL) {
-      fprintf(stderr, "STOP: total divergence log cap atteint (%d), arrêt diagnostic\n",
+      fprintf(stderr, "STOP: total divergence log cap reached (%d), stopping diagnostic\n",
               MAX_DIVERGENCES_TOTAL);
       break;
     }

@@ -1,27 +1,28 @@
-// Spike M5 — Test du template sur CalcDmg (60 instr asm), scale test.
+// Spike M5 — testing the prompt template on CalcDmg (60 instr of asm), the
+// "scale" test.
 //
-// 7 blocs identifiés dans damage.asm @c99f :
-//   1. variance = base/2, clamp 0xFF si high byte nonzero
+// Seven sub-blocks identified in damage.asm @c99f:
+//   1. variance = base/2, clamp to 0xFF if high byte nonzero
 //   2. variance = RandXA(0, variance) ; damage = variance + base (via Add16)
 //   3. apply elemental multiplier (ApplyDmgMult)
-//   4. apply creature type multiplier (ApplyDmgMult)
+//   4. apply creature-type multiplier (ApplyDmgMult)
 //   5. crit bonus (16-bit add)
 //   6. subtract defense (16-bit sbc, clamp to 0)
 //   7. atk_mult via Mult16, saturate to 0xFFFF if high nonzero
-//   8. def_mult via Div16, cap 9999, min 1
+//   8. def_mult via Div16, cap to 9999, minimum 1
 //
-// Inputs en WRAM :
-//   $3902 base attack (16-bit)
-//   $38FA hit_rate, $38FB base_hits (non utilisés ici)
-//   $38FC atk_mult (8-bit)
-//   $38FE elemental mult, $38FF creature type mult (8-bit each)
-//   $3900 crit flag (0=no crit), $3901 crit bonus (8-bit)
+// Inputs in WRAM:
+//   $3902     base attack (16-bit)
+//   $38FA     hit_rate, $38FB base_hits (not used here)
+//   $38FC     atk_mult (8-bit)
+//   $38FE     elemental mult, $38FF creature-type mult (each 8-bit)
+//   $3900     crit flag (0 = no crit), $3901 crit bonus (8-bit)
 //   $3904-$3905 defense (16-bit)
-//   $3906 def_mult (8-bit)
+//   $3906     def_mult (8-bit)
 //   $1900..$19FF RNG table
-//   $97 rng_index
+//   $97       rng_index
 //
-// Output : $A4-$A5 = damage 16-bit, capped to [1, 9999=0x270F]
+// Output: $A4-$A5 = 16-bit damage, capped to [1, 9999 = 0x270F]
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +41,7 @@
 #define RAND_XA_ADDR_24        0x038379u
 
 // ---------------------------------------------------------------------------
-// Boilerplate (factoriser plus tard)
+// Boilerplate (to be factored later)
 // ---------------------------------------------------------------------------
 
 static uint8_t *read_file(const char *path, size_t *out_len) {
@@ -107,10 +108,10 @@ static inline void write16(uint8_t *ram, int addr, uint16_t v) {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers *_emu : delegate to asm via RunEmulatedFunc
-// Convention : longa/shorta géré par les routines elles-mêmes ; on les appelle
-// en setant DB=$7E DP=0, mode A 8-bit (par défaut battle) — elles passent en
-// 16-bit par leur premier `longa` au besoin.
+// `*_emu` helpers: delegate to asm via RunEmulatedFunc.
+// Convention: longa/shorta is the routine's responsibility; we call them
+// with DB=$7E, DP=0, A 8-bit mode (battle default) — they switch to 16-bit
+// themselves via their initial `longa` when needed.
 // ---------------------------------------------------------------------------
 
 static void call_emu(Snes *snes, uint32_t addr, bool mf_in, bool xf_in,
@@ -126,16 +127,16 @@ static void call_emu(Snes *snes, uint32_t addr, bool mf_in, bool xf_in,
     c->a=a_in; c->x=x_in; c->y=y_in;
     c->z=z_in; c->n=n_in;
     run_emulated_func(snes, addr);
-    // restore modes — content of RAM is intentionally preserved
+    // Restore modes — RAM contents are intentionally preserved.
     c->a=saved_a; c->x=saved_x; c->y=saved_y;
     c->sp=saved_sp; c->pc=saved_pc; c->dp=saved_dp;
     c->k=saved_k; c->db=saved_db;
     c->mf=saved_mf; c->xf=saved_xf; c->z=saved_z; c->n=saved_n;
 }
 
-// RandXA : in A=max, X=min ; out A=rand[min..max]
-// Routine asm fait `shorti` au début → X devient 8-bit
-// Mode A à l'entrée : 16-bit selon CalcDmg context
+// RandXA: in A=max, X=min; out A=rand[min..max].
+// The asm starts with `shorti` → X becomes 8-bit.
+// A entry mode: 16-bit per the CalcDmg context.
 static uint16_t rand_xa_emu(Snes *snes, uint16_t a_max, uint8_t x_min) {
     Cpu *c = snes->cpu;
     uint16_t saved_a=c->a, saved_x=c->x, saved_y=c->y, saved_sp=c->sp;
@@ -143,10 +144,10 @@ static uint16_t rand_xa_emu(Snes *snes, uint16_t a_max, uint8_t x_min) {
     uint8_t saved_k=c->k, saved_db=c->db;
     bool saved_mf=c->mf, saved_xf=c->xf, saved_z=c->z, saved_n=c->n;
     c->dp=0; c->db=0x7E;
-    c->mf=false;  // A 16-bit (héritage longa)
-    c->xf=false;  // X 16-bit (sera shorti par RandXA)
+    c->mf=false;  // A 16-bit (longa-inherited)
+    c->xf=false;  // X 16-bit (RandXA will shorti)
     c->a=a_max; c->x=x_min; c->y=0;
-    // Z et N selon a_max (BEQ check in RandXA tests A==0)
+    // Z and N derived from a_max (RandXA's BEQ tests A==0).
     c->z = (a_max == 0); c->n = (a_max & 0x8000) != 0;
     run_emulated_func(snes, RAND_XA_ADDR_24);
     uint16_t result = c->a;
@@ -154,7 +155,7 @@ static uint16_t rand_xa_emu(Snes *snes, uint16_t a_max, uint8_t x_min) {
     c->sp=saved_sp; c->pc=saved_pc; c->dp=saved_dp;
     c->k=saved_k; c->db=saved_db;
     c->mf=saved_mf; c->xf=saved_xf; c->z=saved_z; c->n=saved_n;
-    c->a=saved_a;  // restore but we already captured result
+    c->a=saved_a;  // restore — we already captured `result`
     return result;
 }
 
@@ -167,17 +168,18 @@ static void apply_dmg_mult_emu(Snes *snes, uint8_t mult) {
 }
 
 // ---------------------------------------------------------------------------
-// Côté ASM
+// ASM side
 // ---------------------------------------------------------------------------
 
 static uint16_t CalcDmg_asm(Snes *snes) {
     Cpu *c = snes->cpu;
     c->dp = 0; c->db = 0x7E;
-    // Pitfall 8 CONFIRMÉ : CalcDmg n'a pas de longa/shorta explicite mais
-    // attend mode A 8-bit (hérité convention battle). En mode 16-bit, le
-    // `lsr $3957` shift le WORD $3957-$3958 et corrompt $3958 (le backup de
-    // base pour Add16). Diagnostic A1 a montré $3958=0115 vs 012A attendu.
-    c->mf = true;   // A 8-bit (convention battle)
+    // Pitfall 8 CONFIRMED: CalcDmg has no explicit longa/shorta but expects
+    // A 8-bit (inherited from the battle convention). In 16-bit mode,
+    // `lsr $3957` shifts the WORD $3957-$3958 and corrupts $3958 (the
+    // `base` backup used by Add16). Diagnostic A1 showed $3958=0115 instead
+    // of the expected 012A.
+    c->mf = true;   // A 8-bit (battle convention)
     c->xf = false;  // X 16-bit
     c->a = 0; c->x = 0; c->y = 0;
     c->z = true; c->n = false;
@@ -186,13 +188,13 @@ static uint16_t CalcDmg_asm(Snes *snes) {
 }
 
 // ---------------------------------------------------------------------------
-// Côté C — traduction selon le template
+// C side — translation following the template
 // ---------------------------------------------------------------------------
 
-// Variante "déléguer tout" — utilisée pour valider l'hypothèse "fonction
-// de composition non traduisible sans tracker B-caché".
-// Si cette version PASSE 1000/1000, l'archi shadow-exec marche mais CalcDmg
-// doit être traitée comme "boîte noire émulée" plutôt que traduite.
+// "Delegate everything" variant — used to validate the "composition routine
+// not translatable without tracking hidden B" hypothesis.
+// If this version PASSES 1000/1000, the shadow-exec architecture works but
+// CalcDmg must be treated as an "emulated black box" rather than translated.
 static uint16_t CalcDmg_c_delegated(Snes *snes) {
     Cpu *c = snes->cpu;
     c->dp = 0; c->db = 0x7E;
@@ -206,32 +208,32 @@ static uint16_t CalcDmg_c_delegated(Snes *snes) {
 static uint16_t CalcDmg_c(Snes *snes) {
     uint8_t *ram = snes->ram;
 
-    // Bloc 1 : variance = base/2, clamp to 0x00FF si high nonzero
+    // Block 1: variance = base/2, clamp to 0x00FF when the high byte is nonzero.
     uint16_t base = read16(ram, 0x3902);
-    write16(ram, 0x3956, base);   // current dmg / variance
-    write16(ram, 0x3958, base);   // backup pour Add16
+    write16(ram, 0x3956, base);   // current damage / variance
+    write16(ram, 0x3958, base);   // backup for Add16
     uint16_t variance = base >> 1;
     write16(ram, 0x3956, variance);
-    // lda $3957 / beq → test high byte de variance (= variance >> 8)
-    // Note : lda $3957 charge 1 octet en mode A 8-bit, mais on est en A 16-bit
-    // ici (héritage longa) → lda $3957 charge $3957 et $3958. Donc le test
-    // beq porte sur le mot ($3957 + $3958*256).
-    // ATTENTION : ici l'asm fait potentiellement quelque chose de subtil.
-    // Inspection : @c9a4 vient juste avant lsr/ror, donc on est ENCORE en mode
-    // hérité du début. Le début de CalcDmg ne contient PAS de shorta/longa
-    // explicite, le mode est celui du caller.
-    // Pour l'instant je suppose A 16-bit (à valider par test).
-    // En mode A 16-bit : lda $3957 charge ($3957=v_hi) en A_lo et ($3958=base_lo)
-    // en A_hi. C'est BIZARRE — peut-être que le code attend que $3958 ait été
-    // backed up à `base` initial, et que $3957 (high de variance) soit nonzero
-    // signifie "variance dépasse 0xFF".
-    // Approche pragmatique : tester si v_hi != 0 (i.e. variance > 0xFF) et
-    // clamper à 0x00FF.
+    // `lda $3957 / beq` tests the high byte of variance (= variance >> 8).
+    // Note: `lda $3957` loads one byte in A 8-bit mode. We are in A 16-bit
+    // mode here (longa-inherited) → `lda $3957` loads $3957 and $3958. The
+    // beq therefore tests the word ($3957 + $3958*256).
+    // CAUTION: the asm does something subtle here. @c9a4 sits just before
+    // lsr/ror, so we are STILL in the mode inherited from entry. CalcDmg's
+    // prologue does NOT include explicit shorta/longa, so the mode is the
+    // caller's.
+    // For now we assume A 16-bit (to be validated by test).
+    // In A 16-bit: `lda $3957` loads ($3957=v_hi) into A_lo and ($3958=base_lo)
+    // into A_hi. That looks strange — most likely the asm expects $3958 to
+    // still hold the original `base` backup, and a nonzero $3957 (high byte
+    // of variance) to signal "variance exceeds 0xFF".
+    // Pragmatic approach: test whether v_hi != 0 (i.e. variance > 0xFF) and
+    // clamp to 0x00FF.
     if ((variance >> 8) != 0) {
         write16(ram, 0x3956, 0x00FF);
     }
 
-    // Bloc 2 : variance = RandXA(0, variance) ; damage = variance + base
+    // Block 2: variance = RandXA(0, variance); damage = variance + base.
     uint16_t v = read16(ram, 0x3956);
     uint16_t rand_v = rand_xa_emu(snes, v, 0);
     write16(ram, 0x3956, rand_v);
@@ -239,11 +241,11 @@ static uint16_t CalcDmg_c(Snes *snes) {
     uint16_t damage = read16(ram, 0x395A);
     write16(ram, 0xA4, damage);
 
-    // Bloc 3-4 : apply elemental + creature type multipliers
+    // Blocks 3-4: apply elemental + creature-type multipliers.
     apply_dmg_mult_emu(snes, ram[0x38FE]);  // elemental
     apply_dmg_mult_emu(snes, ram[0x38FF]);  // creature type
 
-    // Bloc 5 : crit bonus (16-bit add)
+    // Block 5: crit bonus (16-bit add)
     uint8_t crit = ram[0x3900];
     if (crit != 0) {
         uint16_t d = read16(ram, 0xA4);
@@ -251,7 +253,7 @@ static uint16_t CalcDmg_c(Snes *snes) {
         write16(ram, 0xA4, d);
     }
 
-    // Bloc 6 : subtract defense (16-bit sbc, clamp to 0 si underflow)
+    // Block 6: subtract defense (16-bit sbc, clamp to 0 on underflow)
     {
         uint16_t d = read16(ram, 0xA4);
         uint16_t def = read16(ram, 0x3904);
@@ -262,13 +264,13 @@ static uint16_t CalcDmg_c(Snes *snes) {
         }
     }
 
-    // Blocs 7+8 : DÉLÉGUÉS à l'asm (Pitfall 9 : B caché non trackable en C
-    // sans tracker explicite). Sous-portion @ca01-@ca40 (mult atk_mult,
+    // Blocks 7+8: DELEGATED to the asm (Pitfall 9: hidden B is not trackable
+    // in C without an explicit tracker). Sub-range @ca01-@ca40 (atk_mult mul,
     // saturate, div def_mult, cap 9999, min 1).
     //
-    // Pour passer 1000/1000 PASS, il faudra revenir traduire 7+8 en C
-    // avec tracking de B. Pour le spike, la délégation prouve que les
-    // blocs 1-6 sont corrects.
+    // To reach 1000/1000 PASS, blocks 7+8 would need a full C translation
+    // with B tracking. For this spike, delegation proves blocks 1-6 are
+    // correct.
     {
         Cpu *c = snes->cpu;
         c->dp = 0; c->db = 0x7E;
@@ -295,16 +297,16 @@ static int run_trial(Snes *snes, Snap *baseline, int trial_id, bool verbose) {
     snap_restore(baseline, snes);
     uint8_t *ram = snes->ram;
 
-    // Inputs aléatoires
+    // Random inputs.
     write16(ram, 0x3902, (uint16_t)(host_rng() & 0x03FF));  // base attack 0..1023
-    ram[0x38FC] = 1 + (uint8_t)(host_rng() % 8);            // atk_mult 1..8 (jamais 0 sinon mult par 0)
+    ram[0x38FC] = 1 + (uint8_t)(host_rng() % 8);            // atk_mult 1..8 (never 0, would multiply by 0)
     ram[0x38FE] = (uint8_t)(host_rng() & 0xFF);             // elemental
     ram[0x38FF] = (uint8_t)(host_rng() & 0xFF);             // creature
-    ram[0x3900] = (host_rng() & 1) ? 1 : 0;                  // crit ?
+    ram[0x3900] = (host_rng() & 1) ? 1 : 0;                 // crit?
     ram[0x3901] = (uint8_t)(host_rng() & 0xFF);             // crit bonus
-    write16(ram, 0x3904, (uint16_t)(host_rng() & 0x01FF));   // defense 0..511
-    ram[0x3906] = 1 + (uint8_t)(host_rng() % 8);            // def_mult 1..8 (jamais 0)
-    ram[0x97] = (uint8_t)(host_rng() & 0xFF);                // rng_index
+    write16(ram, 0x3904, (uint16_t)(host_rng() & 0x01FF));  // defense 0..511
+    ram[0x3906] = 1 + (uint8_t)(host_rng() % 8);            // def_mult 1..8 (never 0)
+    ram[0x97] = (uint8_t)(host_rng() & 0xFF);               // rng_index
     // RNG table
     for (int i = 0; i < 256; i++) ram[0x1900 + i] = (uint8_t)(host_rng() & 0xFF);
 
@@ -313,7 +315,7 @@ static int run_trial(Snes *snes, Snap *baseline, int trial_id, bool verbose) {
 
     uint16_t out_asm = CalcDmg_asm(snes);
 
-    // === DIAG A1 — état post-asm pour le trial 0 uniquement ===
+    // === A1 DIAG — post-asm state for trial 0 only ===
     if (trial_id == 0) {
         Cpu *c = snes->cpu;
         fprintf(stderr, "DIAG A1 post-asm: PC=%02X:%04X SP=%04X mf=%d xf=%d\n",
@@ -327,8 +329,8 @@ static int run_trial(Snes *snes, Snap *baseline, int trial_id, bool verbose) {
     }
 
     snap_restore(&pre, snes);
-    // Use "delegated" variant to test hypothesis. Switch to CalcDmg_c for
-    // partial-translation test.
+    // Use the "delegated" variant to validate the hypothesis. Swap to
+    // CalcDmg_c for the partial-translation test.
     uint16_t out_c = CalcDmg_c_delegated(snes);
     (void)CalcDmg_c;  // silence unused warning
 
@@ -362,7 +364,7 @@ int main(int argc, char **argv) {
     Snap baseline;
     snap_take(&baseline, snes);
 
-    // === DIAG A1 ===
+    // === A1 DIAG ===
     fprintf(stderr, "DIAG A1: baseline[$A4]=%02X [$A5]=%02X (post-boot residual at damage slot)\n",
             baseline.ram[0xA4], baseline.ram[0xA5]);
     fprintf(stderr, "DIAG A1: baseline CPU: PC=%02X:%04X SP=%04X DP=%04X DB=%02X mf=%d xf=%d e=%d\n",

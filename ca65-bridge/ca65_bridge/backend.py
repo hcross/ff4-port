@@ -1,4 +1,4 @@
-"""Ca65BridgeBackend — implémentation REBackend pour disassemblies ca65/65816."""
+"""Ca65BridgeBackend — REBackend implementation for ca65/65816 disassemblies."""
 from __future__ import annotations
 
 import re
@@ -21,12 +21,12 @@ from ca65_bridge.parsers.asm import (
 
 
 # ---------------------------------------------------------------------------
-# Classification ADR-003 — translate vs delegate
+# ADR-003 classification — translate vs delegate
 # ---------------------------------------------------------------------------
 
-# Chain `lda <addr> / tax / stx <other>` qui consomme implicitement le
-# registre B caché (high byte de l'accumulateur en mode A 8-bit). Indicateur
-# fort de "composition non traduisible".
+# `lda <addr> / tax / stx <other>` chain that implicitly consumes the
+# hidden register B (high byte of the accumulator in A 8-bit mode). Strong
+# signal of a non-translatable composition routine.
 _B_HIDDEN_CHAIN_RE = re.compile(
     r"^\s*lda\s+\S+\s*(?:;[^\n]*)?\n"
     r"\s*(?:@\w+:\s*)?tax\s*(?:;[^\n]*)?\n"
@@ -34,36 +34,37 @@ _B_HIDDEN_CHAIN_RE = re.compile(
     re.MULTILINE,
 )
 
-# Heuristique : présence de `longa` explicite SANS `shorta`/`shorta0` final
-# = fonction qui CHANGE le mode et le laisse 16-bit, pollue le caller.
-# (Cas fréquent qui doit être délégué)
+# Heuristic: explicit `longa` WITHOUT a final `shorta`/`shorta0` means the
+# routine changes the mode and leaves it 16-bit, which pollutes the caller.
+# Common reason to delegate.
 _LONGA_RE = re.compile(r"^\s*longa\b", re.MULTILINE)
 _SHORTA_RE = re.compile(r"^\s*shorta0?\b", re.MULTILINE)
 
 
 @dataclass
 class Classification:
-    """Décision de classification ADR-003 + signaux qui ont guidé."""
+    """ADR-003 classification decision plus the signals that triggered it."""
     decision: str            # 'translate' | 'delegate' | 'review'
-    reasons: list[str]       # liste lisible des critères déclenchés
+    reasons: list[str]       # human-readable list of criteria that fired
 
 
-# Seuils ADR-003 (modifiable par config)
+# ADR-003 thresholds (configurable)
 DEFAULT_TRANSLATE_INSTR_MAX = 50
 DEFAULT_TRANSLATE_CALLS_MAX = 2
 
 
 class Ca65BridgeBackend:
-    """Backend RE pour projets de disassembly ca65/65816.
+    """RE backend for ca65/65816 disassembly projects.
 
     Args:
-        root: racine du repo de disassembly (contenant les modules `.asm`).
+        root: root of the disassembly repo (the directory that contains
+              the per-module `.asm` files).
     """
 
     def __init__(self, root: Path | str):
         self.root = Path(root)
         if not self.root.is_dir():
-            raise FileNotFoundError(f"root introuvable : {self.root}")
+            raise FileNotFoundError(f"root not found: {self.root}")
 
     @property
     def capabilities(self) -> BackendCapabilities:
@@ -77,19 +78,19 @@ class Ca65BridgeBackend:
         )
 
     # ------------------------------------------------------------------
-    # Cache de parsing (un parse complet ~80k LoC = ~100 ms typique)
+    # Parse cache (full parse ~80k LoC = ~100 ms typical)
     # ------------------------------------------------------------------
 
     @cached_property
     def _routines(self) -> dict:
-        """Dict {label_name → Routine}. Parsé à la demande, mémoïsé."""
+        """Dict {label_name → Routine}. Parsed on demand, memoised."""
         return parse_tree(self.root)
 
     def _resolve(self, target: str):
-        """Lookup d'une routine par label (préféré) ou par address hint."""
+        """Look up a routine by label (preferred) or by address hint."""
         if target in self._routines:
             return self._routines[target]
-        # adresse hex acceptée : "0xC987" / "C987" / "$c987"
+        # Accept hex addresses: "0xC987" / "C987" / "$c987"
         norm = target.lower().lstrip("$").removeprefix("0x")
         for r in self._routines.values():
             if r.address_hint and r.address_hint == norm:
@@ -101,7 +102,7 @@ class Ca65BridgeBackend:
     # ------------------------------------------------------------------
 
     def decompile(self, target: str):
-        raise NotImplementedError("ca65-bridge ne fournit pas de pseudo-C")
+        raise NotImplementedError("ca65-bridge does not provide pseudo-C")
 
     def get_asm(self, target: str) -> AsmResult | None:
         r = self._resolve(target)
@@ -121,20 +122,20 @@ class Ca65BridgeBackend:
             return []
         out: list[XRef] = []
         for op, tgt in r.xrefs_out():
-            # On ignore les targets `@xxxx` (labels locaux internes) — ils
-            # ne sont pas des xrefs au sens "vers une autre routine".
+            # Ignore `@xxxx` targets (internal local labels) — they are
+            # not xrefs in the "to another routine" sense.
             if tgt.startswith("@"):
                 continue
-            # adresse approchée : address_hint de la target si disponible
+            # Best-effort address: the target's address_hint when known.
             tgt_r = self._routines.get(tgt)
             addr = tgt_r.address_hint if tgt_r and tgt_r.address_hint else ""
             out.append(XRef(address=addr, name=tgt, ref_type=_classify_op(op)))
         return out
 
     def xrefs_to(self, target: str) -> list[XRef]:
-        """Recherche les occurrences de `(jsr|jmp|bra...) <target>` dans tous les .asm."""
+        """Find all `(jsr|jmp|bra...) <target>` occurrences across .asm files."""
         results: list[XRef] = []
-        # On recherche le motif "<op> <target>" ligne par ligne.
+        # We grep "<op> <target>" line by line.
         pat = re.compile(
             rf"^\s*(?:@[A-Za-z0-9_]+:\s*)?"
             rf"(jsr|jsl|jmp|jml|bra|brl|bcc|bcs|beq|bne|bpl|bmi|bvc|bvs)"
@@ -154,10 +155,10 @@ class Ca65BridgeBackend:
         return results
 
     def get_struct(self, name: str):
-        return None  # non applicable
+        return None  # not applicable
 
     def get_enum(self, name: str):
-        return None  # non applicable
+        return None  # not applicable
 
     def search(self, pattern: str) -> list[FunctionEntry]:
         pat = re.compile(pattern)
@@ -172,12 +173,12 @@ class Ca65BridgeBackend:
         return out
 
     def unimplemented(self, filter_pattern: str | None = None) -> list[FunctionEntry]:
-        # Pas de notion de "stub" dans le monde asm — toutes les fonctions
-        # existent. Sémantique à raffiner en Phase 3.5 (registre des
-        # traductions C/, ex. port/_translated.json).
+        # No notion of a "stub" in the asm world — every function exists.
+        # Semantics to be refined in Phase 3.5 (translation registry,
+        # e.g. port/_translated.json).
         raise NotImplementedError(
-            "ca65-bridge.unimplemented(): registre des traductions à implémenter "
-            "en Phase 3.5"
+            "ca65-bridge.unimplemented(): translation registry to be implemented "
+            "in Phase 3.5"
         )
 
     def remaining(self, class_name: str | None = None) -> list[FunctionEntry]:
@@ -193,7 +194,7 @@ class Ca65BridgeBackend:
         return out
 
     # ------------------------------------------------------------------
-    # ADR-003 — Classification translate vs delegate
+    # ADR-003 — translate vs delegate classification
     # ------------------------------------------------------------------
 
     def classify_routine(
@@ -202,15 +203,15 @@ class Ca65BridgeBackend:
         instr_max: int = DEFAULT_TRANSLATE_INSTR_MAX,
         calls_max: int = DEFAULT_TRANSLATE_CALLS_MAX,
     ) -> Classification | None:
-        """Décide si une routine doit être traduite en C ou déléguée à l'asm.
+        """Decide whether a routine should be translated to C or delegated to asm.
 
-        Critères ADR-003 (cumulables) :
-          - instruction_count > instr_max → delegate (probable composition)
-          - call_count > calls_max → delegate (multi-délégation, B caché)
-          - présence de chain `lda/tax/stx` → delegate (Pitfall 9 confirmé)
-          - présence de `longa` sans `shorta`/`shorta0` final → review
+        ADR-003 criteria (cumulative):
+          - instruction_count > instr_max → delegate (likely a composition)
+          - call_count > calls_max → delegate (multi-delegation, hidden B)
+          - presence of an `lda/tax/stx` chain → delegate (Pitfall 9 confirmed)
+          - `longa` without a final `shorta`/`shorta0` → review
 
-        Returns None si la routine est introuvable.
+        Returns None if the routine cannot be found.
         """
         r = self._resolve(name)
         if not r:

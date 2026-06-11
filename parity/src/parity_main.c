@@ -1,13 +1,14 @@
-// FF4 parity harness — phase 2 scaffold.
-// Headless: charge le ROM rebuildé, run N frames via LakeSnes, dump une
-// signature CRC32 du WRAM. Sert de socle aux étapes suivantes (double instance,
-// comparator frame-par-frame contre la future réimpl C).
+// FF4 parity harness — Phase 2 scaffold.
+// Headless: loads the rebuilt ROM, runs N frames through LakeSnes, dumps a
+// CRC32 signature of the WRAM. Serves as the foundation for the next stages
+// (double-instance comparator, frame-by-frame diff against the future native
+// C reimplementation).
 //
 // Usage: ff4-parity <rom.sfc> [frames]
 //
-// La signature WRAM par frame sera le canari : toute divergence de
-// comportement entre ROM vanilla et ROM patché par du code C natif se verra
-// par dérive de la CRC.
+// The per-frame WRAM signature is the canary: any behavioural divergence
+// between the vanilla ROM and a ROM patched with native C code will show up
+// as CRC drift.
 
 #include <stdio.h>
 #include <stdlib.h>

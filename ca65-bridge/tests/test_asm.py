@@ -1,4 +1,4 @@
-"""Tests du parser asm contre battle/damage.asm de ff4."""
+"""asm parser tests against battle/damage.asm in the ff4 upstream submodule."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -16,7 +16,7 @@ DAMAGE_ASM = UPSTREAM / "battle" / "damage.asm"
 
 pytestmark = pytest.mark.skipif(
     not DAMAGE_ASM.exists(),
-    reason="upstream/battle/damage.asm absent — bring-up Phase 1 requis",
+    reason="upstream/battle/damage.asm missing — run Phase 1 bring-up first",
 )
 
 
@@ -40,14 +40,14 @@ def test_calc_hits_body_isolated():
     assert "stz" in ch.body
     assert "jsr     Rand99" in ch.body
     assert "rts" in ch.body
-    # CalcHits ne doit PAS contenir le body de CalcDmg
+    # CalcHits must NOT contain CalcDmg's body
     assert "CalcDmg" not in ch.body
 
 
 def test_calc_hits_metrics():
     routines = {r.name: r for r in parse_file(DAMAGE_ASM)}
     ch = routines["CalcHits"]
-    # 11 instructions : stz/lda/beq/tay/jsr/cmp/bcs/inc/dey/bne/rts
+    # 11 instructions: stz/lda/beq/tay/jsr/cmp/bcs/inc/dey/bne/rts
     assert ch.instruction_count == 11
     # 1 jsr Rand99
     assert ch.call_count == 1
@@ -72,10 +72,10 @@ def test_backend_xrefs_from_calchits():
 
 
 def test_backend_xrefs_to_calchits():
-    """CalcHits est appelé par d'autres routines du module battle."""
+    """CalcHits is called by other routines in the battle module."""
     b = Ca65BridgeBackend(UPSTREAM)
     refs = b.xrefs_to("CalcHits")
-    assert len(refs) >= 1, "CalcHits doit avoir au moins 1 caller"
+    assert len(refs) >= 1, "CalcHits must have at least one caller"
 
 
 def test_backend_search_calc():

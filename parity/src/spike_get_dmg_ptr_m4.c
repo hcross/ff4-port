@@ -1,8 +1,8 @@
-// Spike M4 — Comparison asm vs C de GetDmgPtr.
+// Spike M4 — GetDmgPtr asm vs C comparison.
 // Translation produced by simulating the reverser-agent prompt template
 // (Phase 3.5 dry-run, agent role played by Claude in chat).
 //
-// ASM source @ $03:CA62 (battle/damage.asm) :
+// ASM source @ $03:CA62 (battle/damage.asm):
 //   GetDmgPtr:
 //   sta $a9 / bpl @ca6b / and #$7f / clc / adc #$05
 //   @ca6b: asl / tax / rts
@@ -65,8 +65,8 @@ static uint16_t GetDmgPtr_c(Snes *snes, uint8_t target_id) {
     } else {
         a = (target_id & 0x7F) + 5;      // enemy
     }
-    // PIÈGE : en mode A 8-bit, `asl` tronque à 8 bits. En C, `a << 1`
-    // promote à int et garde le bit 8. Forcer la troncature.
+    // PITFALL: in A 8-bit mode, `asl` truncates to 8 bits. In C, `a << 1`
+    // promotes to int and keeps bit 8. Force the truncation explicitly.
     return (uint16_t)(uint8_t)(a << 1);
 }
 
@@ -79,18 +79,18 @@ static uint16_t GetDmgPtr_asm(Snes *snes, uint8_t target_id) {
     c->dp = 0;
     c->db = 0x7E;
     c->mf = true;
-    c->xf = true;          // X 8-bit pour clean (tax met X_hi=0 en 8-bit X)
+    c->xf = true;          // X 8-bit for cleanliness (`tax` zeroes X_hi in X 8-bit mode)
     c->a = target_id;
     c->x = 0; c->y = 0;
-    // Pitfall 2 : `bpl` consulte N qui n'est pas set par `sta`. Simuler N.
+    // Pitfall 2: `bpl` reads N which is not set by `sta`. Simulate N here.
     c->n = (target_id & 0x80) != 0;
-    c->z = (target_id == 0);  // par cohérence (pas utilisé par bpl mais safe)
+    c->z = (target_id == 0);  // for consistency (not consulted by `bpl`, but safe)
     run_emulated_func(snes, GET_DMG_PTR_ADDR_24);
-    return (uint16_t)(c->x & 0xFF);  // X 8-bit → result low byte only
+    return (uint16_t)(c->x & 0xFF);  // X 8-bit → result is the low byte only
 }
 
 // ---------------------------------------------------------------------------
-// Snapshot / restore (réutilise pattern M2/M3)
+// Snapshot / restore (reuses the M2/M3 pattern)
 // ---------------------------------------------------------------------------
 
 typedef struct {

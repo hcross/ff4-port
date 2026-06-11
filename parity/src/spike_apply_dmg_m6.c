@@ -1,19 +1,19 @@
-// Spike M6 — Test ADR-003 sur ApplyDmg (90 instr, longa explicite).
+// Spike M6 — ADR-003 test on ApplyDmg (90 instr, explicit longa).
 //
-// Étape 1 (ce code) — Validation délégation :
-//   * Setup combat minimal : 13 slots de cibles, HPs/flags random
-//   * Run ApplyDmg via run_emulated_func
-//   * Vérifier : ApplyDmg s'exécute (PC retour magic), modifie HPs comme
-//     attendu pour les cibles "damage" non-miss
+// Step 1 (this code) — Delegation validation:
+//   * Minimal combat setup: 13 target slots, random HPs/flags.
+//   * Run ApplyDmg via run_emulated_func.
+//   * Verify: ApplyDmg executes (returns to the magic PC) and modifies HPs
+//     the way we expect for "damage" non-miss targets.
 //
-// Étape 2 — analyse de faisabilité translation (manuelle, hors code) :
-//   compter chains B-caché potentiels, branches, etc.
+// Step 2 — Translation feasibility analysis (offline, manual):
+//   count potential B-hidden chains, branches, etc.
 //
-// L'objectif n'est PAS de comparer asm vs C (pas de C écrit), mais de
-// confirmer que la stratégie "delegate" marche pour des fonctions à
-// `longa` explicite + boucle externe. Si oui, ADR-003 confirme :
-// "delegate by default for instr_count > 50", traduction reste possible
-// mais reportée.
+// The goal here is NOT to compare asm vs C (no C is produced), but to
+// confirm that the "delegate" strategy works for routines that combine
+// explicit `longa` with an outer loop. If it does, ADR-003 stands:
+// "delegate by default for instr_count > 50" — a future translation
+// remains possible but is deferred.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,16 +27,16 @@
 #define APPLY_DMG_ADDR_24 0x03CA6Eu
 
 #define N_TARGETS 13
-#define TARGET_STRIDE 0x80          // X+=$80 entre cibles ($cb22 ADC #$0080)
+#define TARGET_STRIDE 0x80          // X += $80 between targets ($cb22: ADC #$0080)
 
-#define RAM_TARGET_PRESENT 0x3540   // 1 byte par cible (Y indexed)
-#define RAM_ATTACK_FLAGS   0x34D4   // 2 bytes par cible (Y indexed)
-#define RAM_TARGET_HP_LO   0x2007   // 2 bytes par cible (X indexed, stride 0x80)
-#define RAM_TARGET_HP_MAX  0x2009   // idem max
+#define RAM_TARGET_PRESENT 0x3540   // 1 byte per target (Y indexed)
+#define RAM_ATTACK_FLAGS   0x34D4   // 2 bytes per target (Y indexed)
+#define RAM_TARGET_HP_LO   0x2007   // 2 bytes per target (X indexed, stride 0x80)
+#define RAM_TARGET_HP_MAX  0x2009   // same, max HP
 #define RAM_STATUS_DEAD    0x338E
 #define RAM_STATUS_CRIT    0x3391
-#define RAM_DEAD_COUNT     0x3907   // incrémenté par ApplyDmg quand HP→0
-#define RAM_SHOW_ZERO_DMG  0x355B   // affichage 0-damage flag
+#define RAM_DEAD_COUNT     0x3907   // incremented by ApplyDmg when HP reaches 0
+#define RAM_SHOW_ZERO_DMG  0x355B   // "show zero damage" display flag
 #define RAM_A9_INDEX       0xA9
 
 static uint8_t *read_file(const char *path, size_t *out_len) {
@@ -103,7 +103,7 @@ static void snap_restore(const Snap *s, Snes *snes) {
 }
 
 // ---------------------------------------------------------------------------
-// Wrapper de délégation pour ApplyDmg
+// Delegation wrapper for ApplyDmg
 // ---------------------------------------------------------------------------
 
 static void ApplyDmg_emu(Snes *snes) {
@@ -112,9 +112,9 @@ static void ApplyDmg_emu(Snes *snes) {
     c->db = 0x7E;
     // ApplyDmg commence par `longa / clr_ax / stx $a9 / tay`.
     // longa fait `rep #$20` → A passe 16-bit. mais clr_ax = tdc/tax,
-    // donc état initial mf importe peu.
+    // so the initial mf doesn't really matter.
     // X 16-bit : ApplyDmg utilise X 16-bit (stx $a9 word).
-    c->mf = true;   // sera changé par longa
+    c->mf = true;   // will be changed by `longa`
     c->xf = false;  // X 16-bit
     c->a = 0; c->x = 0; c->y = 0;
     c->z = true; c->n = false;
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
     Snap baseline;
     snap_take(&baseline, snes);
 
-    // --- Test 1 : 3 cibles présentes, attack flag = damage (bit 15=0), damage value 100
+    // --- Test 1: 3 targets present, attack flag = damage (bit 15 = 0), damage value 100
     //             Aucune en miss (bit 14=0). HP courant = 500 chaque.
     TargetSetup targets[N_TARGETS] = {0};
     targets[0] = (TargetSetup){.present=true, .hp_current=500, .hp_max=999, .attack_flag=0x0064};  // damage=100

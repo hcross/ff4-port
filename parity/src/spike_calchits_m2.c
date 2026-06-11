@@ -1,20 +1,20 @@
-// Spike M2 — comparison asm vs C de CalcHits, avec shadow-exec partiel.
+// Spike M2 — asm vs C comparison of CalcHits with partial shadow-exec.
 //
-// Architecture :
-//   - 1 seule instance LakeSnes
-//   - Côté ASM : on positionne le PC sur CalcHits @ $03:C987 et on laisse
-//     l'asm tourner (qui appelle Rand99 lui-même via JSR)
-//   - Côté C : CalcHits_c(snes) reproduit la logique de damage.asm en C, et
-//     pour chaque tirage Rand99 il fait RunEmulatedFunc($03:858B) qui exécute
-//     l'asm Rand99 et retourne dans cpu->a. C'est EXACTEMENT le pattern
-//     zelda3 "fonction traduite délègue à l'asm pour les sous-routines non
-//     traduites".
+// Architecture:
+//   - A single LakeSnes instance.
+//   - ASM side: we set PC on CalcHits @ $03:C987 and let the asm run
+//     (Rand99 is invoked from within via JSR).
+//   - C side: CalcHits_c(snes) reproduces the damage.asm logic in C, and
+//     for each Rand99 draw it calls RunEmulatedFunc($03:858B) which
+//     executes the asm Rand99 and returns the value in cpu->a. This is
+//     EXACTLY the zelda3 pattern of "a translated function delegates to
+//     the asm for sub-routines that have not been translated yet".
 //
-//   - Pour chaque trial : snapshot RAM + regs → run asm → record output → restore
-//     → run C → record output → compare byte-equal sur $38FD
+//   - For each trial: snapshot RAM + regs → run asm → record output → restore
+//     → run C → record output → compare byte-equal on $38FD.
 //
-// Si 1000/1000 trials donnent CalcHits_asm == CalcHits_c, l'archi
-// shadow-exec snesrev est définitivement validée sur FF4.
+// If 1000/1000 trials show CalcHits_asm == CalcHits_c, the snesrev
+// shadow-exec architecture is definitively validated for FF4.
 //
 // Usage:
 //   ./ff4-spike-calchits-m2 <rom.sfc> [n_trials]
@@ -76,7 +76,7 @@ static void run_emulated_func(Snes *snes, uint32_t pc24) {
 
 // ---------------------------------------------------------------------------
 // Snapshot / restore — RAM + CPU regs.
-// On utilise un buffer alloué une fois.
+// A single buffer is allocated up front.
 // ---------------------------------------------------------------------------
 
 typedef struct {
@@ -112,9 +112,9 @@ static void snap_restore(const Snap *s, Snes *snes) {
 }
 
 // ---------------------------------------------------------------------------
-// Côté C : CalcHits réimplémenté.
+// C side: CalcHits reimplemented.
 //
-// Référence (damage.asm @c987) :
+// Reference (damage.asm @c987):
 //   CalcHits:
 //   @c987:  stz     $38fd       ; clear number of hits
 //           lda     $38fb
@@ -128,21 +128,21 @@ static void snap_restore(const Snap *s, Snes *snes) {
 //           bne     @c990
 //   @c99e:  rts
 //
-// Sémantique : `cmp` puis `bcs` ⇔ if A >= mem branche → notre `r < rate`
-// inverse la condition (puisque bcs ne branche PAS quand carry clear, c.à.d
-// quand A < mem). Donc : si Rand99 < rate, on incrémente.
+// Semantics: `cmp` then `bcs` ⇔ "if A >= mem branch" → our `r < rate`
+// inverts the condition (bcs does NOT branch when carry is clear, i.e.
+// when A < mem). So: if Rand99 < rate, we increment.
 // ---------------------------------------------------------------------------
 
 static uint8_t rand99_emu(Snes *snes) {
-    // Snapshot CPU regs minimaux pour ne pas pourrir l'état entre 2 tirages
+    // Snapshot the minimal CPU regs so the state between draws stays clean.
     Cpu *c = snes->cpu;
     uint16_t saved_a = c->a, saved_x = c->x, saved_y = c->y;
     uint16_t saved_sp = c->sp, saved_pc = c->pc, saved_dp = c->dp;
     uint8_t saved_k = c->k, saved_db = c->db;
     bool saved_mf = c->mf, saved_xf = c->xf;
 
-    // Setup pour Rand99 : mode A/X 8-bit, DB=0x7E (Rand99 fait lda $1900,x
-    // qui doit pointer en WRAM)
+    // Setup for Rand99: A/X 8-bit mode, DB=0x7E (Rand99 does `lda $1900,x`
+    // which must point into WRAM).
     c->dp = 0;
     c->db = 0x7E;
     c->mf = true;
@@ -175,7 +175,7 @@ static void CalcHits_c(Snes *snes) {
 }
 
 // ---------------------------------------------------------------------------
-// Côté ASM : juste un wrapper qui set DB/DP/M/X et appelle CalcHits.
+// ASM side: a thin wrapper that sets DB/DP/M/X and calls CalcHits.
 // ---------------------------------------------------------------------------
 
 static void CalcHits_asm(Snes *snes) {
@@ -188,7 +188,7 @@ static void CalcHits_asm(Snes *snes) {
 }
 
 // ---------------------------------------------------------------------------
-// Host PRNG — xorshift32 pour générer les inputs des trials
+// Host PRNG — xorshift32 used to generate trial inputs.
 // ---------------------------------------------------------------------------
 
 static uint32_t host_rng_state = 0x12345678u;
@@ -213,15 +213,15 @@ typedef struct {
 
 static int run_one_trial(Snes *snes, const Trial *t, Snap *baseline,
                          int trial_id, bool verbose) {
-    // Préparer le baseline : restore l'état "boot stable" + inscrire les inputs
+    // Prepare the baseline: restore the "stable boot" state and write inputs.
     snap_restore(baseline, snes);
     memcpy(snes->ram + RAM_RNG_TABLE, t->rng_table, 256);
     snes->ram[RAM_RNG_INDEX] = t->rng_index;
     snes->ram[RAM_HIT_RATE] = t->hit_rate;
     snes->ram[RAM_BASE_HITS] = t->base_hits;
-    snes->ram[RAM_NHITS_OUT] = 0xAA;  // sentinelle
+    snes->ram[RAM_NHITS_OUT] = 0xAA;  // sentinel
 
-    // Snapshot pré-asm (pour pouvoir rejouer le C avec exactement le même état)
+    // Pre-asm snapshot (so we can replay the C side with the exact same state).
     Snap pre;
     snap_take(&pre, snes);
 
@@ -229,7 +229,7 @@ static int run_one_trial(Snes *snes, const Trial *t, Snap *baseline,
     CalcHits_asm(snes);
     uint8_t out_asm = snes->ram[RAM_NHITS_OUT];
 
-    // Restore pré-asm, run C
+    // Restore pre-asm, run C
     snap_restore(&pre, snes);
     CalcHits_c(snes);
     uint8_t out_c = snes->ram[RAM_NHITS_OUT];
@@ -267,7 +267,7 @@ int main(int argc, char **argv) {
     snes->cpu->nmiWanted = false;
     snes->cpu->irqWanted = false;
 
-    // Baseline = état CPU+RAM stable après 60 frames boot
+    // Baseline = stable CPU+RAM state after 60 boot frames.
     Snap baseline;
     snap_take(&baseline, snes);
 
@@ -278,7 +278,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < n_trials; i++) {
         t.rng_index = host_rng_byte();
         t.base_hits = host_rng_byte();
-        t.hit_rate = (uint8_t)(host_rng() % 100);  // dans [0, 99] = domaine de jeu
+        t.hit_rate = (uint8_t)(host_rng() % 100);  // [0, 99] = in-game domain
         for (int j = 0; j < 256; j++) t.rng_table[j] = host_rng_byte();
         fails += run_one_trial(snes, &t, &baseline, i, /*verbose*/false);
     }

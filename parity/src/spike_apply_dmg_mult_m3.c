@@ -1,35 +1,36 @@
-// Spike M3 — Comparison asm vs C de ApplyDmgMult.
+// Spike M3 — ApplyDmgMult asm vs C comparison.
 //
-// Contexte d'appel (depuis CalcDmg @c9c5) :
-//   - Mode A 8-bit (hypothèse à valider par le test)
-//   - Mode X 16-bit (xf=0 hérité de clr_ax)
+// Call site context (from CalcDmg @c9c5):
+//   - A 8-bit mode (hypothesis to validate via the test)
+//   - X 16-bit mode (xf=0 inherited from clr_ax)
 //   - DB = $7E, DP = 0
 //   - A = elemental_multiplier (8-bit)
 //   - $a4-$a5 = damage 16-bit little-endian (lo, hi)
 //
-// Routine ApplyDmgMult (damage.asm @ca41) :
+// ApplyDmgMult routine (damage.asm @ca41):
 //   bne @ca48          ; A != 0 ?
-//   stz $a4            ; cas A==0 : damage = 0
+//   stz $a4            ; A==0 case: damage = 0
 //   stz $a5
 //   rts
 //   @ca48:
 //   lsr                ; A >>= 1
 //   bne @ca50          ; A_orig > 1 ?
-//   lsr $a5            ; cas A_orig == 1 : damage >>= 1
+//   lsr $a5            ; A_orig == 1 case: damage >>= 1
 //   ror $a4
 //   rts
 //   @ca50:
 //   tax                ; X = A (mult)
-//   stx $393d          ; arg1 de Mult16 (16-bit en mode X 16-bit)
+//   stx $393d          ; Mult16 arg1 (16-bit because X is 16-bit)
 //   ldx $a4            ; X = damage 16-bit
-//   stx $393f          ; arg2 de Mult16
+//   stx $393f          ; Mult16 arg2
 //   jsr Mult16
-//   ldx $3941          ; X = résultat lo
-//   stx $a4            ; damage = résultat lo (tronqué à 16-bit)
+//   ldx $3941          ; X = result lo
+//   stx $a4            ; damage = result lo (truncated to 16-bit)
 //   rts
 //
-// On compare l'output (damage post-call) entre les 2 implémentations sur
-// fuzz 1000 trials. Si fail → mode A 16-bit à tester.
+// We compare the post-call output (damage) between the two implementations
+// across 1000 fuzz trials. If failures appear → next hypothesis to test is
+// "A 16-bit at entry".
 //
 // Usage:
 //   ./ff4-spike-apply-dmg-mult <rom.sfc> [n_trials]
@@ -50,10 +51,10 @@
 #define RAM_DAMAGE_HI 0xA5
 #define RAM_MULT16_ARG1 0x393D   // 16-bit
 #define RAM_MULT16_ARG2 0x393F   // 16-bit
-#define RAM_MULT16_RESLO 0x3941  // 16-bit lo of 32-bit result
+#define RAM_MULT16_RESLO 0x3941  // low 16-bit of the 32-bit result
 
 // ---------------------------------------------------------------------------
-// Helpers communs M1/M2 (à factoriser dans un header un jour)
+// Common helpers (shared with M1/M2 — should be factored into a header one day)
 // ---------------------------------------------------------------------------
 
 static uint8_t *read_file(const char *path, size_t *out_len) {
@@ -119,11 +120,10 @@ static void snap_restore(const Snap *s, Snes *snes) {
 }
 
 // ---------------------------------------------------------------------------
-// Côté C : ApplyDmgMult réimplémenté, hypothèse A 8-bit / X 16-bit
+// C side: ApplyDmgMult reimplemented under the A 8-bit / X 16-bit hypothesis.
 //
-// `mult16_emu` exécute Mult16 via RunEmulatedFunc avec mode A 16-bit
-// (Mult16 commence par `longa`) et X 16-bit. Inputs déjà en RAM aux bonnes
-// adresses.
+// `mult16_emu` runs Mult16 via RunEmulatedFunc with A 16-bit (Mult16 starts
+// with `longa`) and X 16-bit. Inputs are already in RAM at the right addresses.
 // ---------------------------------------------------------------------------
 
 static void mult16_emu(Snes *snes) {
@@ -135,8 +135,8 @@ static void mult16_emu(Snes *snes) {
 
     c->dp = 0;
     c->db = 0x7E;
-    c->mf = false;  // 16-bit A (Mult16 fait longa au début mais autant être propre)
-    c->xf = false;  // 16-bit X (Mult16 utilise ldx #$10)
+    c->mf = false;  // A 16-bit (Mult16 issues `longa` itself, but be explicit)
+    c->xf = false;  // X 16-bit (Mult16 uses `ldx #$10`)
 
     run_emulated_func(snes, MULT16_ADDR_24);
 
@@ -158,53 +158,53 @@ static void ApplyDmgMult_c(Snes *snes, uint8_t mult) {
     uint8_t *ram = snes->ram;
 
     if (mult == 0) {
-        // bne @ca48 → not taken : zero le damage
+        // bne @ca48 → not taken: zero the damage
         ram[RAM_DAMAGE_LO] = 0;
         ram[RAM_DAMAGE_HI] = 0;
         return;
     }
-    // @ca48 : A >>= 1 ; bne @ca50 → si zero, A_orig était 1
+    // @ca48: A >>= 1 ; bne @ca50 → if zero, A_orig was 1
     uint8_t shifted = mult >> 1;
     if (shifted == 0) {
-        // mult was 1 : damage 16-bit >>= 1
+        // mult was 1: damage 16-bit >>= 1
         uint16_t dmg = read16(ram, RAM_DAMAGE_LO);
         dmg >>= 1;
         write16(ram, RAM_DAMAGE_LO, dmg);
         return;
     }
-    // @ca50 : algo Mult16(shifted, damage), résultat tronqué à 16-bit
-    // En mode X 16-bit, stx $393d écrit shifted en $393d (lo) et 0 en $393e
-    // (X_hi a été zero'd par clr_ax au début de CalcDmg, et tax preserve ça
-    // puisqu'on transfère A_lo seul en mode A 8-bit — X_lo prend A_lo,
-    // X_hi est préservé à 0).
+    // @ca50: Mult16(shifted, damage), result truncated to 16-bit.
+    // In X 16-bit mode, `stx $393d` writes `shifted` at $393d (lo) and 0 at
+    // $393e (X_hi was zeroed by clr_ax at the top of CalcDmg, and `tax`
+    // preserves that — only A_lo transfers in A 8-bit mode; X_lo takes A_lo,
+    // X_hi stays at 0).
     write16(ram, RAM_MULT16_ARG1, (uint16_t)shifted);
     uint16_t dmg = read16(ram, RAM_DAMAGE_LO);
     write16(ram, RAM_MULT16_ARG2, dmg);
 
     mult16_emu(snes);
 
-    // damage = résultat lo (les bits hauts du produit 32-bit sont jetés)
+    // damage = result lo (the high bits of the 32-bit product are discarded)
     uint16_t result_lo = read16(ram, RAM_MULT16_RESLO);
     write16(ram, RAM_DAMAGE_LO, result_lo);
 }
 
 // ---------------------------------------------------------------------------
-// Côté ASM : wrapper qui set DB/DP/M/X et appelle ApplyDmgMult
+// ASM side: a wrapper that sets DB/DP/M/X and calls ApplyDmgMult.
 // ---------------------------------------------------------------------------
 
 static void ApplyDmgMult_asm(Snes *snes, uint8_t mult) {
     Cpu *c = snes->cpu;
     c->dp = 0;
     c->db = 0x7E;
-    c->mf = true;   // A 8-bit (hypothèse)
+    c->mf = true;   // A 8-bit (hypothesis)
     c->xf = false;  // X 16-bit
     c->a = mult;    // input
-    c->x = 0;       // par cohérence clr_ax (X_hi = 0)
+    c->x = 0;       // matches clr_ax (X_hi = 0)
     c->y = 0;
-    // PIÈGE CLASSIQUE : la routine commence par `bne @ca48` qui consulte Z.
-    // Dans le flow normal, `lda $38FE` JUSTE AVANT le `jsr ApplyDmgMult` met
-    // Z à jour. Nous, on saute directement à @ca41 sans LDA, donc on doit
-    // simuler les flags d'entrée comme si on venait de faire LDA mult.
+    // CLASSIC PITFALL: the routine starts with `bne @ca48` which reads Z.
+    // In the normal flow `lda $38FE` JUST BEFORE `jsr ApplyDmgMult` sets Z.
+    // We jump directly to @ca41 without an LDA, so we must simulate the
+    // entry flags as if we had just done `lda mult`.
     c->z = (mult == 0);
     c->n = (mult & 0x80) != 0;
     run_emulated_func(snes, APPLY_DMG_MULT_ADDR_24);
@@ -278,17 +278,17 @@ int main(int argc, char **argv) {
 
     fprintf(stderr, "comparing ApplyDmgMult asm vs C : %d trials (A 8-bit / X 16-bit hypothesis)\n", n_trials);
 
-    // Trials nommés : exposent les 3 branches de la fonction
+    // Named trials: exercise each of the three branches of the function.
     int fails = 0;
     Trial named[] = {
         {0,   0x1234},  // mult=0 → damage=0
         {0,   0xFFFF},  // mult=0 → damage=0
         {1,   0x1000},  // mult=1 → damage >>= 1 = 0x0800
         {1,   0x0001},  // mult=1 → damage >>= 1 = 0
-        {2,   0x0100},  // mult>1 → Mult16(1, damage), résultat lo = 256
+        {2,   0x0100},  // mult>1 → Mult16(1, damage), result lo = 256
         {2,   0x4000},  // mult>1 → Mult16(1, damage) = 0x4000
-        {255, 0x0010},  // mult=255 → Mult16(127, 0x10), résultat = 0x07F0
-        {3,   0x5555},  // arbitraire
+        {255, 0x0010},  // mult=255 → Mult16(127, 0x10), result = 0x07F0
+        {3,   0x5555},  // arbitrary
     };
     for (size_t i = 0; i < sizeof(named)/sizeof(named[0]); i++) {
         fails += run_trial(snes, &named[i], &baseline, (int)i, /*verbose*/true);

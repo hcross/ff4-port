@@ -1,40 +1,40 @@
 #!/usr/bin/env python3
-"""Batch translator FF4 — asm 65816 → C via LLM pluggable.
+"""FF4 batch translator — asm 65816 → C via pluggable LLM provider.
 
-ARCHITECTURE :
-1. Énumère les routines via ca65-bridge (filtrées par module)
-2. Pour chaque routine, classify_routine() → 'translate' | 'delegate'
-3. Si delegate : émet un wrapper C trivial localement (zero coût LLM)
-4. Si translate : appelle un LLM via provider choisi (--llm)
-5. Tracke tokens consommés et coût $USD à chaque call
-6. STOP automatique si budget dépassé
-7. Output : code C dans port/<module>/<func>.c + log JSONL
+ARCHITECTURE:
+1. Enumerate routines via ca65-bridge (filtered by module).
+2. For each routine, classify_routine() → 'translate' | 'delegate'.
+3. If delegate: emit a trivial C wrapper locally (zero LLM cost).
+4. If translate: call an LLM through the chosen provider (--llm).
+5. Track tokens consumed and $USD cost per call.
+6. Stop automatically when the budget cap is exceeded.
+7. Output: C code in port/<module>/<func>.c plus a JSONL log.
 
-PROVIDERS LLM SUPPORTÉS (--llm) :
-  - claude-cli     : `claude --print` non-interactif (DEFAULT, abonnement Claude Code)
-  - anthropic-sdk  : SDK Python anthropic (API pay-as-you-go)
+SUPPORTED LLM PROVIDERS (--llm):
+  - claude-cli     : non-interactive `claude --print` (DEFAULT, Claude Code subscription)
+  - anthropic-sdk  : Python anthropic SDK (pay-as-you-go API)
   - openai-compat  : OpenAI Chat Completions compatible (Ollama, OpenRouter, etc.)
 
-USAGE (dry-run avec claude CLI) :
+USAGE (dry-run with claude CLI):
     python translator/batch_translate.py \\
         --module battle --max-functions 5 --dry-run
 
-USAGE (réel avec claude CLI, cap budget $0 = abonnement) :
+USAGE (real run with claude CLI, no budget cap = subscription):
     python translator/batch_translate.py \\
         --module battle --max-functions 3
 
-USAGE (Anthropic SDK, hard cap $0.50) :
+USAGE (Anthropic SDK, hard cap $0.50):
     ANTHROPIC_API_KEY=$KEY python translator/batch_translate.py \\
         --module battle --max-functions 3 \\
         --llm anthropic-sdk --budget-usd 0.50
 
-USAGE (Ollama local, gratuit) :
+USAGE (local Ollama, free):
     python translator/batch_translate.py \\
         --module battle --max-functions 3 \\
         --llm openai-compat --api-base http://localhost:11434/v1 \\
         --model llama3:8b
 
-Mode non-interactif strict : sortie JSON sur stdout, aucune question.
+Strict non-interactive mode: JSON on stdout, no questions asked.
 """
 from __future__ import annotations
 
@@ -47,11 +47,11 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-# ca65-bridge est installé dans son propre venv ; on l'invoque via subprocess
-# pour ne pas créer de dépendance Python cross-package.
+# ca65-bridge is installed in its own venv; we invoke it via subprocess to
+# avoid creating a cross-package Python dependency.
 import subprocess
 
-# Providers LLM (claude-cli, anthropic-sdk, openai-compat)
+# LLM providers (claude-cli, anthropic-sdk, openai-compat)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from llm_providers import create_provider, CallStats, DEFAULT_MODELS
 
@@ -63,11 +63,11 @@ PROMPTS_DIR = ROOT / "prompts"
 PORT_DIR = ROOT / "port"
 LOG_FILE = HERE / "batch_log.jsonl"
 
-DEFAULT_BUDGET = 0.0   # 0 = no API cost (claude CLI / Ollama local)
+DEFAULT_BUDGET = 0.0   # 0 = no API cost (claude CLI / local Ollama)
 
 
 def _bridge(*args: str, cwd: Path = ROOT) -> str:
-    """Invoque la CLI ca65-bridge installée dans son venv local."""
+    """Invoke the ca65-bridge CLI installed in its local venv."""
     bridge_bin = ROOT / "ca65-bridge" / ".venv" / "bin" / "ca65-bridge"
     cmd = [str(bridge_bin), "--root", str(UPSTREAM)] + list(args)
     res = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
@@ -80,7 +80,7 @@ def _bridge(*args: str, cwd: Path = ROOT) -> str:
 class RoutineInfo:
     name: str
     module: str
-    address: str        # ex. "c987" (4-char hint)
+    address: str        # e.g. "c987" (4-char hint)
     instr_count: int
     call_count: int
     decision: str       # 'translate' | 'delegate'
@@ -90,7 +90,7 @@ class RoutineInfo:
 
 
 def enumerate_module(module: str) -> list[RoutineInfo]:
-    """Liste les routines d'un module avec leur classification."""
+    """List the routines of a module with their classification."""
     out = _bridge("classify-module", module).strip().splitlines()
     routines: list[RoutineInfo] = []
     for line in out:
@@ -108,9 +108,9 @@ def enumerate_module(module: str) -> list[RoutineInfo]:
 
 
 def hydrate(r: RoutineInfo) -> RoutineInfo:
-    """Charge asm + xrefs_out pour une routine prête à traduire."""
+    """Load asm body + xrefs_out for a routine, ready to translate."""
     asm_text = _bridge("get-asm", r.name)
-    # Parse header `# address_hint: XXXX  instr=N  calls=N` puis body
+    # Parse header `# address_hint: XXXX  instr=N  calls=N` then body
     lines = asm_text.splitlines()
     header_re = re.match(r"^# address_hint:\s*(\S+)\s+instr=(\d+)\s+calls=(\d+)", lines[0])
     if header_re:
@@ -141,7 +141,7 @@ def load_prompts() -> dict[str, str]:
 
 
 def build_user_prompt(r: RoutineInfo, mode: str, task_template: str) -> str:
-    """Render le template task avec les valeurs runtime."""
+    """Render the task template with runtime values."""
     bank = r.address[:2] if len(r.address) >= 4 else "03"
     offset = r.address[2:] if len(r.address) >= 4 else r.address
     xrefs_str = "\n".join(f"- {x}" for x in r.xrefs_out) or "(none)"
@@ -157,21 +157,22 @@ def build_user_prompt(r: RoutineInfo, mode: str, task_template: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Delegate path — émit le wrapper directement (zéro token)
+# Delegate path — emit the wrapper directly (zero token)
 # ---------------------------------------------------------------------------
 
 def emit_delegate_wrapper(r: RoutineInfo) -> str:
-    # Module → bank SNES (depuis rom/ff4-jp1.map segment list)
+    # Module → SNES bank (from rom/ff4-jp1.map segment list)
     MODULE_BANK = {
-        "battle":   "03",   # battle_code start 0x038000
-        "btlgfx":   "02",   # btlgfx_code start 0x028000
-        "menu":     "01",   # menu_code start 0x018000
-        "field":    "00",   # field_code start 0x008000
-        "sound":    "04",   # sound_code start 0x048000
-        "cutscene": "13",   # cutscene_code start 0x13D610
+        "battle":   "03",   # battle_code starts at 0x038000
+        "btlgfx":   "02",   # btlgfx_code starts at 0x028000
+        "menu":     "01",   # menu_code starts at 0x018000
+        "field":    "00",   # field_code starts at 0x008000
+        "sound":    "04",   # sound_code starts at 0x048000
+        "cutscene": "13",   # cutscene_code starts at 0x13D610
     }
     bank = MODULE_BANK.get(r.module, "03")
-    # address_hint donné par ca65-bridge = juste l'offset 16-bit dans la bank
+    # The address_hint provided by ca65-bridge is the 16-bit offset within
+    # the bank — we prepend the module's bank to build the full 24-bit address.
     offset = r.address.upper().lstrip("$").removeprefix("0X")
     addr24 = f"0x{bank}{offset}u"
     reasons_doc = "ADR-003 delegate reasons: " + "; ".join(r.reasons or ["heuristic"])
@@ -202,30 +203,30 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--module", required=True, help="battle, menu, field, btlgfx, sound, cutscene")
     ap.add_argument("--max-functions", type=int, default=5)
     ap.add_argument("--budget-usd", type=float, default=DEFAULT_BUDGET,
-                    help="Hard cap budget. 0 = pas de cap (utile pour claude CLI / Ollama)")
+                    help="Hard budget cap. 0 = no cap (useful for claude CLI / Ollama).")
     ap.add_argument("--llm", choices=["claude-cli", "anthropic-sdk", "openai-compat"],
-                    default="claude-cli", help="Backend LLM (default: claude-cli)")
+                    default="claude-cli", help="LLM backend (default: claude-cli)")
     ap.add_argument("--model", default=None,
-                    help="Modèle (défaut selon provider)")
+                    help="Model name (per-provider default if unset)")
     ap.add_argument("--max-output-tokens", type=int, default=2000)
     ap.add_argument("--api-base", default=None,
-                    help="Base URL OpenAI-compat (ex. http://localhost:11434/v1)")
+                    help="Base URL for OpenAI-compat (e.g. http://localhost:11434/v1)")
     ap.add_argument("--api-key", default=None,
-                    help="Clé API OpenAI-compat (optionnelle pour Ollama)")
+                    help="API key for OpenAI-compat (optional for Ollama)")
     ap.add_argument("--claude-bin", default="claude",
-                    help="Path vers le binaire `claude` CLI (default: claude)")
+                    help="Path to the `claude` CLI binary (default: claude)")
     ap.add_argument("--dry-run", action="store_true",
-                    help="Estime tokens, n'appelle pas l'API")
+                    help="Estimate tokens, do not call the API")
     ap.add_argument("--only-translate", action="store_true",
-                    help="Skip routines classées 'delegate'")
+                    help="Skip routines classified as 'delegate'")
     ap.add_argument("--only-delegate", action="store_true",
-                    help="Skip routines classées 'translate'")
+                    help="Skip routines classified as 'translate'")
     args = ap.parse_args(argv)
 
-    # Modèle par défaut selon provider
+    # Per-provider default model
     model = args.model or DEFAULT_MODELS[args.llm]
 
-    # Provider LLM
+    # LLM provider
     provider = create_provider(
         args.llm,
         bin_path=args.claude_bin,
@@ -297,7 +298,7 @@ def main(argv: list[str] | None = None) -> int:
             if code and not args.dry_run:
                 (out_module_dir / f"{r.name}.c").write_text(code)
                 n_translate_done += 1
-            # Budget cap : seulement si > 0 (sinon claude CLI/Ollama = pas de cap)
+            # Budget cap only applies when > 0 (claude CLI/Ollama have no cap).
             if args.budget_usd > 0 and total_cost > args.budget_usd:
                 sys.stderr.write(f"[batch] BUDGET EXCEEDED ${total_cost:.4f} > ${args.budget_usd}, stopping\n")
                 log_fp.write(json.dumps(record) + "\n")

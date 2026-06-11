@@ -1,56 +1,56 @@
 # FF4 batch translator
 
-Pipeline asm 65816 → C via **LLM pluggable**, avec budget contrôlé et mode
-non-interactif.
+asm 65816 → C pipeline via a **pluggable LLM provider**, with budget
+control and a strict non-interactive mode.
 
-## Providers LLM supportés
+## Supported LLM providers
 
-| Provider          | Flag            | Coût          | Cache  | Notes                                  |
+| Provider          | Flag            | Cost          | Cache  | Notes                                  |
 |-------------------|-----------------|---------------|--------|----------------------------------------|
-| **Claude Code CLI** (default) | `--llm claude-cli`    | abonnement Pro/Max  | (auto) | Pas de gestion clé API, mode `claude --print` non-interactif |
-| Anthropic SDK     | `--llm anthropic-sdk` | pay-per-token       | 90% off | `ANTHROPIC_API_KEY` requis, prompt caching natif |
-| OpenAI-compatible | `--llm openai-compat` | selon serveur       | non    | Ollama local (gratuit), OpenRouter, LM Studio, vLLM |
+| **Claude Code CLI** (default) | `--llm claude-cli`    | Pro/Max subscription  | (auto) | No API key, `claude --print` non-interactive mode |
+| Anthropic SDK     | `--llm anthropic-sdk` | pay-per-token         | 90% off | `ANTHROPIC_API_KEY` required, native prompt caching |
+| OpenAI-compatible | `--llm openai-compat` | depends on server     | no    | Local Ollama (free), OpenRouter, LM Studio, vLLM |
 
-## Modèle économique
+## Cost model
 
-| Modèle             | Input  | Output | Cache read | Estimation 30 fns translate |
-|--------------------|-------:|-------:|-----------:|-----------------------------:|
-| claude-haiku-4-5   | $1/M   | $5/M   | $0.10/M    | ~$0.30                       |
-| **claude-sonnet-4-6** (défaut) | $3/M | $15/M | $0.30/M | **~$2**             |
-| claude-opus-4-7    | $15/M  | $75/M  | $1.50/M    | ~$15                         |
+| Model              | Input  | Output | Cache read | Estimated 30 fns translate |
+|--------------------|-------:|-------:|-----------:|---------------------------:|
+| claude-haiku-4-5   | $1/M   | $5/M   | $0.10/M    | ~$0.30                     |
+| **claude-sonnet-4-6** (default) | $3/M | $15/M | $0.30/M | **~$2**         |
+| claude-opus-4-7    | $15/M  | $75/M  | $1.50/M    | ~$15                       |
 
-Avec prompt caching (system + few-shots ~5k tokens cachés) :
-- 1er call : tarif plein
-- Calls suivants : -90 % sur tokens cachés
-- **Pour tout battle/ (~30 translate) : ~$1-3 estimé**
-- **Pour tout le projet (~150 translate sur 6 modules) : ~$5-15 estimé**
+With prompt caching (system + few-shots ~5k cached tokens):
+- 1st call: full rate
+- Subsequent calls: -90% on cached tokens
+- **Whole battle/ (~30 translate): ~$1-3 estimated**
+- **Whole project (~150 translate across 6 modules): ~$5-15 estimated**
 
-## Hard cap budget
+## Hard budget cap
 
-Le script s'arrête automatiquement si le coût cumulé dépasse `--budget-usd`.
-Valeur par défaut : $1.
+The script stops automatically when cumulative cost exceeds `--budget-usd`.
+Default: $1.
 
 ```bash
-# Test en mode dry-run avec claude CLI (gratuit, défaut)
+# Dry-run with claude CLI (free, default)
 python batch_translate.py --module battle --max-functions 5 --dry-run
 
-# Run réel avec claude CLI (consomme abonnement, pas l'API)
+# Real run with claude CLI (consumes subscription, not API)
 python batch_translate.py --module battle --max-functions 3
 
-# Run avec Anthropic SDK + hard cap budget
+# Run with Anthropic SDK + hard budget cap
 ANTHROPIC_API_KEY=sk-ant-... python batch_translate.py \
     --llm anthropic-sdk \
     --module battle --max-functions 3 \
     --budget-usd 0.50
 
-# Run avec Ollama local (gratuit, modèle ouvert)
+# Run with local Ollama (free, open model)
 python batch_translate.py \
     --llm openai-compat \
     --api-base http://localhost:11434/v1 \
     --model llama3:8b \
     --module battle --max-functions 3
 
-# Run avec OpenRouter
+# Run with OpenRouter
 python batch_translate.py \
     --llm openai-compat \
     --api-base https://openrouter.ai/api/v1 \
@@ -60,15 +60,15 @@ python batch_translate.py \
     --budget-usd 1.0
 ```
 
-## Mode non-interactif
+## Non-interactive mode
 
-- **Aucune question utilisateur** : tous paramètres via CLI args
-- **Sortie structurée** : JSON par fonction sur stdout (un objet par ligne)
-- **Log persistant** : `translator/batch_log.jsonl` (append-only)
-- **Exit code** : 0 si tout OK, non-zéro si erreur fatale (budget, API key manquante, etc.)
-- **Récap final** : sur stderr, ne pollue pas le stdout JSON
+- **No user questions**: all parameters via CLI args
+- **Structured output**: JSON per function on stdout (one object per line)
+- **Persistent log**: `translator/batch_log.jsonl` (append-only)
+- **Exit code**: 0 if OK, non-zero on fatal error (budget, missing API key, etc.)
+- **Final summary**: on stderr, does not pollute the JSON stdout
 
-Exemple de sortie stdout (1 objet par ligne) :
+Example stdout (one object per line):
 ```json
 {"name": "CalcHits", "module": "battle", "decision": "translate", "tokens_in": 287, "tokens_cache_read": 5123, "tokens_out": 124, "cost_usd": 0.003, "status": "translated"}
 {"name": "CalcDmg", "module": "battle", "decision": "delegate", "cost_usd": 0.0, "status": "delegate_emitted"}
@@ -76,20 +76,20 @@ Exemple de sortie stdout (1 objet par ligne) :
 
 ## Output
 
-- C code écrit dans `port/<module>/<func>.c`
-- Wrappers délégués : un par fichier, contenu trivial
-- Translations : à valider ensuite via le harness parity (voir Phase 4.3 — auto-spike)
+- C code written to `port/<module>/<func>.c`
+- Delegated wrappers: one per file, trivial content
+- Translations: must be validated next via the parity harness (see Phase 4.3 — auto-spike)
 
-## Garde-fous
+## Safeguards
 
 - `--max-functions N` (default 5)
-- `--budget-usd X` (default $1)
-- `--only-translate` / `--only-delegate` pour cibler un sous-ensemble
-- Dry-run = aucune API call, estimation seule
+- `--budget-usd X` (default $1, 0 = no cap)
+- `--only-translate` / `--only-delegate` to target a subset
+- Dry-run = no API call, estimate only
 
-## Workflow recommandé
+## Recommended workflow
 
-1. **Toujours** commencer par `--dry-run` pour voir l'estimation tokens
-2. Faire un test réel avec `--max-functions 3 --budget-usd 0.10` (sanity)
-3. Inspecter le `port/<module>/` produit
-4. Si OK, agrandir progressivement le scope
+1. **Always** start with `--dry-run` to see the token estimate
+2. Run a real sanity test with `--max-functions 3 --budget-usd 0.10`
+3. Inspect the resulting `port/<module>/`
+4. If OK, scale up incrementally
