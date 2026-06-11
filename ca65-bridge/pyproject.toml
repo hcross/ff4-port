@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ca65-bridge"
+version = "0.1.0"
+description = "Backend bridge for ca65/65816 disassembly projects (re-agent compatible)"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Hoani Cross" }]
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+ca65-bridge = "ca65_bridge.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["ca65_bridge"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
