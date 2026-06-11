@@ -248,6 +248,48 @@ static void <FuncName>_emu(Snes *snes /*, optional args from caller */) {
 
 End with: `DELEGATED_FUNCTION: <module>::<function_name> ($<bank>:<offset>)`
 
+# API reference (the names you can rely on)
+
+The translation runs inside the parity harness. The following identifiers
+and signatures are **guaranteed** to exist; do NOT invent variations.
+
+## CPU state — `snes->cpu` (LakeSnes `Cpu` struct)
+
+Registers (all `uint16_t` even when the mode is 8-bit):
+- `a`, `x`, `y`, `sp`, `pc`, `dp`
+- `k` (program bank, `uint8_t`), `db` (data bank, `uint8_t`)
+
+Flag bits (each is `bool`, NOT `c_flag` / `z_flag`):
+- `c`, `z`, `v`, `n`, `i`, `d`, `xf`, `mf`, `e`
+- `waiting`, `stopped`
+
+Wrong: `snes->cpu->c_flag = 1;`
+Right: `snes->cpu->c = true;`
+
+## WRAM — `snes->ram` (`uint8_t[0x20000]`)
+
+Always indexed by an absolute 17-bit offset, e.g. `snes->ram[0x38FD]`. Use
+the helpers below for 16-bit little-endian access.
+
+## Helpers provided by the harness
+
+```c
+static void     run_emulated_func(Snes *snes, uint32_t pc24);
+static inline uint16_t read16(const uint8_t *ram, int addr);
+static inline void     write16(uint8_t *ram, int addr, uint16_t v);
+```
+
+## `*_emu` delegation helpers
+
+For every asm sub-routine not yet translated, call `<name>_emu(snes)`
+where `<name>` is the snake_case form of the ca65 label (`Rand99` →
+`rand99_emu`, `ApplyDmgMult` → `apply_dmg_mult_emu`, etc.). The auto-spike
+generator emits these wrappers on demand from `ca65-bridge` — you do NOT
+need to define them; just call them.
+
+Each `*_emu(snes)` returns `uint16_t` (the accumulator after RTS) and
+preserves all RAM the emulated routine wrote to.
+
 # Reference examples
 
 See `reverser_examples.md` for two complete asm→C translations

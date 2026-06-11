@@ -103,3 +103,75 @@ ff4-spike-auto-aitarget_17: src/spike_aitarget_17_auto.c $(CORE_SRC)
 # AUTO: spike for AICond_02
 ff4-spike-auto-aicond_02: src/spike_aicond_02_auto.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_16
+ff4-spike-auto-aitarget_16: src/spike_aitarget_16_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_16_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_19
+ff4-spike-auto-aitarget_19: src/spike_aitarget_19_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_19_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_1a
+ff4-spike-auto-aitarget_1a: src/spike_aitarget_1a_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1a_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_1b
+ff4-spike-auto-aitarget_1b: src/spike_aitarget_1b_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1b_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for GetFrontRowChars
+ff4-spike-auto-getfrontrowchars: src/spike_getfrontrowchars_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getfrontrowchars_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for GetBackRowChars
+ff4-spike-auto-getbackrowchars: src/spike_getbackrowchars_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbackrowchars_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_1e
+ff4-spike-auto-aitarget_1e: src/spike_aitarget_1e_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1e_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_1f
+ff4-spike-auto-aitarget_1f: src/spike_aitarget_1f_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1f_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_20
+ff4-spike-auto-aitarget_20: src/spike_aitarget_20_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_20_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_21
+ff4-spike-auto-aitarget_21: src/spike_aitarget_21_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_21_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_22
+ff4-spike-auto-aitarget_22: src/spike_aitarget_22_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_22_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_23
+ff4-spike-auto-aitarget_23: src/spike_aitarget_23_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_23_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_24
+ff4-spike-auto-aitarget_24: src/spike_aitarget_24_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_24_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_25
+ff4-spike-auto-aitarget_25: src/spike_aitarget_25_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_25_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITarget_29
+ff4-spike-auto-aitarget_29: src/spike_aitarget_29_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_29_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AITargetTbl
+ff4-spike-auto-aitargettbl: src/spike_aitargettbl_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitargettbl_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AICond_00
+ff4-spike-auto-aicond_00: src/spike_aicond_00_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_00_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO: spike for AICond_03
+ff4-spike-auto-aicond_03: src/spike_aicond_03_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_03_auto.c $(CORE_SRC) $(LDFLAGS)

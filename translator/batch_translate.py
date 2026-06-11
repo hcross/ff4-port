@@ -54,6 +54,9 @@ import subprocess
 # LLM providers (claude-cli, anthropic-sdk, openai-compat)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from llm_providers import create_provider, CallStats, DEFAULT_MODELS
+# Auto-spike helper (only imported lazily inside main when --validate is set,
+# to avoid the import cost when batches skip validation).
+GENERATE_SPIKE_PY = Path(__file__).resolve().parent / "generate_spike.py"
 
 
 HERE = Path(__file__).resolve().parent
@@ -74,6 +77,24 @@ def _bridge(*args: str, cwd: Path = ROOT) -> str:
     if res.returncode != 0:
         raise RuntimeError(f"ca65-bridge {args} failed:\n{res.stderr}")
     return res.stdout
+
+
+# Pattern: any indexed store (sta/stx/sty/stz $XXXX,x|y). When present, the
+# routine's output address is dynamic and the auto-spike harness cannot
+# validate it without a custom oracle. Same regex as generate_spike.py.
+_INDEXED_STORE_RE = re.compile(
+    r"^\s*(?:@[A-Za-z0-9_]+:\s*)?(?:sta|stx|sty|stz)\s+[^\s,]+,[xy]\b",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def asm_has_indexed_store(func_name: str) -> bool:
+    """True iff the asm body for `func_name` contains an indexed store."""
+    try:
+        asm_text = _bridge("get-asm", func_name)
+    except RuntimeError:
+        return False
+    return bool(_INDEXED_STORE_RE.search(asm_text))
 
 
 @dataclasses.dataclass
@@ -221,6 +242,14 @@ def main(argv: list[str] | None = None) -> int:
                     help="Skip routines classified as 'delegate'")
     ap.add_argument("--only-delegate", action="store_true",
                     help="Skip routines classified as 'translate'")
+    ap.add_argument("--exclude-indexed-store", action="store_true",
+                    help="Skip translate routines whose asm contains an "
+                         "indexed store (sta/stx/sty/stz $XXXX,x|y). These "
+                         "are marked CUSTOM_SPIKE by generate_spike anyway.")
+    ap.add_argument("--validate", action="store_true",
+                    help="After each successful translation, invoke "
+                         "generate_spike.py --build --run 100 and record "
+                         "the verdict in the JSONL output.")
     args = ap.parse_args(argv)
 
     # Per-provider default model
@@ -254,6 +283,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.only_translate and r.decision != "translate":
             continue
         if args.only_delegate and r.decision != "delegate":
+            continue
+        if (args.exclude_indexed_store and r.decision == "translate"
+                and asm_has_indexed_store(r.name)):
             continue
         if n_processed >= args.max_functions:
             sys.stderr.write(f"[batch] reached --max-functions={args.max_functions}, stopping\n")
@@ -298,8 +330,22 @@ def main(argv: list[str] | None = None) -> int:
             if stats.error:
                 record["error"] = stats.error
             if code and not args.dry_run:
-                (out_module_dir / f"{r.name}.c").write_text(code)
+                out_path = out_module_dir / f"{r.name}.c"
+                out_path.write_text(code)
                 n_translate_done += 1
+                if args.validate:
+                    gen = subprocess.run(
+                        [sys.executable, str(GENERATE_SPIKE_PY),
+                         str(out_path), "--build", "--run", "100"],
+                        capture_output=True, text=True, cwd=str(ROOT),
+                    )
+                    tail = (gen.stdout + gen.stderr).strip().splitlines()[-3:]
+                    record["spike_exit"] = gen.returncode
+                    record["spike_tail"] = " | ".join(tail)
+                    # Parse a "fails: N" verdict if present.
+                    m = re.search(r"fails:\s*(\d+)", gen.stdout + gen.stderr)
+                    if m:
+                        record["spike_fails"] = int(m.group(1))
             # Budget cap only applies when > 0 (claude CLI/Ollama have no cap).
             if args.budget_usd > 0 and total_cost > args.budget_usd:
                 sys.stderr.write(f"[batch] BUDGET EXCEEDED ${total_cost:.4f} > ${args.budget_usd}, stopping\n")
