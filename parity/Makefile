@@ -91,3 +91,7 @@ run-patch: $(BIN_COMPARE)
 
 clean:
 	rm -f $(BIN_SAMPLE) $(BIN_COMPARE) $(BIN_SPIKE) $(BIN_SPIKE_M2) $(BIN_SPIKE_M3) $(BIN_SPIKE_M4) $(BIN_SPIKE_M5) $(BIN_SPIKE_M6)
+
+# AUTO: spike for CalcHits
+ff4-spike-auto-calchits: src/spike_calchits_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calchits_auto.c $(CORE_SRC) $(LDFLAGS)

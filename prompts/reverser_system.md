@@ -189,12 +189,25 @@ explained by B≠0 on entry to `lda $38fc`.
 
 ## For `mode: translate`
 
-1. The C function implementation in a single \`\`\`c block
-2. A `// PITFALLS:` comment listing which of the above pitfalls were
-   relevant to this routine (helps the human reviewer audit)
-3. A `// HELPERS:` comment listing the `*_emu` helpers used (for sub-routines
-   delegated to asm)
-4. End with: `REVERSED_FUNCTION: <module>::<function_name> ($<bank>:<offset>)`
+1. The C function implementation in a single \`\`\`c block.
+2. A `// PITFALLS:` comment listing which of the pitfalls were relevant
+   (helps the human reviewer audit).
+3. A `// HELPERS:` comment listing the `*_emu` helpers used (for delegated
+   sub-routines).
+4. A `// CONTRACT:` block in the format consumed by the auto-spike generator:
+   ```
+   // CONTRACT:
+   //   inputs_reg:  a=<bits|none>, x=<bits|none>, y=<bits|none>
+   //   inputs_ram:  0xXXXX=<width>, 0xYYYY=<width>, ...   (width = 1 or 2)
+   //   output_ram:  0xZZZZ=<width>                         (single observable output)
+   //   entry_mode:  mf=<true|false>, xf=<true|false>, dp=0x0, db=0x7E
+   //   entry_flags: z=<expr|auto>, n=<expr|auto>
+   ```
+   The auto-spike generator (Phase 4.3) parses this block and produces a
+   parity harness automatically. If a routine has no clean single-output
+   contract, declare it as `output_ram: none` and provide a `// CUSTOM_SPIKE: yes`
+   marker so the generator skips it and the human writes the spike manually.
+5. End with: `REVERSED_FUNCTION: <module>::<function_name> ($<bank>:<offset>)`
 
 ## For `mode: delegate`
 
