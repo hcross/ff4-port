@@ -721,6 +721,10 @@ def main(argv: list[str] | None = None) -> int:
                     help="Suffix used for the generated spike file "
                          "(parity/src/spike_<name>_<suffix>.c). Set per "
                          "model when running parallel benches.")
+    ap.add_argument("--run-timeout", type=int, default=20,
+                    help="Hard timeout in seconds on the spike binary "
+                         "execution. A binary that does not finish N trials "
+                         "in this budget is killed (likely infinite loop).")
     args = ap.parse_args(argv)
 
     text = args.source.read_text()
@@ -768,8 +772,21 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.run > 0 and args.build:
         bin_path = ROOT / "parity" / bin_name
-        res = subprocess.run([str(bin_path), str(args.rom), str(args.run)],
-                             capture_output=True, text=True)
+        try:
+            res = subprocess.run(
+                [str(bin_path), str(args.rom), str(args.run)],
+                capture_output=True, text=True,
+                # Hard cap: a spike that does not finish 100 trials in 20 s
+                # contains an infinite loop. Kill it instead of orphaning it
+                # under the parent's timeout.
+                timeout=args.run_timeout,
+            )
+        except subprocess.TimeoutExpired:
+            sys.stderr.write(
+                f"[gen] spike binary exceeded {args.run_timeout}s — likely "
+                "infinite loop in the translated C body.\n"
+            )
+            return 124  # standard shell convention for timeout
         print(res.stdout)
         sys.stderr.write(res.stderr)
         return res.returncode
