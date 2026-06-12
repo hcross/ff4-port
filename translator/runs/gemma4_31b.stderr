@@ -1,0 +1,9 @@
+[batch] enumerating module=battle
+[batch] 373 routines found
+
+[batch] === summary ===
+[batch] provider:   openai-compat (model: gemma4:31b)
+[batch] processed:  164
+[batch] translated: 164
+[batch] delegated:  0
+[batch] total cost: $0.0000 (budget no-cap)

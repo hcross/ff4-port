@@ -1,0 +1,10 @@
+[validate_run] qwen3: 163 C files to validate
+
+[validate_run] qwen3 summary:
+  pass                 76
+  compile_error        62
+  unknown              12
+  custom_spike         11
+  timeout               2
+  TOTAL               163
+  pass rate          46.6%

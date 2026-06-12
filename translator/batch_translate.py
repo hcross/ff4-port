@@ -250,6 +250,19 @@ def main(argv: list[str] | None = None) -> int:
                     help="After each successful translation, invoke "
                          "generate_spike.py --build --run 100 and record "
                          "the verdict in the JSONL output.")
+    ap.add_argument("--out-dir", type=Path, default=None,
+                    help="Directory under which port/<module>/<name>.c "
+                         "files are written. Default: <repo>/port. Use a "
+                         "unique value per run to compare models side by "
+                         "side without overwriting.")
+    ap.add_argument("--log", type=Path, default=None,
+                    help="Path to the JSONL log file. Default: "
+                         "<repo>/translator/batch_log.jsonl. Use a unique "
+                         "value per parallel run.")
+    ap.add_argument("--min-instr-count", type=int, default=0,
+                    help="Skip routines whose asm has fewer than N "
+                         "instructions. Useful to drop parser artefacts "
+                         "(labels reported as instr_count=0).")
     args = ap.parse_args(argv)
 
     # Per-provider default model
@@ -269,15 +282,19 @@ def main(argv: list[str] | None = None) -> int:
     routines = enumerate_module(args.module)
     sys.stderr.write(f"[batch] {len(routines)} routines found\n")
 
-    PORT_DIR.mkdir(exist_ok=True)
-    out_module_dir = PORT_DIR / args.module
+    out_root = args.out_dir or PORT_DIR
+    out_root.mkdir(exist_ok=True, parents=True)
+    out_module_dir = out_root / args.module
     out_module_dir.mkdir(exist_ok=True)
+
+    log_path = args.log or LOG_FILE
+    log_path.parent.mkdir(exist_ok=True, parents=True)
 
     total_cost = 0.0
     n_processed = 0
     n_translate_done = 0
     n_delegate_done = 0
-    log_fp = LOG_FILE.open("a")
+    log_fp = log_path.open("a")
 
     for r in routines:
         if args.only_translate and r.decision != "translate":
@@ -287,6 +304,15 @@ def main(argv: list[str] | None = None) -> int:
         if (args.exclude_indexed_store and r.decision == "translate"
                 and asm_has_indexed_store(r.name)):
             continue
+        # Skip parser artefact labels with no asm body.
+        if args.min_instr_count > 0:
+            try:
+                rh = hydrate(r)
+            except Exception:
+                continue
+            if rh.instr_count < args.min_instr_count:
+                continue
+            r = rh
         if n_processed >= args.max_functions:
             sys.stderr.write(f"[batch] reached --max-functions={args.max_functions}, stopping\n")
             break

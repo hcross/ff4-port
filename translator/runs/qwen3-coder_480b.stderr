@@ -1,0 +1,9 @@
+[batch] enumerating module=battle
+[batch] 373 routines found
+
+[batch] === summary ===
+[batch] provider:   openai-compat (model: qwen3-coder:480b)
+[batch] processed:  164
+[batch] translated: 163
+[batch] delegated:  0
+[batch] total cost: $0.0000 (budget no-cap)

@@ -143,9 +143,16 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
     # Ground truth: module + name from the file path (preferred over the LLM line).
     module: Optional[str] = None
     name: Optional[str] = None
-    if source_path is not None and source_path.parent.parent.name == "port":
-        module = source_path.parent.name
-        name = source_path.stem
+    if source_path is not None:
+        # Standard layout: port/<module>/<name>.c
+        if source_path.parent.parent.name == "port":
+            module = source_path.parent.name
+            name = source_path.stem
+        # Bench / parallel-run layout: */<module>/<name>.c where <module>
+        # is one of the known module names.
+        elif source_path.parent.name in MODULE_BANK:
+            module = source_path.parent.name
+            name = source_path.stem
 
     m_rev = _REVERSED_RE.search(text)
     if m_rev:
@@ -683,17 +690,17 @@ BIN_AUTO_{upper} := ff4-spike-auto-{slug}
 """
 
 
-def add_makefile_rule(name: str) -> str:
+def add_makefile_rule(name: str, suffix: str = "auto") -> str:
     """Append a build rule for the auto spike. Returns the binary name."""
     slug = name.lower()
-    bin_name = f"ff4-spike-auto-{slug}"
+    bin_name = f"ff4-spike-{suffix}-{slug}"
     text = PARITY_MAKEFILE.read_text()
     if bin_name in text:
         return bin_name
     rule = f"""
-# AUTO: spike for {name}
-{bin_name}: src/spike_{slug}_auto.c $(CORE_SRC)
-\t$(CC) $(CFLAGS) -o $@ src/spike_{slug}_auto.c $(CORE_SRC) $(LDFLAGS)
+# AUTO ({suffix}): spike for {name}
+{bin_name}: src/spike_{slug}_{suffix}.c $(CORE_SRC)
+\t$(CC) $(CFLAGS) -o $@ src/spike_{slug}_{suffix}.c $(CORE_SRC) $(LDFLAGS)
 """
     PARITY_MAKEFILE.write_text(text + rule)
     return bin_name
@@ -710,6 +717,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--build", action="store_true", help="run `make <spike>` after generation")
     ap.add_argument("--run", type=int, default=0, help="run N trials after building (requires --build)")
     ap.add_argument("--rom", type=Path, default=ROOT / "upstream/rom/ff4-jp1.sfc")
+    ap.add_argument("--spike-suffix", default="auto",
+                    help="Suffix used for the generated spike file "
+                         "(parity/src/spike_<name>_<suffix>.c). Set per "
+                         "model when running parallel benches.")
     args = ap.parse_args(argv)
 
     text = args.source.read_text()
@@ -739,9 +750,10 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
-    spike_src = PARITY_SRC / f"spike_{contract.func_name.lower()}_auto.c"
+    suffix = args.spike_suffix
+    spike_src = PARITY_SRC / f"spike_{contract.func_name.lower()}_{suffix}.c"
     spike_src.write_text(render_spike(text, contract))
-    bin_name = add_makefile_rule(contract.func_name)
+    bin_name = add_makefile_rule(contract.func_name, suffix)
     print(f"[gen] wrote {spike_src.relative_to(ROOT)} (target {bin_name})")
 
     if args.build:
