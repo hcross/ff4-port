@@ -3,13 +3,14 @@
 // Output: writes to $28A3 or $28A4, then jumps to effect handlers
 static void MagicEffect_22_c(Snes *snes) {
     uint8_t *ram = snes->ram;
-    uint16_t x = 0;                    // ldx #0
-    uint8_t a = 2;                     // lda #2
-    a = randxa_emu(snes, x, a);        // jsr RandXA (delegated)
-    x = a;                             // tax
-    if (x != 0) goto dce9;             // bne @dce9
+    snes->cpu->x = 0;                  // ldx #0
+    snes->cpu->a = 2;                  // lda #2
+    RandXA_emu(snes);                  // jsr RandXA (delegated)
+    uint16_t a = snes->cpu->a;
+    snes->cpu->x = a;                  // tax
+    if (a != 0) goto dce9;             // bne @dce9
     ram[0x28A4] = 0x20;                // lda #$20 / sta $28a4
-    sleep_paralyze_effect_emu(snes);   // jmp SleepParalyzeEffect
+    SleepParalyzeEffect_emu(snes);     // jmp SleepParalyzeEffect
     return;
 
 dce9:
@@ -22,12 +23,12 @@ dcf3:
     ram[0x28A4] = 0x80;                // lda #$80 / sta $28a4
 
 dcf8:
-    set_magic_status2_emu(snes);       // jmp SetMagicStatus2
+    SetMagicStatus2_emu(snes);         // jmp SetMagicStatus2
 }
 
 // PITFALLS: 1 (DB=$7E required for WRAM access), 2 (flags handled by caller)
-// HELPERS: randxa_emu(snes, x, a), sleep_paralyze_effect_emu(snes),
-//          set_magic_status2_emu(snes)
+// HELPERS: RandXA_emu(snes), SleepParalyzeEffect_emu(snes),
+//          SetMagicStatus2_emu(snes)
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=none
 //   inputs_ram:  none

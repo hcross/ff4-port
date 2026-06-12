@@ -10,14 +10,14 @@ static void AITarget_25_c(Snes *snes) {
         ram[0xAF] = 5;
         ram[0xB0] = 12;
         ram[0xAD] = ram[0xD2];
-        rand_ai_target_emu(snes); // jmp RandAITarget
+        RandAITarget_emu(snes);   // jmp RandAITarget
     } else {
-        skip_ai_turn_emu(snes);   // jmp SkipAITurn
+        SkipAITurn_emu(snes);     // jmp SkipAITurn
     }
 }
 
 // PITFALLS: 1 (DB=$7E required for correct RAM access)
-// HELPERS: skip_ai_turn_emu(snes), rand_ai_target_emu(snes)
+// HELPERS: SkipAITurn_emu(snes), RandAITarget_emu(snes)
 // CONTRACT:
 //   inputs_reg:  none
 //   inputs_ram:  0x29CD=1

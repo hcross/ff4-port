@@ -1,0 +1,163 @@
+{"file": "port/_runs/qwen3-coder_480b/battle/AICondTargetTbl.c", "name": "AICondTargetTbl", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICondTarget_23.c", "name": "AICondTarget_23", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICondTarget_25.c", "name": "AICondTarget_25", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICondTarget_26.c", "name": "AICondTarget_26", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICondTarget_27.c", "name": "AICondTarget_27", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICondTbl.c", "name": "AICondTbl", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'AICondTbl_c'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_00.c", "name": "AICond_00", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $BC:00E8 but ca65-bridge says $03:BCE8. Trusting the bridge.", "AICond_00 asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_02.c", "name": "AICond_02", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_03.c", "name": "AICond_03", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $BD:00B8 but ca65-bridge says $03:BDB8. Trusting the bridge.", "AICond_03 asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_04.c", "name": "AICond_04", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $BD:00F0 but ca65-bridge says $03:BDF0. Trusting the bridge.", "AICond_04 asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_05.c", "name": "AICond_05", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_06.c", "name": "AICond_06", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_09.c", "name": "AICond_09", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_0a.c", "name": "AICond_0a", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $BE:00EC but ca65-bridge says $03:BEEC. Trusting the bridge.", "AICond_0a asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/AICond_0b.c", "name": "AICond_0b", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITargetTbl.c", "name": "AITargetTbl", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'AITargetTbl_c'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_16.c", "name": "AITarget_16", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_19.c", "name": "AITarget_19", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_1a.c", "name": "AITarget_1a", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_1b.c", "name": "AITarget_1b", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_1e.c", "name": "AITarget_1e", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_1f.c", "name": "AITarget_1f", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_20.c", "name": "AITarget_20", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_21.c", "name": "AITarget_21", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_22.c", "name": "AITarget_22", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_23.c", "name": "AITarget_23", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_24.c", "name": "AITarget_24", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_25.c", "name": "AITarget_25", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AITarget_29.c", "name": "AITarget_29", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ActionTbl.c", "name": "ActionTbl", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Add16.c", "name": "Add16", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AddMsg1.c", "name": "AddMsg1", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AddMsg2.c", "name": "AddMsg2", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AddMsg3.c", "name": "AddMsg3", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AnyTarget.c", "name": "AnyTarget", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ApplyDmgMult.c", "name": "ApplyDmgMult", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ApplySpeedMod.c", "name": "ApplySpeedMod", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Asl_6.c", "name": "Asl_6", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattlePtrs.c", "name": "AutoBattlePtrs", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattle_0000.c", "name": "AutoBattle_0000", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattle_0001.c", "name": "AutoBattle_0001", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattle_0002.c", "name": "AutoBattle_0002", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattle_0003.c", "name": "AutoBattle_0003", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattle_0004.c", "name": "AutoBattle_0004", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattle_0005.c", "name": "AutoBattle_0005", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattle_0006.c", "name": "AutoBattle_0006", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/AutoBattle_0007.c", "name": "AutoBattle_0007", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CalcHits.c", "name": "CalcHits", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CalcTimerDur.c", "name": "CalcTimerDur", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $9E:002C but ca65-bridge says $03:9E2C. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckAICond.c", "name": "CheckAICond", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $BC:00CE but ca65-bridge says $03:BCCE. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckAttackName.c", "name": "CheckAttackName", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'Lsr_5_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckBattleList.c", "name": "CheckBattleList", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckBit.c", "name": "CheckBit", "exit": 246, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $85:0064 but ca65-bridge says $03:8564. Trusting the bridge.", "CheckBit asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckCanUseItem.c", "name": "CheckCanUseItem", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckFanfare.c", "name": "CheckFanfare", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckMonsterFlash.c", "name": "CheckMonsterFlash", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'Lsr_5_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckRegen.c", "name": "CheckRegen", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $FF:00B4 but ca65-bridge says $03:FFB4. Trusting the bridge.", "CheckRegen asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckStrongElem.c", "name": "CheckStrongElem", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckTimer.c", "name": "CheckTimer", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckWeakElem.c", "name": "CheckWeakElem", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CheckWinAnim.c", "name": "CheckWinAnim", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ClearBit.c", "name": "ClearBit", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ClearInvalidTargets.c", "name": "ClearInvalidTargets", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CmdDelayTbl.c", "name": "CmdDelayTbl", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'CmdDelayTbl_c'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CmdTargetTbl.c", "name": "CmdTargetTbl", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $FD:00C3 but ca65-bridge says $03:FDC3. Trusting the bridge.", "CmdTargetTbl asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/CmdTbl.c", "name": "CmdTbl", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'CmdTbl_c'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Cmd_01.c", "name": "Cmd_01", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Cmd_08.c", "name": "Cmd_08", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Cmd_0c.c", "name": "Cmd_0c", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Cmd_0e.c", "name": "Cmd_0e", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Cmd_0f.c", "name": "Cmd_0f", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Cmd_21.c", "name": "Cmd_21", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Cmd_22.c", "name": "Cmd_22", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CountBits.c", "name": "CountBits", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/CountCharTargets.c", "name": "CountCharTargets", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $AD:0023 but ca65-bridge says $03:AD23. Trusting the bridge.", "CountCharTargets asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/DisableCmdStatusTbl.c", "name": "DisableCmdStatusTbl", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'DisableCmdStatusTbl_c'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Div16.c", "name": "Div16", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/DoAction.c", "name": "DoAction", "exit": 246, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $86:0087 but ca65-bridge says $03:8687. Trusting the bridge.", "DoAction asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/DrawMP.c", "name": "DrawMP", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/DrawStolenItem.c", "name": "DrawStolenItem", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/EndMultiAttack.c", "name": "EndMultiAttack", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $B3:0048 but ca65-bridge says $03:B348. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/battle/EquipStatTbl.c", "name": "EquipStatTbl", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'EquipStatTbl_c'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ExecBattle.c", "name": "ExecBattle", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ExecBtlGfx.c", "name": "ExecBtlGfx", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ExecCmd.c", "name": "ExecCmd", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/FindValidChar.c", "name": "FindValidChar", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 3 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetAntiElem.c", "name": "GetAntiElem", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetBackRowChars.c", "name": "GetBackRowChars", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 3 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetDmgPtr.c", "name": "GetDmgPtr", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetFrontRowChars.c", "name": "GetFrontRowChars", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $B9:007E but ca65-bridge says $03:B97E. Trusting the bridge.", "GetFrontRowChars asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetObjPtr.c", "name": "GetObjPtr", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetPendingAction.c", "name": "GetPendingAction", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetScriptPtr.c", "name": "GetScriptPtr", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $84:0043 but ca65-bridge says $03:8443. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetShieldProp.c", "name": "GetShieldProp", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetSummonAttack.c", "name": "GetSummonAttack", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/GetTimerPtr.c", "name": "GetTimerPtr", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/InitAction.c", "name": "InitAction", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/InitCharRows.c", "name": "InitCharRows", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Lsr_6.c", "name": "Lsr_6", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicDmgEffect.c", "name": "MagicDmgEffect", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_03.c", "name": "MagicEffect_03", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $D4:0043 but ca65-bridge says $03:D443. Trusting the bridge.", "MagicEffect_03 asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_04.c", "name": "MagicEffect_04", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_08.c", "name": "MagicEffect_08", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_0c.c", "name": "MagicEffect_0c", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $D8:001A but ca65-bridge says $03:D81A. Trusting the bridge.", "MagicEffect_0c asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_0d.c", "name": "MagicEffect_0d", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_0e.c", "name": "MagicEffect_0e", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_0f.c", "name": "MagicEffect_0f", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $D8:0087 but ca65-bridge says $03:D887. Trusting the bridge.", "MagicEffect_0f asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_13.c", "name": "MagicEffect_13", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_15.c", "name": "MagicEffect_15", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_16.c", "name": "MagicEffect_16", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_20.c", "name": "MagicEffect_20", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_21.c", "name": "MagicEffect_21", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_22.c", "name": "MagicEffect_22", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_23.c", "name": "MagicEffect_23", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function '_d3e4_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_24.c", "name": "MagicEffect_24", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_25.c", "name": "MagicEffect_25", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $DD:001D but ca65-bridge says $03:DD1D. Trusting the bridge.", "MagicEffect_25 asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_27.c", "name": "MagicEffect_27", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function '_dd77_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_28.c", "name": "MagicEffect_28", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_29.c", "name": "MagicEffect_29", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $DD:009B but ca65-bridge says $03:DD9B. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_2a.c", "name": "MagicEffect_2a", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_2b.c", "name": "MagicEffect_2b", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_2c.c", "name": "MagicEffect_2c", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_2f.c", "name": "MagicEffect_2f", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/MagicEffect_32.c", "name": "MagicEffect_32", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Max255.c", "name": "Max255", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Max99.c", "name": "Max99", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Mult16.c", "name": "Mult16", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Mult8.c", "name": "Mult8", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $00:83E0 but ca65-bridge says $03:83E0. Trusting the bridge.", "Mult8 asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/NextObj.c", "name": "NextObj", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/NoFanfareTbl.c", "name": "NoFanfareTbl", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/NoMonsterFlashTbl.c", "name": "NoMonsterFlashTbl", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'NoMonsterFlashTbl_c'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/NoNameAttackTbl.c", "name": "NoNameAttackTbl", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/NoUpdateBattleTbl.c", "name": "NoUpdateBattleTbl", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/NoWinAnimTbl.c", "name": "NoWinAnimTbl", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/PlayBattleSong.c", "name": "PlayBattleSong", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Rand.c", "name": "Rand", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 3 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Rand99.c", "name": "Rand99", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/RandChar.c", "name": "RandChar", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 3 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/RandMonster.c", "name": "RandMonster", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/RemoveTarget.c", "name": "RemoveTarget", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/RestoreHP.c", "name": "RestoreHP", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $D4:000C but ca65-bridge says $03:D40C. Trusting the bridge.", "RestoreHP asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/battle/SetBit.c", "name": "SetBit", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/SetMagicStatus.c", "name": "SetMagicStatus", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function '_d5a2_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/SetTargets.c", "name": "SetTargets", "exit": 2, "status": "compile_error", "error_message": "use of undeclared identifier 'ram'"}
+{"file": "port/_runs/qwen3-coder_480b/battle/SetTimerDur.c", "name": "SetTimerDur", "exit": 2, "status": "compile_error", "error_message": "expected expression"}
+{"file": "port/_runs/qwen3-coder_480b/battle/SpellListTbl.c", "name": "SpellListTbl", "exit": 2, "status": "compile_error", "error_message": "called object type 'const uint8_t[33]' (aka 'const unsigned char[33]') is not a function or function pointer"}
+{"file": "port/_runs/qwen3-coder_480b/battle/Sub16.c", "name": "Sub16", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TargetMonster.c", "name": "TargetMonster", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function '_bfc9_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDurTbl.c", "name": "TimerDurTbl", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_00.c", "name": "TimerDur_00", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_02.c", "name": "TimerDur_02", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_03.c", "name": "TimerDur_03", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_05.c", "name": "TimerDur_05", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_07.c", "name": "TimerDur_07", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_08.c", "name": "TimerDur_08", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_09.c", "name": "TimerDur_09", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_0a.c", "name": "TimerDur_0a", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerDur_0b.c", "name": "TimerDur_0b", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TimerEffectTbl.c", "name": "TimerEffectTbl", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/battle/TwinFailed.c", "name": "TwinFailed", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/UpdateEquip_far.c", "name": "UpdateEquip_far", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ValidateAITarget.c", "name": "ValidateAITarget", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/battle/ValidateChar.c", "name": "ValidateChar", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $A5:008D but ca65-bridge says $03:A58D. Trusting the bridge.", "ValidateChar asm vs C : 100 trials"]}

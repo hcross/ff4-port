@@ -15,20 +15,22 @@ static void MagicEffect_21_c(Snes *snes) {
     cpu->a = 1;
     cpu->mf = true;  // A 8-bit
     cpu->xf = false; // X 16-bit
-    uint16_t rand_result = rand_xa_emu(snes); // jsr RandXA
+    cpu->db = 0x7E;  // Required for WRAM access
+    RandXA_emu(snes); // jsr RandXA
 
-    if (rand_result == 0) {              // tax / bne @dcce
-        ram[0x28A3] = 0x80;              // lda #$80 / sta $28a3
-        set_magic_status2_emu(snes);     // jmp SetMagicStatus2
+    uint16_t rand_result = cpu->a; // Result returned in A
+    if (rand_result == 0) {        // tax / bne @dcce
+        ram[0x28A3] = 0x80;        // lda #$80 / sta $28a3
+        SetMagicStatus2_emu(snes); // jmp SetMagicStatus2
     } else {
-        ram[0x28A4] = 0x20;              // lda #$20 / sta $28a4
-        sleep_paralyze_effect_emu(snes); // jmp SleepParalyzeEffect
+        ram[0x28A4] = 0x20;        // lda #$20 / sta $28a4
+        SleepParalyzeEffect_emu(snes); // jmp SleepParalyzeEffect
     }
 }
 
 // PITFALLS: 1 (DB=$7E for WRAM access), 8 (mode A/X must match caller)
-// HELPERS: rand_xa_emu(snes), set_magic_status2_emu(snes),
-//          sleep_paralyze_effect_emu(snes)
+// HELPERS: RandXA_emu(snes), SetMagicStatus2_emu(snes),
+//          SleepParalyzeEffect_emu(snes)
 // CONTRACT:
 //   inputs_reg:  none
 //   inputs_ram:  none

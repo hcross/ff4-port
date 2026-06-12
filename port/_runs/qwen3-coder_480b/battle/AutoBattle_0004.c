@@ -11,4 +11,5 @@
 //   output_ram:  none
 //   entry_mode:  mf=true, xf=false, dp=0x0, db=0x7E
 //   entry_flags: none
+// CUSTOM_SPIKE: yes
 REVERSED_FUNCTION: battle::AutoBattle_0004 ($FE:003B)

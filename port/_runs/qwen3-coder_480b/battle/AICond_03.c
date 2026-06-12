@@ -11,7 +11,7 @@
 static void AICond_03_c(Snes *snes) {
     uint8_t *ram = snes->ram;
 
-    get_ai_cond_target_emu(snes);  // jsr GetAICondTarget
+    GetAICondTarget_emu(snes);  // jsr GetAICondTarget
 
     uint8_t a = ram[0x289E];       // lda $289e
     if (a != 0) goto bdc6;         // bne @bdc6
@@ -55,7 +55,7 @@ bdef:
 }
 
 // PITFALLS: 1 (DB=$7E), 8 (mode A 8-bit, X 16-bit inherited from caller)
-// HELPERS: get_ai_cond_target_emu(snes)
+// HELPERS: GetAICondTarget_emu(snes)
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=none
 //   inputs_ram:  0x289E=1, 0xDD=1

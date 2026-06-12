@@ -9,11 +9,11 @@ static void AITarget_1b_c(Snes *snes) {
     snes->cpu->n = (2 & 0x80) != 0;
 
     // jmp TargetMonsterTypeAll
-    target_monster_type_all_emu(snes);
+    TargetMonsterTypeAll_emu(snes);
 }
 
 // PITFALLS: 1 (DB must be $7E for battle routines), 2 (flags Z/N set to match hardcoded A=2)
-// HELPERS: target_monster_type_all_emu(snes)
+// HELPERS: TargetMonsterTypeAll_emu(snes)
 // CONTRACT:
 //   inputs_reg:  a=8, x=none, y=none
 //   inputs_ram:  none

@@ -2,15 +2,13 @@
 // Entry: none (no inputs in registers)
 // This function unconditionally jumps to TargetMonsterTypeAll with A=1
 static void AITarget_1a_c(Snes *snes) {
-    Cpu *cpu = snes->cpu;
-    cpu->a = 1;                        // lda #1
-    // Jump to TargetMonsterTypeAll (delegate)
-    target_monster_type_all_emu(snes);
+    snes->cpu->a = 1;                  // lda #1
+    TargetMonsterTypeAll_emu(snes);    // jmp TargetMonsterTypeAll
 }
 
 // PITFALLS: 1 (DB must be $7E for battle module when delegating),
 //           2 (Z/N flags not relevant as no branch-on-register at entry)
-// HELPERS: target_monster_type_all_emu(snes)
+// HELPERS: TargetMonsterTypeAll_emu(snes)
 // CONTRACT:
 //   inputs_reg:  a=8, x=none, y=none
 //   inputs_ram:  none

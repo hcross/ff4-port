@@ -1,7 +1,7 @@
 // Entry mode: A 8-bit (mf=1), X 16-bit (xf=0), DB=$7E, DP=0
-// This routine converts a character index/type into a memory offset (pointer).
-// If the input A is negative (bit 7 set), it is treated as a special 
-// index that is masked and offset by 5 before being shifted.
+// Purpose: Converts a character index in A to a memory offset pointer.
+// Characters with bit 7 set (negative) are treated as special indices, 
+// masked with 0x7F and offset by 5 before the final shift.
 static void GetDmgPtr_c(Snes *snes) {
     uint8_t *ram = snes->ram;
     uint8_t a = (uint8_t)snes->cpu->a;
@@ -12,18 +12,18 @@ static void GetDmgPtr_c(Snes *snes) {
         // Branch taken: positive character index
     } else {
         // Branch not taken: special index processing
-        a &= 0x7F;       // and #$7f
+        a &= 0x7F;            // and #$7f
         a = (uint8_t)(a + 5); // clc / adc #$05 (Pitfall 7: truncate to 8-bit)
     }
 
-    a = (uint8_t)(a << 1); // asl (Pitfall 7: truncate to 8-bit)
-    
-    snes->cpu->a = a;   // Result in A
-    snes->cpu->x = a;   // tax
+    a = (uint8_t)(a << 1);    // asl (Pitfall 7: truncate to 8-bit)
+
+    snes->cpu->a = a;         // Result in A
+    snes->cpu->x = a;         // tax
 }
 
-// PITFALLS: 7 (8-bit arithmetic truncation: both ADC and ASL wrapped in uint8_t 
-// to prevent 16-bit promotion and ensure overflow bits are dropped).
+// PITFALLS: 7 (8-bit arithmetic truncation: ADC and ASL result cast to uint8_t 
+// to ensure bit 8 is dropped, matching 65816 behavior).
 // HELPERS: none
 // CONTRACT:
 //   inputs_reg:  a=8, x=none, y=none

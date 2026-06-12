@@ -13,20 +13,22 @@ static void RemoveTarget_c(Snes *snes) {
     if (a != 0) {
         // lda $ce / and #$7f / tax
         // lda $3523 / jsr ClearBit / sta $3523
-        uint8_t targets = ram[0x3523];
-        uint8_t result = clear_bit_emu(snes, targets, bit);  // delegate ClearBit
-        ram[0x3523] = result;
+        ram[0xCE] = bit; // Set up X register input for ClearBit
+        ram[0xA4] = ram[0x3523]; // Set up A register input for ClearBit
+        ClearBit_emu(snes); // delegate ClearBit
+        ram[0x3523] = ram[0xA4]; // Store result back
     } else {
         // lda $ce / and #$7f / tax
         // lda $3550 / jsr ClearBit / sta $3550
-        uint8_t targets = ram[0x3550];
-        uint8_t result = clear_bit_emu(snes, targets, bit);  // delegate ClearBit
-        ram[0x3550] = result;
+        ram[0xCE] = bit; // Set up X register input for ClearBit
+        ram[0xA4] = ram[0x3550]; // Set up A register input for ClearBit
+        ClearBit_emu(snes); // delegate ClearBit
+        ram[0x3550] = ram[0xA4]; // Store result back
     }
 }
 
-// PITFALLS: 1 (DB=$7E required for WRAM access)
-// HELPERS: clear_bit_emu(snes, value, bit_index) — delegates ClearBit @ $03:855A
+// PITFALLS: 1 (DB=$7E required for WRAM access), 8 (mode A 8-bit assumed)
+// HELPERS: ClearBit_emu(snes) — delegates ClearBit @ $03:855A
 // CONTRACT:
 //   inputs_ram: 0x3554=1, 0xCE=1
 //   output_ram: 0x3550=1, 0x3523=1

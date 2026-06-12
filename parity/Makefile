@@ -1187,3 +1187,1015 @@ ff4-spike-gemma4-updateequip_far: src/spike_updateequip_far_gemma4.c $(CORE_SRC)
 # AUTO (gemma4): spike for ValidateChar
 ff4-spike-gemma4-validatechar: src/spike_validatechar_gemma4.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_validatechar_gemma4.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_retry): spike for AICond_09
+ff4-spike-qwen3_retry-aicond_09: src/spike_aicond_09_qwen3_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_09_qwen3_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_retry): spike for AICondTbl
+ff4-spike-qwen3_retry-aicondtbl: src/spike_aicondtbl_qwen3_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtbl_qwen3_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_retry): spike for AICond_00
+ff4-spike-gemma4_retry-aicond_00: src/spike_aicond_00_gemma4_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_00_gemma4_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_retry2): spike for AICond_09
+ff4-spike-qwen3_retry2-aicond_09: src/spike_aicond_09_qwen3_retry2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_09_qwen3_retry2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_retry2): spike for AICond_00
+ff4-spike-gemma4_retry2-aicond_00: src/spike_aicond_00_gemma4_retry2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_00_gemma4_retry2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICondTarget_23
+ff4-spike-qwen3_after_retry-aicondtarget_23: src/spike_aicondtarget_23_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_23_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICondTarget_25
+ff4-spike-qwen3_after_retry-aicondtarget_25: src/spike_aicondtarget_25_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICondTarget_26
+ff4-spike-qwen3_after_retry-aicondtarget_26: src/spike_aicondtarget_26_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_26_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICondTarget_27
+ff4-spike-qwen3_after_retry-aicondtarget_27: src/spike_aicondtarget_27_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_27_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICondTbl
+ff4-spike-qwen3_after_retry-aicondtbl: src/spike_aicondtbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICondTarget_25
+ff4-spike-gemma4_after_retry-aicondtarget_25: src/spike_aicondtarget_25_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_00
+ff4-spike-qwen3_after_retry-aicond_00: src/spike_aicond_00_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_00_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICondTarget_26
+ff4-spike-gemma4_after_retry-aicondtarget_26: src/spike_aicondtarget_26_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_26_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICondTarget_27
+ff4-spike-gemma4_after_retry-aicondtarget_27: src/spike_aicondtarget_27_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_27_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_00
+ff4-spike-gemma4_after_retry-aicond_00: src/spike_aicond_00_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_00_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_02
+ff4-spike-qwen3_after_retry-aicond_02: src/spike_aicond_02_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_03
+ff4-spike-qwen3_after_retry-aicond_03: src/spike_aicond_03_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_03_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_02
+ff4-spike-gemma4_after_retry-aicond_02: src/spike_aicond_02_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_03
+ff4-spike-gemma4_after_retry-aicond_03: src/spike_aicond_03_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_03_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_04
+ff4-spike-qwen3_after_retry-aicond_04: src/spike_aicond_04_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_04_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_05
+ff4-spike-qwen3_after_retry-aicond_05: src/spike_aicond_05_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_06
+ff4-spike-qwen3_after_retry-aicond_06: src/spike_aicond_06_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_06_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_09
+ff4-spike-qwen3_after_retry-aicond_09: src/spike_aicond_09_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_09_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_04
+ff4-spike-gemma4_after_retry-aicond_04: src/spike_aicond_04_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_04_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_0a
+ff4-spike-qwen3_after_retry-aicond_0a: src/spike_aicond_0a_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_0a_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_05
+ff4-spike-gemma4_after_retry-aicond_05: src/spike_aicond_05_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AICond_0b
+ff4-spike-qwen3_after_retry-aicond_0b: src/spike_aicond_0b_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_0b_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_06
+ff4-spike-gemma4_after_retry-aicond_06: src/spike_aicond_06_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_06_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITargetTbl
+ff4-spike-qwen3_after_retry-aitargettbl: src/spike_aitargettbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitargettbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_09
+ff4-spike-gemma4_after_retry-aicond_09: src/spike_aicond_09_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_09_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_16
+ff4-spike-qwen3_after_retry-aitarget_16: src/spike_aitarget_16_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_16_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_0a
+ff4-spike-gemma4_after_retry-aicond_0a: src/spike_aicond_0a_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_0a_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_19
+ff4-spike-qwen3_after_retry-aitarget_19: src/spike_aitarget_19_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_19_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_1a
+ff4-spike-qwen3_after_retry-aitarget_1a: src/spike_aitarget_1a_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1a_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AICond_0b
+ff4-spike-gemma4_after_retry-aicond_0b: src/spike_aicond_0b_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_0b_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_1b
+ff4-spike-qwen3_after_retry-aitarget_1b: src/spike_aitarget_1b_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1b_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_1e
+ff4-spike-qwen3_after_retry-aitarget_1e: src/spike_aitarget_1e_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1e_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AITarget_1e
+ff4-spike-gemma4_after_retry-aitarget_1e: src/spike_aitarget_1e_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1e_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_1f
+ff4-spike-qwen3_after_retry-aitarget_1f: src/spike_aitarget_1f_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1f_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AITarget_1f
+ff4-spike-gemma4_after_retry-aitarget_1f: src/spike_aitarget_1f_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_1f_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_20
+ff4-spike-qwen3_after_retry-aitarget_20: src/spike_aitarget_20_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_20_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AITarget_22
+ff4-spike-gemma4_after_retry-aitarget_22: src/spike_aitarget_22_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_22_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AITarget_29
+ff4-spike-gemma4_after_retry-aitarget_29: src/spike_aitarget_29_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_29_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_21
+ff4-spike-qwen3_after_retry-aitarget_21: src/spike_aitarget_21_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_21_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Add16
+ff4-spike-gemma4_after_retry-add16: src/spike_add16_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_add16_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AddMsg1
+ff4-spike-gemma4_after_retry-addmsg1: src/spike_addmsg1_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_addmsg1_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_22
+ff4-spike-qwen3_after_retry-aitarget_22: src/spike_aitarget_22_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_22_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_23
+ff4-spike-qwen3_after_retry-aitarget_23: src/spike_aitarget_23_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_23_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AddMsg2
+ff4-spike-gemma4_after_retry-addmsg2: src/spike_addmsg2_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_addmsg2_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_24
+ff4-spike-qwen3_after_retry-aitarget_24: src/spike_aitarget_24_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_24_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AddMsg3
+ff4-spike-gemma4_after_retry-addmsg3: src/spike_addmsg3_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_addmsg3_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_25
+ff4-spike-qwen3_after_retry-aitarget_25: src/spike_aitarget_25_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_25_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for ApplyDmgMult
+ff4-spike-gemma4_after_retry-applydmgmult: src/spike_applydmgmult_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_applydmgmult_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AITarget_29
+ff4-spike-qwen3_after_retry-aitarget_29: src/spike_aitarget_29_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_29_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for ApplySpeedMod
+ff4-spike-gemma4_after_retry-applyspeedmod: src/spike_applyspeedmod_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_applyspeedmod_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Asl_6
+ff4-spike-gemma4_after_retry-asl_6: src/spike_asl_6_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_asl_6_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AutoBattlePtrs
+ff4-spike-gemma4_after_retry-autobattleptrs: src/spike_autobattleptrs_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_autobattleptrs_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for AutoBattle_0001
+ff4-spike-gemma4_after_retry-autobattle_0001: src/spike_autobattle_0001_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_autobattle_0001_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Add16
+ff4-spike-qwen3_after_retry-add16: src/spike_add16_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_add16_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AddMsg1
+ff4-spike-qwen3_after_retry-addmsg1: src/spike_addmsg1_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_addmsg1_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AddMsg2
+ff4-spike-qwen3_after_retry-addmsg2: src/spike_addmsg2_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_addmsg2_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AddMsg3
+ff4-spike-qwen3_after_retry-addmsg3: src/spike_addmsg3_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_addmsg3_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AnyTarget
+ff4-spike-qwen3_after_retry-anytarget: src/spike_anytarget_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_anytarget_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ApplyDmgMult
+ff4-spike-qwen3_after_retry-applydmgmult: src/spike_applydmgmult_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_applydmgmult_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ApplySpeedMod
+ff4-spike-qwen3_after_retry-applyspeedmod: src/spike_applyspeedmod_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_applyspeedmod_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Asl_6
+ff4-spike-qwen3_after_retry-asl_6: src/spike_asl_6_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_asl_6_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AutoBattlePtrs
+ff4-spike-qwen3_after_retry-autobattleptrs: src/spike_autobattleptrs_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_autobattleptrs_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for AutoBattle_0003
+ff4-spike-qwen3_after_retry-autobattle_0003: src/spike_autobattle_0003_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_autobattle_0003_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CalcHits
+ff4-spike-gemma4_after_retry-calchits: src/spike_calchits_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calchits_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckAICond
+ff4-spike-gemma4_after_retry-checkaicond: src/spike_checkaicond_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkaicond_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckBattleList
+ff4-spike-gemma4_after_retry-checkbattlelist: src/spike_checkbattlelist_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkbattlelist_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CalcHits
+ff4-spike-qwen3_after_retry-calchits: src/spike_calchits_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calchits_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CalcTimerDur
+ff4-spike-qwen3_after_retry-calctimerdur: src/spike_calctimerdur_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calctimerdur_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckCanUseItem
+ff4-spike-gemma4_after_retry-checkcanuseitem: src/spike_checkcanuseitem_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkcanuseitem_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckFanfare
+ff4-spike-gemma4_after_retry-checkfanfare: src/spike_checkfanfare_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkfanfare_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckMonsterFlash
+ff4-spike-gemma4_after_retry-checkmonsterflash: src/spike_checkmonsterflash_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkmonsterflash_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckRegen
+ff4-spike-gemma4_after_retry-checkregen: src/spike_checkregen_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkregen_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckAICond
+ff4-spike-qwen3_after_retry-checkaicond: src/spike_checkaicond_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkaicond_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckStrongElem
+ff4-spike-gemma4_after_retry-checkstrongelem: src/spike_checkstrongelem_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkstrongelem_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckTimer
+ff4-spike-gemma4_after_retry-checktimer: src/spike_checktimer_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktimer_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckWeakElem
+ff4-spike-gemma4_after_retry-checkweakelem: src/spike_checkweakelem_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkweakelem_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CheckWinAnim
+ff4-spike-gemma4_after_retry-checkwinanim: src/spike_checkwinanim_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkwinanim_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Cmd_01
+ff4-spike-gemma4_after_retry-cmd_01: src/spike_cmd_01_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_01_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckAttackName
+ff4-spike-qwen3_after_retry-checkattackname: src/spike_checkattackname_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkattackname_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Cmd_08
+ff4-spike-gemma4_after_retry-cmd_08: src/spike_cmd_08_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_08_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckBattleList
+ff4-spike-qwen3_after_retry-checkbattlelist: src/spike_checkbattlelist_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkbattlelist_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Cmd_0c
+ff4-spike-gemma4_after_retry-cmd_0c: src/spike_cmd_0c_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_0c_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckBit
+ff4-spike-qwen3_after_retry-checkbit: src/spike_checkbit_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkbit_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Cmd_0e
+ff4-spike-gemma4_after_retry-cmd_0e: src/spike_cmd_0e_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_0e_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckCanUseItem
+ff4-spike-qwen3_after_retry-checkcanuseitem: src/spike_checkcanuseitem_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkcanuseitem_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckFanfare
+ff4-spike-qwen3_after_retry-checkfanfare: src/spike_checkfanfare_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkfanfare_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Cmd_0f
+ff4-spike-gemma4_after_retry-cmd_0f: src/spike_cmd_0f_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_0f_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Cmd_21
+ff4-spike-gemma4_after_retry-cmd_21: src/spike_cmd_21_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_21_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Cmd_22
+ff4-spike-gemma4_after_retry-cmd_22: src/spike_cmd_22_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_22_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CountBits
+ff4-spike-gemma4_after_retry-countbits: src/spike_countbits_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_countbits_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for CountCharTargets
+ff4-spike-gemma4_after_retry-countchartargets: src/spike_countchartargets_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_countchartargets_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for DrawMP
+ff4-spike-gemma4_after_retry-drawmp: src/spike_drawmp_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawmp_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for DrawStolenItem
+ff4-spike-gemma4_after_retry-drawstolenitem: src/spike_drawstolenitem_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawstolenitem_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for EndMultiAttack
+ff4-spike-gemma4_after_retry-endmultiattack: src/spike_endmultiattack_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endmultiattack_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckMonsterFlash
+ff4-spike-qwen3_after_retry-checkmonsterflash: src/spike_checkmonsterflash_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkmonsterflash_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckRegen
+ff4-spike-qwen3_after_retry-checkregen: src/spike_checkregen_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkregen_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckStrongElem
+ff4-spike-qwen3_after_retry-checkstrongelem: src/spike_checkstrongelem_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkstrongelem_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckTimer
+ff4-spike-qwen3_after_retry-checktimer: src/spike_checktimer_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktimer_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckWeakElem
+ff4-spike-qwen3_after_retry-checkweakelem: src/spike_checkweakelem_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkweakelem_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CheckWinAnim
+ff4-spike-qwen3_after_retry-checkwinanim: src/spike_checkwinanim_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkwinanim_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ClearBit
+ff4-spike-qwen3_after_retry-clearbit: src/spike_clearbit_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearbit_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ClearInvalidTargets
+ff4-spike-qwen3_after_retry-clearinvalidtargets: src/spike_clearinvalidtargets_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearinvalidtargets_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CmdDelayTbl
+ff4-spike-qwen3_after_retry-cmddelaytbl: src/spike_cmddelaytbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmddelaytbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CmdTargetTbl
+ff4-spike-qwen3_after_retry-cmdtargettbl: src/spike_cmdtargettbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmdtargettbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for ExecBtlGfx
+ff4-spike-gemma4_after_retry-execbtlgfx: src/spike_execbtlgfx_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execbtlgfx_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for ExecCmd
+ff4-spike-gemma4_after_retry-execcmd: src/spike_execcmd_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execcmd_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CmdTbl
+ff4-spike-qwen3_after_retry-cmdtbl: src/spike_cmdtbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmdtbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Cmd_01
+ff4-spike-qwen3_after_retry-cmd_01: src/spike_cmd_01_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_01_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Cmd_08
+ff4-spike-qwen3_after_retry-cmd_08: src/spike_cmd_08_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_08_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Cmd_0c
+ff4-spike-qwen3_after_retry-cmd_0c: src/spike_cmd_0c_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_0c_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Cmd_0e
+ff4-spike-qwen3_after_retry-cmd_0e: src/spike_cmd_0e_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_0e_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Cmd_0f
+ff4-spike-qwen3_after_retry-cmd_0f: src/spike_cmd_0f_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_0f_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for FindValidChar
+ff4-spike-gemma4_after_retry-findvalidchar: src/spike_findvalidchar_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_findvalidchar_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Cmd_21
+ff4-spike-qwen3_after_retry-cmd_21: src/spike_cmd_21_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_21_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for GetAntiElem
+ff4-spike-gemma4_after_retry-getantielem: src/spike_getantielem_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getantielem_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Cmd_22
+ff4-spike-qwen3_after_retry-cmd_22: src/spike_cmd_22_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmd_22_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for GetBackRowChars
+ff4-spike-gemma4_after_retry-getbackrowchars: src/spike_getbackrowchars_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbackrowchars_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CountBits
+ff4-spike-qwen3_after_retry-countbits: src/spike_countbits_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_countbits_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for GetDmgPtr
+ff4-spike-gemma4_after_retry-getdmgptr: src/spike_getdmgptr_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdmgptr_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for CountCharTargets
+ff4-spike-qwen3_after_retry-countchartargets: src/spike_countchartargets_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_countchartargets_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for GetFrontRowChars
+ff4-spike-gemma4_after_retry-getfrontrowchars: src/spike_getfrontrowchars_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getfrontrowchars_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for DisableCmdStatusTbl
+ff4-spike-qwen3_after_retry-disablecmdstatustbl: src/spike_disablecmdstatustbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_disablecmdstatustbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for GetObjPtr
+ff4-spike-gemma4_after_retry-getobjptr: src/spike_getobjptr_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getobjptr_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Div16
+ff4-spike-qwen3_after_retry-div16: src/spike_div16_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_div16_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for GetSummonAttack
+ff4-spike-gemma4_after_retry-getsummonattack: src/spike_getsummonattack_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getsummonattack_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for DoAction
+ff4-spike-qwen3_after_retry-doaction: src/spike_doaction_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_doaction_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for GetTimerPtr
+ff4-spike-gemma4_after_retry-gettimerptr: src/spike_gettimerptr_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettimerptr_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for DrawMP
+ff4-spike-qwen3_after_retry-drawmp: src/spike_drawmp_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawmp_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for InitAction
+ff4-spike-gemma4_after_retry-initaction: src/spike_initaction_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initaction_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for DrawStolenItem
+ff4-spike-qwen3_after_retry-drawstolenitem: src/spike_drawstolenitem_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawstolenitem_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for InitCharRows
+ff4-spike-gemma4_after_retry-initcharrows: src/spike_initcharrows_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initcharrows_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for EndMultiAttack
+ff4-spike-qwen3_after_retry-endmultiattack: src/spike_endmultiattack_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endmultiattack_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicDmgEffect
+ff4-spike-gemma4_after_retry-magicdmgeffect: src/spike_magicdmgeffect_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magicdmgeffect_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_03
+ff4-spike-gemma4_after_retry-magiceffect_03: src/spike_magiceffect_03_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_03_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_04
+ff4-spike-gemma4_after_retry-magiceffect_04: src/spike_magiceffect_04_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_04_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_08
+ff4-spike-gemma4_after_retry-magiceffect_08: src/spike_magiceffect_08_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_08_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_0c
+ff4-spike-gemma4_after_retry-magiceffect_0c: src/spike_magiceffect_0c_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_0c_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_0d
+ff4-spike-gemma4_after_retry-magiceffect_0d: src/spike_magiceffect_0d_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_0d_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_0e
+ff4-spike-gemma4_after_retry-magiceffect_0e: src/spike_magiceffect_0e_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_0e_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_0f
+ff4-spike-gemma4_after_retry-magiceffect_0f: src/spike_magiceffect_0f_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_0f_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_15
+ff4-spike-gemma4_after_retry-magiceffect_15: src/spike_magiceffect_15_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_15_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_16
+ff4-spike-gemma4_after_retry-magiceffect_16: src/spike_magiceffect_16_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_16_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_20
+ff4-spike-gemma4_after_retry-magiceffect_20: src/spike_magiceffect_20_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_20_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for EquipStatTbl
+ff4-spike-qwen3_after_retry-equipstattbl: src/spike_equipstattbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_equipstattbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_22
+ff4-spike-gemma4_after_retry-magiceffect_22: src/spike_magiceffect_22_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_22_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ExecBattle
+ff4-spike-qwen3_after_retry-execbattle: src/spike_execbattle_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execbattle_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_23
+ff4-spike-gemma4_after_retry-magiceffect_23: src/spike_magiceffect_23_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_23_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_24
+ff4-spike-gemma4_after_retry-magiceffect_24: src/spike_magiceffect_24_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_24_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_25
+ff4-spike-gemma4_after_retry-magiceffect_25: src/spike_magiceffect_25_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_25_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ExecBtlGfx
+ff4-spike-qwen3_after_retry-execbtlgfx: src/spike_execbtlgfx_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execbtlgfx_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_27
+ff4-spike-gemma4_after_retry-magiceffect_27: src/spike_magiceffect_27_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_27_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_29
+ff4-spike-gemma4_after_retry-magiceffect_29: src/spike_magiceffect_29_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_29_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_2a
+ff4-spike-gemma4_after_retry-magiceffect_2a: src/spike_magiceffect_2a_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_2a_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_2c
+ff4-spike-gemma4_after_retry-magiceffect_2c: src/spike_magiceffect_2c_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_2c_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_2f
+ff4-spike-gemma4_after_retry-magiceffect_2f: src/spike_magiceffect_2f_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_2f_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for MagicEffect_32
+ff4-spike-gemma4_after_retry-magiceffect_32: src/spike_magiceffect_32_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_32_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Mult8
+ff4-spike-gemma4_after_retry-mult8: src/spike_mult8_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult8_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for NextObj
+ff4-spike-gemma4_after_retry-nextobj: src/spike_nextobj_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_nextobj_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ExecCmd
+ff4-spike-qwen3_after_retry-execcmd: src/spike_execcmd_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execcmd_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for NoFanfareTbl
+ff4-spike-gemma4_after_retry-nofanfaretbl: src/spike_nofanfaretbl_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_nofanfaretbl_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for FindValidChar
+ff4-spike-qwen3_after_retry-findvalidchar: src/spike_findvalidchar_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_findvalidchar_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for NoUpdateBattleTbl
+ff4-spike-gemma4_after_retry-noupdatebattletbl: src/spike_noupdatebattletbl_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_noupdatebattletbl_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetAntiElem
+ff4-spike-qwen3_after_retry-getantielem: src/spike_getantielem_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getantielem_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for PlayBattleSong
+ff4-spike-gemma4_after_retry-playbattlesong: src/spike_playbattlesong_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playbattlesong_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetBackRowChars
+ff4-spike-qwen3_after_retry-getbackrowchars: src/spike_getbackrowchars_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbackrowchars_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetDmgPtr
+ff4-spike-qwen3_after_retry-getdmgptr: src/spike_getdmgptr_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdmgptr_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for RandChar
+ff4-spike-gemma4_after_retry-randchar: src/spike_randchar_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_randchar_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetFrontRowChars
+ff4-spike-qwen3_after_retry-getfrontrowchars: src/spike_getfrontrowchars_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getfrontrowchars_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for RandMonster
+ff4-spike-gemma4_after_retry-randmonster: src/spike_randmonster_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_randmonster_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetObjPtr
+ff4-spike-qwen3_after_retry-getobjptr: src/spike_getobjptr_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getobjptr_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for RemoveTarget
+ff4-spike-gemma4_after_retry-removetarget: src/spike_removetarget_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_removetarget_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetPendingAction
+ff4-spike-qwen3_after_retry-getpendingaction: src/spike_getpendingaction_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getpendingaction_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for SetTargets
+ff4-spike-gemma4_after_retry-settargets: src/spike_settargets_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_settargets_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetScriptPtr
+ff4-spike-qwen3_after_retry-getscriptptr: src/spike_getscriptptr_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getscriptptr_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for SetTimerDur
+ff4-spike-gemma4_after_retry-settimerdur: src/spike_settimerdur_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_settimerdur_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for Sub16
+ff4-spike-gemma4_after_retry-sub16: src/spike_sub16_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_sub16_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for TargetMonster
+ff4-spike-gemma4_after_retry-targetmonster: src/spike_targetmonster_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_targetmonster_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for TimerDur_02
+ff4-spike-gemma4_after_retry-timerdur_02: src/spike_timerdur_02_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_02_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for TimerDur_08
+ff4-spike-gemma4_after_retry-timerdur_08: src/spike_timerdur_08_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_08_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for TimerDur_0a
+ff4-spike-gemma4_after_retry-timerdur_0a: src/spike_timerdur_0a_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_0a_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for TwinFailed
+ff4-spike-gemma4_after_retry-twinfailed: src/spike_twinfailed_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_twinfailed_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for UpdateEquip_far
+ff4-spike-gemma4_after_retry-updateequip_far: src/spike_updateequip_far_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updateequip_far_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetShieldProp
+ff4-spike-qwen3_after_retry-getshieldprop: src/spike_getshieldprop_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getshieldprop_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_after_retry): spike for ValidateChar
+ff4-spike-gemma4_after_retry-validatechar: src/spike_validatechar_gemma4_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_validatechar_gemma4_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetSummonAttack
+ff4-spike-qwen3_after_retry-getsummonattack: src/spike_getsummonattack_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getsummonattack_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for GetTimerPtr
+ff4-spike-qwen3_after_retry-gettimerptr: src/spike_gettimerptr_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettimerptr_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for InitAction
+ff4-spike-qwen3_after_retry-initaction: src/spike_initaction_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initaction_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for InitCharRows
+ff4-spike-qwen3_after_retry-initcharrows: src/spike_initcharrows_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initcharrows_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Lsr_6
+ff4-spike-qwen3_after_retry-lsr_6: src/spike_lsr_6_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_lsr_6_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicDmgEffect
+ff4-spike-qwen3_after_retry-magicdmgeffect: src/spike_magicdmgeffect_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magicdmgeffect_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_03
+ff4-spike-qwen3_after_retry-magiceffect_03: src/spike_magiceffect_03_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_03_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_04
+ff4-spike-qwen3_after_retry-magiceffect_04: src/spike_magiceffect_04_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_04_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_08
+ff4-spike-qwen3_after_retry-magiceffect_08: src/spike_magiceffect_08_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_08_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_0c
+ff4-spike-qwen3_after_retry-magiceffect_0c: src/spike_magiceffect_0c_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_0c_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_0d
+ff4-spike-qwen3_after_retry-magiceffect_0d: src/spike_magiceffect_0d_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_0d_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_0e
+ff4-spike-qwen3_after_retry-magiceffect_0e: src/spike_magiceffect_0e_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_0e_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_0f
+ff4-spike-qwen3_after_retry-magiceffect_0f: src/spike_magiceffect_0f_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_0f_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_13
+ff4-spike-qwen3_after_retry-magiceffect_13: src/spike_magiceffect_13_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_13_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_15
+ff4-spike-qwen3_after_retry-magiceffect_15: src/spike_magiceffect_15_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_15_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_16
+ff4-spike-qwen3_after_retry-magiceffect_16: src/spike_magiceffect_16_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_16_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_20
+ff4-spike-qwen3_after_retry-magiceffect_20: src/spike_magiceffect_20_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_20_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_21
+ff4-spike-qwen3_after_retry-magiceffect_21: src/spike_magiceffect_21_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_21_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_22
+ff4-spike-qwen3_after_retry-magiceffect_22: src/spike_magiceffect_22_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_22_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_23
+ff4-spike-qwen3_after_retry-magiceffect_23: src/spike_magiceffect_23_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_23_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_24
+ff4-spike-qwen3_after_retry-magiceffect_24: src/spike_magiceffect_24_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_24_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_25
+ff4-spike-qwen3_after_retry-magiceffect_25: src/spike_magiceffect_25_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_25_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_27
+ff4-spike-qwen3_after_retry-magiceffect_27: src/spike_magiceffect_27_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_27_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_28
+ff4-spike-qwen3_after_retry-magiceffect_28: src/spike_magiceffect_28_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_28_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_29
+ff4-spike-qwen3_after_retry-magiceffect_29: src/spike_magiceffect_29_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_29_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_2a
+ff4-spike-qwen3_after_retry-magiceffect_2a: src/spike_magiceffect_2a_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_2a_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_2b
+ff4-spike-qwen3_after_retry-magiceffect_2b: src/spike_magiceffect_2b_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_2b_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_2c
+ff4-spike-qwen3_after_retry-magiceffect_2c: src/spike_magiceffect_2c_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_2c_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_2f
+ff4-spike-qwen3_after_retry-magiceffect_2f: src/spike_magiceffect_2f_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_2f_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for MagicEffect_32
+ff4-spike-qwen3_after_retry-magiceffect_32: src/spike_magiceffect_32_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_32_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Max255
+ff4-spike-qwen3_after_retry-max255: src/spike_max255_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_max255_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Max99
+ff4-spike-qwen3_after_retry-max99: src/spike_max99_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_max99_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Mult16
+ff4-spike-qwen3_after_retry-mult16: src/spike_mult16_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult16_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Mult8
+ff4-spike-qwen3_after_retry-mult8: src/spike_mult8_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult8_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for NextObj
+ff4-spike-qwen3_after_retry-nextobj: src/spike_nextobj_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_nextobj_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for NoFanfareTbl
+ff4-spike-qwen3_after_retry-nofanfaretbl: src/spike_nofanfaretbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_nofanfaretbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for NoMonsterFlashTbl
+ff4-spike-qwen3_after_retry-nomonsterflashtbl: src/spike_nomonsterflashtbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_nomonsterflashtbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for PlayBattleSong
+ff4-spike-qwen3_after_retry-playbattlesong: src/spike_playbattlesong_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playbattlesong_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Rand
+ff4-spike-qwen3_after_retry-rand: src/spike_rand_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_rand_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Rand99
+ff4-spike-qwen3_after_retry-rand99: src/spike_rand99_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_rand99_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for RandChar
+ff4-spike-qwen3_after_retry-randchar: src/spike_randchar_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_randchar_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for RandMonster
+ff4-spike-qwen3_after_retry-randmonster: src/spike_randmonster_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_randmonster_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for RemoveTarget
+ff4-spike-qwen3_after_retry-removetarget: src/spike_removetarget_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_removetarget_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for RestoreHP
+ff4-spike-qwen3_after_retry-restorehp: src/spike_restorehp_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_restorehp_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for SetBit
+ff4-spike-qwen3_after_retry-setbit: src/spike_setbit_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_setbit_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for SetMagicStatus
+ff4-spike-qwen3_after_retry-setmagicstatus: src/spike_setmagicstatus_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_setmagicstatus_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for SetTargets
+ff4-spike-qwen3_after_retry-settargets: src/spike_settargets_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_settargets_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for SetTimerDur
+ff4-spike-qwen3_after_retry-settimerdur: src/spike_settimerdur_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_settimerdur_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for SpellListTbl
+ff4-spike-qwen3_after_retry-spelllisttbl: src/spike_spelllisttbl_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_spelllisttbl_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for Sub16
+ff4-spike-qwen3_after_retry-sub16: src/spike_sub16_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_sub16_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TargetMonster
+ff4-spike-qwen3_after_retry-targetmonster: src/spike_targetmonster_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_targetmonster_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_00
+ff4-spike-qwen3_after_retry-timerdur_00: src/spike_timerdur_00_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_00_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_02
+ff4-spike-qwen3_after_retry-timerdur_02: src/spike_timerdur_02_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_02_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_03
+ff4-spike-qwen3_after_retry-timerdur_03: src/spike_timerdur_03_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_03_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_05
+ff4-spike-qwen3_after_retry-timerdur_05: src/spike_timerdur_05_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_05_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_07
+ff4-spike-qwen3_after_retry-timerdur_07: src/spike_timerdur_07_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_07_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_08
+ff4-spike-qwen3_after_retry-timerdur_08: src/spike_timerdur_08_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_08_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_09
+ff4-spike-qwen3_after_retry-timerdur_09: src/spike_timerdur_09_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_09_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_0a
+ff4-spike-qwen3_after_retry-timerdur_0a: src/spike_timerdur_0a_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_0a_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TimerDur_0b
+ff4-spike-qwen3_after_retry-timerdur_0b: src/spike_timerdur_0b_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_0b_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for TwinFailed
+ff4-spike-qwen3_after_retry-twinfailed: src/spike_twinfailed_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_twinfailed_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for UpdateEquip_far
+ff4-spike-qwen3_after_retry-updateequip_far: src/spike_updateequip_far_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updateequip_far_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ValidateAITarget
+ff4-spike-qwen3_after_retry-validateaitarget: src/spike_validateaitarget_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_validateaitarget_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_after_retry): spike for ValidateChar
+ff4-spike-qwen3_after_retry-validatechar: src/spike_validatechar_qwen3_after_retry.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_validatechar_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)

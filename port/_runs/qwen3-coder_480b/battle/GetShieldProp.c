@@ -2,48 +2,51 @@
 // from indirect table pointed to by ($82),Y into various battle RAM fields.
 static void GetShieldProp_c(Snes *snes) {
     uint8_t *ram = snes->ram;
-    ram[0x396B]++;                     // inc $396b
+    Cpu *cpu = snes->cpu;
+
+    ram[0x396B]++; // inc $396b
 
     // Process magic defense % (bits 0-6)
-    uint8_t val = ram[(ram[0x83] << 8) | ram[0x82] + snes->cpu->y];
-    val &= 0x7F;                       // and #$7f
-    ram[0x3972] = (uint8_t)(ram[0x3972] + val); // adc $3972 (8-bit)
-    snes->cpu->y++;                    // iny
+    uint16_t addr = (ram[0x83] << 8) | ram[0x82];
+    uint8_t val = ram[addr + cpu->y];
+    val &= 0x7F;
+    ram[0x3972] = (uint8_t)(ram[0x3972] + val); // adc $3972
+    cpu->y++; // iny
 
     // Process defense
-    val = ram[(ram[0x83] << 8) | ram[0x82] + snes->cpu->y];
-    ram[0x396F] = (uint8_t)(ram[0x396F] + val); // adc $396f (8-bit)
-    snes->cpu->y++;                    // iny
+    val = ram[addr + cpu->y];
+    ram[0x396F] = (uint8_t)(ram[0x396F] + val); // adc $396f
+    cpu->y++; // iny
 
     // Process defense % (bits 0-6)
-    val = ram[(ram[0x83] << 8) | ram[0x82] + snes->cpu->y];
-    val &= 0x7F;                       // and #$7f
-    ram[0x396C] = (uint8_t)(ram[0x396C] + val); // adc $396c (8-bit)
-    snes->cpu->y++;                    // iny
+    val = ram[addr + cpu->y];
+    val &= 0x7F;
+    ram[0x396C] = (uint8_t)(ram[0x396C] + val); // adc $396c
+    cpu->y++; // iny
 
     // Process magic defense
-    val = ram[(ram[0x83] << 8) | ram[0x82] + snes->cpu->y];
-    ram[0x3973] = (uint8_t)(ram[0x3973] + val); // adc $3973 (8-bit)
-    snes->cpu->y += 2;                 // iny2
+    val = ram[addr + cpu->y];
+    ram[0x3973] = (uint8_t)(ram[0x3973] + val); // adc $3973
+    cpu->y += 2; // iny2
 
     // Process creature type (OR'd)
-    val = ram[(ram[0x83] << 8) | ram[0x82] + snes->cpu->y];
-    ram[0x3974] |= val;                // ora $3974
-    snes->cpu->y++;                    // iny
+    val = ram[addr + cpu->y];
+    ram[0x3974] |= val; // ora $3974
+    cpu->y++; // iny
 
     // Process element
-    val = ram[(ram[0x83] << 8) | ram[0x82] + snes->cpu->y];
-    ram[0x396D] = val;                 // sta $396d
-    snes->cpu->y++;                    // iny
+    val = ram[addr + cpu->y];
+    ram[0x396D] = val; // sta $396d
+    cpu->y++; // iny
 
     // Process status 1 (OR'd)
-    val = ram[(ram[0x83] << 8) | ram[0x82] + snes->cpu->y];
-    ram[0x3970] |= val;                // ora $3970
-    snes->cpu->y++;                    // iny
+    val = ram[addr + cpu->y];
+    ram[0x3970] |= val; // ora $3970
+    cpu->y++; // iny
 
     // Process status 2 (OR'd)
-    val = ram[(ram[0x83] << 8) | ram[0x82] + snes->cpu->y];
-    ram[0x3971] |= val;                // ora $3971
+    val = ram[addr + cpu->y];
+    ram[0x3971] |= val; // ora $3971
 }
 
 // PITFALLS: 6 (mode A assumed 8-bit), 7 (ADC truncation to 8-bit),

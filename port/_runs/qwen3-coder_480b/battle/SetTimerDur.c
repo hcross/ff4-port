@@ -9,7 +9,7 @@ static void SetTimerDur_c(Snes *snes) {
     if (timer < 0) {                   // bpl @9fd5 → taken when timer >= 0
         timer = 0;                     // clr_ay → Y = 0 (A is not used)
     }
-    ram[0xD4] = (uint8_t)timer;        // sty $d4 (Y is 16-bit, but only low byte matters)
+    write16(ram, 0xD4, (uint16_t)(uint8_t)timer);  // sty $d4 (Y is 16-bit, but only low byte matters)
 }
 
 // PITFALLS: 6 (mode A assumed 8-bit based on typical battle conventions),

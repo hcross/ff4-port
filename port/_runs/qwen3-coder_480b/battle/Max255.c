@@ -3,14 +3,12 @@
 // Output: cpu->a = clamped value (0x00 to 0xFF)
 static void Max255_c(Snes *snes) {
     Cpu *cpu = snes->cpu;
-    uint16_t a = cpu->a;
 
     // bcc @9e2b → branch if C clear, skip clamping
     if (cpu->c) {
         // C set: clamp A to 0xFF
-        a = 0xFF;
+        cpu->a = 0xFF;
     }
-    cpu->a = a;
 }
 
 // PITFALLS: 2 (C flag must be set by caller to match `bcc` behavior)

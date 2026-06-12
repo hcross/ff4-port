@@ -3,9 +3,9 @@
 // Exit:  A = min(A, 99)
 static void Max99_c(Snes *snes) {
     Cpu *cpu = snes->cpu;
-    uint16_t a = cpu->a & 0xFF;  // A is 8-bit (mf=1 assumed)
-    if (a >= 99) {               // cmp #99 / bcc @9e26
-        cpu->a = 99;             // lda #99
+    uint8_t a = cpu->a & 0xFF;  // A is 8-bit (mf=1 assumed)
+    if (a >= 99) {              // cmp #99 / bcc @9e26
+        cpu->a = 99;            // lda #99
     }
     // else fall through to rts
 }

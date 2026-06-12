@@ -28,7 +28,7 @@ static void FindValidChar_c(Snes *snes) {
         uint8_t status3 = ram[0x2006 + cpu->x]; // lda $2006,x
         if ((status3 & 0x80) == 0) goto done;   // bpl @c430 (not hiding)
 next:
-        next_obj_emu(snes);                     // jsr NextObj
+        NextObj_emu(snes);                      // jsr NextObj
         cpu->y++;                               // iny
         if (cpu->y == 5) {                      // cpy #5 / bne @c40d
             ram[0xA9]++;                        // inc $a9
@@ -40,7 +40,7 @@ done:
 }
 
 // PITFALLS: 8 (mode A/X inherited as 8-bit/16-bit from caller)
-// HELPERS: next_obj_emu(snes) — delegates NextObj @ $03:85BC
+// HELPERS: NextObj_emu(snes) — delegates NextObj @ $03:85BC
 // CONTRACT:
 //   inputs_reg:  a=none, x=16, y=16
 //   inputs_ram:  0x3540=1, 0x2003=1, 0x2005=1, 0x2006=1

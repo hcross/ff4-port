@@ -29,19 +29,20 @@ static void TimerDur_09_c(Snes *snes) {
     ram[0xDF] = ram[0xAD];              // lda $ad / sta $df
     ram[0xE2] = ram[0xAE];              // lda $ae / sta $e2
 
-    mult8_emu(snes);                    // jsr Mult8
+    Mult8_emu(snes);                    // jsr Mult8
 
     uint8_t e3 = ram[0xE3];
     uint8_t e4 = ram[0xE4];
-    ram[0xA9] = (uint8_t)(e3 + 0x1E);           // clc / lda $e3 / adc #$1e / sta $a9
-    ram[0xAA] = (uint8_t)(e4 + (ram[0xA9] < (uint8_t)(e3 + 0x1E) ? 1 : 0)); // adc #$00
+    uint16_t sum = (uint16_t)e3 + 0x1E;
+    ram[0xA9] = (uint8_t)sum;           // clc / lda $e3 / adc #$1e / sta $a9
+    ram[0xAA] = (uint8_t)(e4 + (sum >> 8)); // adc #$00
 
-    apply_speed_mod_emu(snes);          // jsr ApplySpeedMod
-    set_timer_dur_emu(snes);            // jmp SetTimerDur (tail call)
+    ApplySpeedMod_emu(snes);          // jsr ApplySpeedMod
+    SetTimerDur_emu(snes);            // jmp SetTimerDur (tail call)
 }
 
 // PITFALLS: 1 (DB=$7E), 6 (mode A 8-bit), 7 (arithmetic truncation)
-// HELPERS: mult8_emu, apply_speed_mod_emu, set_timer_dur_emu
+// HELPERS: Mult8_emu, ApplySpeedMod_emu, SetTimerDur_emu
 // CONTRACT:
 //   inputs_reg:  a=none, x=16, y=none
 //   inputs_ram:  0x3558=1, 0x2017=1, 0x2018=1, 0x202f=1

@@ -2,11 +2,15 @@
 // No inputs or outputs in registers; all state is internal or in WRAM.
 // This is a pure wrapper around ExecBtlGfx_ext.
 static void ExecBtlGfx_c(Snes *snes) {
-    exec_btl_gfx_ext_emu(snes);  // jsl ExecBtlGfx_ext
+    Cpu *cpu = snes->cpu;
+    cpu->mf = false;  // A 16-bit
+    cpu->xf = false;  // X/Y 16-bit
+    cpu->db = 0x7E;   // Data bank for WRAM
+    ExecBtlGfx_ext_emu(snes);  // jsl ExecBtlGfx_ext
 }
 
-// PITFALLS: 1 (DB must be $7E for ExecBtlGfx_ext, which is in bank $C0)
-// HELPERS: exec_btl_gfx_ext_emu(snes) — delegates ExecBtlGfx_ext @ $C0:xxxx
+// PITFALLS: 1 (DB must be $7E for ExecBtlGfx_ext, which operates on WRAM)
+// HELPERS: ExecBtlGfx_ext_emu(snes) — delegates ExecBtlGfx_ext @ $C0:xxxx
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=none
 //   inputs_ram:  none

@@ -1,9 +1,9 @@
 // Entry mode: A 8-bit (mf=1), X 16-bit (xf=0), DB=$7E, DP=0
 // Entry: cpu->a = summon_id (8-bit)
 // Output: ram[$26D2] = attack_id (8-bit), ram[$3584] incremented
-static void GetSummonAttack_c(Snes *snes, uint8_t summon_id) {
+static void GetSummonAttack_c(Snes *snes) {
     uint8_t *ram = snes->ram;
-    uint8_t a = summon_id;
+    uint8_t a = snes->cpu->a;
 
     if (a >= 0x3E) {                    // cmp #$3e / bcc @e071
         if (a == 0x3F) {                // cmp #$3f / bne @e05f
@@ -11,8 +11,10 @@ static void GetSummonAttack_c(Snes *snes, uint8_t summon_id) {
             goto store_result;          // bra @e077
         }
         // else: a > 0x3F
-        uint16_t x = 0;                 // ldx #0
-        uint16_t rand_result = rand_xa_emu(snes, 0, 2); // jsr RandXA
+        snes->cpu->x = 0;               // ldx #0
+        snes->cpu->a = 2;               // lda #2
+        RandXA_emu(snes);               // jsr RandXA
+        uint8_t rand_result = snes->cpu->a;
         ram[0x26D4] = 0xF8;             // sta $26d4
         a = (uint8_t)(rand_result + 0x3E); // adc #$3e (8-bit)
     } else {
@@ -28,7 +30,7 @@ store_result:
 
 // PITFALLS: 1 (DB=$7E required for absolute stores), 6 (mode A is 8-bit),
 // 7 (arithmetic truncation in 8-bit mode)
-// HELPERS: rand_xa_emu(snes, x, a) — delegates RandXA @ $03:8379
+// HELPERS: RandXA_emu(snes) — delegates RandXA @ $03:8379
 // CONTRACT:
 //   inputs_reg:  a=8, x=none, y=none
 //   inputs_ram:  none

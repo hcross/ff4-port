@@ -6,11 +6,11 @@ static void AITarget_22_c(Snes *snes) {
     ram[0xB0] = 0x0C;  // lda #$0c / sta $b0
     ram[0xAF] = 0x00;  // lda #$00 / sta $af
     ram[0xAD] = 0xFF;  // dec (from 0) / sta $ad → 0xFF
-    rand_ai_target_emu(snes);  // jmp RandAITarget
+    RandAITarget_emu(snes);  // jmp RandAITarget
 }
 
 // PITFALLS: 1 (DB must be $7E for correct RAM writes)
-// HELPERS: rand_ai_target_emu(snes) — delegates RandAITarget @ $BA:9C
+// HELPERS: RandAITarget_emu(snes) — delegates RandAITarget @ $BA:9C
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=none
 //   inputs_ram:  none

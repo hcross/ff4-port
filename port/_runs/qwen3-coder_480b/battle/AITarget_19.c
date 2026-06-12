@@ -5,11 +5,11 @@ static void AITarget_19_c(Snes *snes) {
     // lda #0 sets A to zero
     snes->cpu->a = 0;
     // jmp TargetMonsterTypeAll → direct jump, no return
-    target_monster_type_all_emu(snes);
+    TargetMonsterTypeAll_emu(snes);
 }
 
 // PITFALLS: 1 (DB must be $7E for TargetMonsterTypeAll if it accesses WRAM)
-// HELPERS: target_monster_type_all_emu(snes)
+// HELPERS: TargetMonsterTypeAll_emu(snes)
 // CONTRACT:
 //   inputs_reg:  a=8, x=none, y=none
 //   inputs_ram:  none

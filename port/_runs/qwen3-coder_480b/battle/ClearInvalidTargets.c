@@ -30,9 +30,8 @@ loop:
     uint8_t bitfield = ram[0xAD];
     cpu->a = bitfield;
     cpu->x = index;
-    // Set flags for ClearBit entry (not needed since ClearBit doesn't check)
-    bitfield = clear_bit_emu(snes); // jsr ClearBit
-    ram[0xAD] = bitfield;
+    clear_bit_emu(snes); // jsr ClearBit
+    ram[0xAD] = cpu->a;
 
 next:
     // Advance to next target (Y += $80)

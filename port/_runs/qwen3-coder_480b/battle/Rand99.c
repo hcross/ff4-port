@@ -7,10 +7,10 @@ static void Rand99_c(Snes *snes) {
     // clr_ax → tdc / tax (A = DP = 0, X = A = 0)
     // Since DP=0 (battle convention), clr_ax produces A=0, X=0
     // Then lda #98 sets A=98
-    uint8_t a = 98;
+    snes->cpu->a = 98;
     // jsr RandXA (expects A=upper bound, returns random 0..A in A and X)
     // RandXA is not yet translated, so delegate
-    uint16_t ax = randxa_emu(snes, a);
+    RandXA_emu(snes);
     // After RTS, A and X both hold the random value (0-98)
     // Caller will read A (8-bit), X is set as side-effect
     // No RAM output — register-only result
@@ -18,7 +18,7 @@ static void Rand99_c(Snes *snes) {
 
 // PITFALLS: 1 (DB=$7E required for WRAM access if any),
 //           5 (clr_ax is tdc/tax, not lda #0/ldx #0)
-// HELPERS: randxa_emu(snes, a) — delegates RandXA @ $03:8379
+// HELPERS: RandXA_emu(snes) — delegates RandXA @ $03:8379
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=none
 //   inputs_ram:  none

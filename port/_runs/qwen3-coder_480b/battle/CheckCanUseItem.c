@@ -10,8 +10,9 @@
 //   else:
 //     check if character can equip item via EquipProp table
 //     if not, set $353d = 1
-static void CheckCanUseItem_c(Snes *snes, uint8_t item_id) {
+static void CheckCanUseItem_c(Snes *snes) {
     uint8_t *ram = snes->ram;
+    uint8_t item_id = snes->cpu->a; // Entry: A = item_id
     ram[0x353D] = 0;
 
     if (item_id >= 0x6D) {
@@ -25,7 +26,7 @@ static void CheckCanUseItem_c(Snes *snes, uint8_t item_id) {
     ram[0xE5] = item_id;
     write16(ram, 0x80, 0x5842); // EquipProp table loword
     ram[0x82] = 0x03;           // EquipProp table bank
-    load_array_item_emu(snes, 0x08);
+    LoadArrayItem_emu(snes);    // jsr LoadArrayItem (delegated)
 
     // Get item equipability class bits
     uint16_t equip_class = read16(ram, 0x28A2) & 0x1F;
@@ -46,7 +47,7 @@ static void CheckCanUseItem_c(Snes *snes, uint8_t item_id) {
 // PITFALLS: 1 (DB must be $7E for absolute addressing to hit WRAM),
 //           6 (mode A starts as 8-bit, longa/shorta used internally),
 //           7 (16-bit operations must truncate properly when switching back to 8-bit)
-// HELPERS: load_array_item_emu(snes, 0x08) — delegates LoadArrayItem @ $03:845E
+// HELPERS: LoadArrayItem_emu(snes) — delegates LoadArrayItem @ $03:845E
 // CONTRACT:
 //   inputs_reg:  a=8, x=none, y=none
 //   inputs_ram:  0xA9=2

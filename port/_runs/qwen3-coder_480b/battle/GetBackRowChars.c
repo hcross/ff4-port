@@ -22,8 +22,9 @@ static void GetBackRowChars_c(Snes *snes) {
         if ((int8_t)ram[0x2001 + y] >= 0) goto next;      // bpl @b9f2
 
         // Character qualifies as back-row: set bit in $ab
-        uint8_t mask = set_bit_emu(snes, ram[0xAB]);      // jsr SetBit
-        ram[0xAB] = mask;
+        snes->cpu->a = ram[0xAB];
+        SetBit_emu(snes);                                 // jsr SetBit
+        ram[0xAB] = snes->cpu->a;
 
     next:
         y += 0x80;  // tya / clc / adc #$0080 / tay
@@ -32,7 +33,7 @@ static void GetBackRowChars_c(Snes *snes) {
 }
 
 // PITFALLS: 1 (DB=$7E), 6 (A starts 16-bit), 8 (X/Y 16-bit from longi)
-// HELPERS: set_bit_emu(snes, arg) — delegates SetBit @ $03:855F
+// HELPERS: SetBit_emu(snes) — delegates SetBit @ $03:855F
 // CONTRACT:
 //   inputs_reg:  a=none, x=16, y=16
 //   inputs_ram:  0x2001=1, 0x2003=1, 0x2005=1, 0x2006=1, 0x3540=1

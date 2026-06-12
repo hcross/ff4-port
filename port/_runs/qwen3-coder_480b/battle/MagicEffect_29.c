@@ -13,13 +13,13 @@ static void MagicEffect_29_c(Snes *snes) {
         x++;                          // inx
     }
     write16(ram, 0x8A, x);            // stx $8a
-    uint8_t a = 1;                    // lda #$01
-    activate_monster_emu(snes, a);    // jmp ActivateMonster (delegated)
+    snes->cpu->a = 1;                 // lda #$01 (set A for ActivateMonster)
+    ActivateMonster_emu(snes);        // jmp ActivateMonster (delegated)
 }
 
 // PITFALLS: 1 (DB=$7E required for correct RAM addressing),
 //           6 (A 8-bit, X 16-bit — must match original mode or parity fails)
-// HELPERS: activate_monster_emu(snes, a) — delegates ActivateMonster @ $03:DF5F
+// HELPERS: ActivateMonster_emu(snes) — delegates ActivateMonster @ $03:DF5F
 // CONTRACT:
 //   inputs_reg:  none
 //   inputs_ram:  none

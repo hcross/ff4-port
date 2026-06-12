@@ -1,17 +1,17 @@
 // Entry mode: A 8-bit (mf=1), X 16-bit (xf=0), DB=$7E, DP=0
 // Logic:
-//   Sets the target bitmask in ram[$34C5].
-//   Calls CountBits to determine the number of bits set in the mask.
-//   If more than one target is set (X > 1 after dex), it sets the 0x40 bit 
-//   in the target status ram[$34C4] to flag a multi-target attack.
+//   Stores the target bitmask in ram[$34C5].
+//   Calls CountBits to determine the number of set bits (result in X).
+//   If X > 1, the 0x40 bit is set in the target status byte at ram[$34C4]
+//   to indicate a multi-target attack.
 static void SetTargets_c(Snes *snes) {
     uint8_t *ram = snes->ram;
 
     // sta $34c5
     ram[0x34C5] = (uint8_t)snes->cpu->a;
 
-    // jsr CountBits (returns bit count in X)
-    count_bits_emu(snes);
+    // jsr CountBits (result stored in snes->cpu->x)
+    CountBits_emu(snes);
 
     // dex
     snes->cpu->x--;
@@ -21,15 +21,12 @@ static void SetTargets_c(Snes *snes) {
         return;
     }
 
-    // multi-target path
-    // lda $34c4 / ora #$40 / sta $34c4
-    uint8_t status = ram[0x34C4];
-    status |= 0x40;
-    ram[0x34C4] = status;
+    // multi-target path: lda $34c4 / ora #$40 / sta $34c4
+    ram[0x34C4] |= 0x40;
 }
 
 // PITFALLS: 8 (Inherited mode: mf=true, xf=false for battle module)
-// HELPERS: count_bits_emu(snes) — delegates CountBits @ $00:850C
+// HELPERS: CountBits_emu(snes) — delegates CountBits @ $850C
 // CONTRACT:
 //   inputs_reg:  a=8, x=none, y=none
 //   inputs_ram:  0x34C4=1

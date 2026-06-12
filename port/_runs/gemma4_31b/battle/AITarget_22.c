@@ -1,9 +1,8 @@
 // Entry mode: A 8-bit (mf=1), X 16-bit (xf=0), DB=$7E, DP=0
-// This routine sets up parameters for the RandAITarget selection:
-// - range_max ($B0) = 12 (0x0C)
-// - range_min ($AF) = 0 (0x00)
-// - iterations  ($AD) = -1 (0xFF in 8-bit, since DEC 0x00 = 0xFF)
-// Then jumps to RandAITarget to pick the actual target.
+// Sets up selection parameters for RandAITarget:
+// - Target range max ($B0) = 12
+// - Target range min ($AF) = 0
+// - Loop iterations  ($AD) = 255 (0x00 DEC)
 static void AITarget_22_c(Snes *snes) {
     uint8_t *ram = snes->ram;
 
@@ -11,14 +10,14 @@ static void AITarget_22_c(Snes *snes) {
     ram[0xAF] = 0x00; // lda #$00 / sta $af
     
     // lda #$00 / dec / sta $ad
-    // In 8-bit mode, 0x00 - 1 = 0xFF
+    // Pitfall 7: In 8-bit mode, 0x00 - 1 = 0xFF
     ram[0xAD] = 0xFF;
 
-    rand_ai_target_emu(snes); // jmp RandAITarget
+    RandAITarget_emu(snes); // jmp RandAITarget
 }
 
 // PITFALLS: 7 (Arithmetic truncation: dec 0x00 in 8-bit mode results in 0xFF)
-// HELPERS: rand_ai_target_emu(snes) — delegates RandAITarget @ $BA:9C
+// HELPERS: RandAITarget_emu(snes) — delegates RandAITarget @ $BA:9C
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=none
 //   inputs_ram:  none

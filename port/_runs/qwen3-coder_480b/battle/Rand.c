@@ -1,7 +1,8 @@
 // Entry mode: A 8-bit (mf=1), X 16-bit (xf=0), DB=$7E, DP=0
 // Input: none (hardcoded to $FF)
 // Output: returned in A (8-bit)
-static uint8_t Rand_c(Snes *snes) {
+static void Rand_c(Snes *snes) {
+    uint8_t *ram = snes->ram;
     // clr_ax → tdc / tax (A = X = 0, since DP=0)
     uint16_t a = 0;
     uint16_t x = 0;
@@ -21,7 +22,7 @@ static uint8_t Rand_c(Snes *snes) {
     c->n = (arg & 0x80) != 0;
 
     run_emulated_func(snes, 0x8379u);  // RandXA
-    return (uint8_t)(snes->cpu->a & 0xFF);
+    // Result is in snes->cpu->a (low byte)
 }
 
 // PITFALLS: 1 (DB=$7E), 2 (Z/N flags for jsr target), 9 (upper byte B preserved)

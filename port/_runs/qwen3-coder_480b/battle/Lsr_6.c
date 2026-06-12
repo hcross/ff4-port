@@ -3,10 +3,29 @@
 // Exit: A register shifted right by 6 bits
 static void Lsr_6_c(Snes *snes) {
     Cpu *cpu = snes->cpu;
-    cpu->a >>= 6;                    // Perform 6 right shifts
-    cpu->c = (cpu->a & 0x20) != 0;   // Set carry flag based on bit 5 (before shift)
-    cpu->z = (cpu->a == 0);          // Set zero flag
-    cpu->n = (cpu->a & 0x80) != 0;   // Set negative flag (for 8-bit)
+    // Assuming 8-bit mode (mf=1), each LSR shifts 1 bit right, bit 0 goes to C
+    // LSR #1
+    cpu->c = (cpu->a & 1) != 0;
+    cpu->a = (uint8_t)(cpu->a >> 1);
+    // LSR #2
+    cpu->c = (cpu->a & 1) != 0;
+    cpu->a = (uint8_t)(cpu->a >> 1);
+    // LSR #3
+    cpu->c = (cpu->a & 1) != 0;
+    cpu->a = (uint8_t)(cpu->a >> 1);
+    // LSR #4
+    cpu->c = (cpu->a & 1) != 0;
+    cpu->a = (uint8_t)(cpu->a >> 1);
+    // LSR #5
+    cpu->c = (cpu->a & 1) != 0;
+    cpu->a = (uint8_t)(cpu->a >> 1);
+    // LSR #6
+    cpu->c = (cpu->a & 1) != 0;
+    cpu->a = (uint8_t)(cpu->a >> 1);
+
+    // Update flags based on final value in A (8-bit)
+    cpu->z = (cpu->a == 0);
+    cpu->n = (cpu->a & 0x80) != 0;
 }
 
 // PITFALLS: 6 (mode A size matters - assuming 8-bit), 7 (truncation in 8-bit mode)

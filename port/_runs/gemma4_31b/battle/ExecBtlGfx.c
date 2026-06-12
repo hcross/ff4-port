@@ -1,12 +1,12 @@
 // Entry mode: A 8-bit (mf=1), X 16-bit (xf=0), DB=$80, DP=0
-// This is a thin jump wrapper that delegates the actual execution 
-// to the extended version of the routine.
+// This routine is a thin wrapper that jumps to the extended 
+// battle graphics execution routine.
 static void ExecBtlGfx_c(Snes *snes) {
-    exec_btlgfx_ext_emu(snes);
+    ExecBtlGfx_ext_emu(snes);
 }
 
 // PITFALLS: None (simple delegation)
-// HELPERS: exec_btlgfx_ext_emu(snes) — delegates ExecBtlGfx_ext @ $80:0003
+// HELPERS: ExecBtlGfx_ext_emu(snes) — delegates ExecBtlGfx_ext @ $80:0003
 // CONTRACT:
 //   inputs_reg:  none
 //   inputs_ram:  none

@@ -1,0 +1,10 @@
+[validate_run] gemma4_after_retry: 164 C files to validate
+
+[validate_run] gemma4_after_retry summary:
+  pass                 64
+  custom_spike         57
+  compile_error        21
+  unknown              19
+  no_contract           3
+  TOTAL               164
+  pass rate          39.0%

@@ -7,19 +7,19 @@ static void SetMagicStatus_c(Snes *snes) {
     uint8_t *ram = snes->ram;
     uint8_t a3 = ram[0x28A3];
     if ((a3 & 0x80) == 0) {              // bpl → N=0 when bit 7 clear
-        set_magic_status2_emu(snes);
+        SetMagicStatus2_emu(snes);
         return;
     }
     uint8_t flags = ram[0x2740] & 0x8A;  // and #$8a
     if (flags == 0) {                    // beq → Z=1 when result zero
-        set_magic_status2_emu(snes);
+        SetMagicStatus2_emu(snes);
         return;
     }
     _d5a2_emu(snes);                     // jmp _d5a2
 }
 
 // PITFALLS: 1 (DB=$7E required for WRAM access), 2 (flags Z/N set by caller)
-// HELPERS: set_magic_status2_emu(snes), _d5a2_emu(snes)
+// HELPERS: SetMagicStatus2_emu(snes), _d5a2_emu(snes)
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=none
 //   inputs_ram:  0x28a3=1, 0x2740=1

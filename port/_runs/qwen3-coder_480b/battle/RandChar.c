@@ -5,12 +5,12 @@ static void RandChar_c(Snes *snes) {
     Cpu *cpu = snes->cpu;
     cpu->x = 0;                          // ldx #0
     cpu->a = 4;                          // lda #4
-    randxa_emu(snes);                    // jsr RandXA
+    RandXA_emu(snes);                    // jsr RandXA
     // Result is in cpu->a (8-bit), caller reads it
 }
 
 // PITFALLS: 1 (DB=$7E required for RandXA), 8 (mode A/X inherited from caller)
-// HELPERS: randxa_emu(snes) — delegates RandXA @ $03:8379
+// HELPERS: RandXA_emu(snes) — delegates RandXA @ $03:8379
 // CONTRACT:
 //   inputs_reg:  a=8, x=16, y=none
 //   inputs_ram:  none

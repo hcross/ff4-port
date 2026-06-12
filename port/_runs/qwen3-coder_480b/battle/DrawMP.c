@@ -9,14 +9,14 @@ static void DrawMP_c(Snes *snes) {
     }
     if (ram[0x353F] != 0) {        // lda $353f / bne @807c
         // bra @8081 is here in asm, but logically part of the if-block
-        uint8_t a = 0x0D;          // lda #$0d
-        exec_btl_gfx_emu(snes, a); // jsr ExecBtlGfx
+        snes->cpu->a = 0x0D;          // lda #$0d
+        ExecBtlGfx_emu(snes); // jsr ExecBtlGfx
     }
     ram[0x353F]++;                 // inc $353f
 } // rts
 
 // PITFALLS: 1 (DB=$7E assumed), 2 (Z/N flags not involved at entry)
-// HELPERS: exec_btl_gfx_emu(snes, a) — delegates ExecBtlGfx @ $80:85
+// HELPERS: ExecBtlGfx_emu(snes) — delegates ExecBtlGfx @ $80:85
 // CONTRACT:
 //   inputs_reg:  none
 //   inputs_ram:  0x353E=1, 0x353F=1

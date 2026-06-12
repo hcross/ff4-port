@@ -16,7 +16,7 @@ static void PlayBattleSong_c(Snes *snes) {
         ram[0x1E01] = ram[0xA9]; // lda $a9 / sta $1e01
         ram[0x1E00] = 0x01;      // lda #$01 / sta $1e00
         
-        exec_sound_ext_emu(snes); // jsl ExecSound_ext
+        ExecSound_ext_emu(snes); // jsl ExecSound_ext
 
         // Check if song is now playing: ram[$1e05] == requested song
         if (ram[0x1E05] == ram[0xA9]) { // lda $1e05 / cmp $a9 / bne @ff1d
@@ -29,7 +29,7 @@ static void PlayBattleSong_c(Snes *snes) {
 }
 
 // PITFALLS: 1 (DB=$7E), 3 (CMP/BNE logic: loop continues while values are NOT equal)
-// HELPERS: exec_sound_ext_emu(snes) — delegates ExecSound_ext @ $80:0003
+// HELPERS: ExecSound_ext_emu(snes) — delegates ExecSound_ext @ $80:0003
 // CONTRACT:
 //   inputs_reg:  a=8, x=none, y=none
 //   inputs_ram:  none

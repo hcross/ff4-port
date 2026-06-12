@@ -19,7 +19,7 @@
 //   - if no match, increment $80 by #$80 (16-bit), loop until x==$001A
 static void AICond_00_c(Snes *snes) {
     uint8_t *ram = snes->ram;
-    get_ai_cond_target_emu(snes);  // jsr GetAICondTarget
+    GetAICondTarget_emu(snes);  // jsr GetAICondTarget
     if (ram[0xDD] == 0) return;    // lda $dd / beq @bd3c
 
     // Compute base address: $80 = #$03 + ram[$289E], $81 = #$20 + carry
@@ -65,7 +65,7 @@ static void AICond_00_c(Snes *snes) {
 //           3 (CMP/BPL sign check on $289D treated as signed int8),
 //           6 (mode A 8-bit assumed throughout except for longa block),
 //           8 (mode A/X inherited from caller — battle uses mf=1, xf=0)
-// HELPERS: get_ai_cond_target_emu(snes) — delegates GetAICondTarget @ $BF0F
+// HELPERS: GetAICondTarget_emu(snes) — delegates GetAICondTarget @ $BF0F
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=none
 //   inputs_ram:  0x289D=1, 0x289E=1, 0x289F=1, 0x35D0=2

@@ -1,29 +1,29 @@
 // Entry mode: A 8-bit (mf=1), X/Y 16-bit (xf=0), DB=$7E, DP=0
-// Logic: 
-//   The routine takes the item ID in Y, saves it to RAM $01 (DP offset),
-//   then triggers the battle graphics engine to draw the inventory item text
-//   using command 0x06.
+// Logic:
+//   Saves the item ID from Y to RAM $01 and calls the battle graphics 
+//   engine (ExecBtlGfx) with command 0x06 to draw the item text.
 static void DrawStolenItem_c(Snes *snes) {
     uint8_t *ram = snes->ram;
-    
-    // Routine preserves X and Y via phx/phy...ply/plx
-    // The item ID is passed in Y
-    uint16_t item_id = snes->cpu->y;
-    
-    // sta $01 (DP=0)
-    // Note: Since Y is typically 16-bit here (xf=0) but 'sta' is 8-bit,
-    // only the low byte of Y is stored to $01.
-    ram[0x01] = (uint8_t)(item_id & 0xFF);
-    
-    // lda #$06 (Battle graphics command for draw inventory item text)
+
+    // phx / phy are implicit in C as we use local variables or 
+    // read from snes->cpu and don't modify the registers permanently.
+    uint16_t y_val = snes->cpu->y;
+
+    // tya / sta $01 (DP=0)
+    // In 8-bit mode, only the low byte of Y is transferred to A and stored.
+    ram[0x01] = (uint8_t)(y_val & 0xFF);
+
+    // lda #$06
     snes->cpu->a = 0x06;
-    
+
     // jsr ExecBtlGfx (delegated)
-    exec_btl_gfx_emu(snes);
+    ExecBtlGfx_emu(snes);
+
+    // ply / plx are implicit.
 }
 
-// PITFALLS: None applicable (simple register-to-RAM transfer and delegation).
-// HELPERS: exec_btl_gfx_emu(snes) — delegates ExecBtlGfx @ 8085
+// PITFALLS: None applicable.
+// HELPERS: ExecBtlGfx_emu(snes) — delegates ExecBtlGfx @ 8085
 // CONTRACT:
 //   inputs_reg:  a=none, x=none, y=16
 //   inputs_ram:  none

@@ -1,0 +1,9 @@
+[validate_run] qwen3_after_retry: 163 C files to validate
+
+[validate_run] qwen3_after_retry summary:
+  pass                 88
+  compile_error        39
+  unknown              22
+  custom_spike         14
+  TOTAL               163
+  pass rate          54.0%

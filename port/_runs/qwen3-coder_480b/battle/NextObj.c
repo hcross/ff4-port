@@ -3,7 +3,9 @@
 // Exit: cpu->x = object pointer + 0x80 (16-bit)
 static void NextObj_c(Snes *snes) {
     Cpu *cpu = snes->cpu;
+    cpu->mf = false;              // longa
     cpu->x = (uint16_t)(cpu->x + 0x80);  // txa / clc / adc #$0080 / tax
+    cpu->mf = true;               // shorta0
 }
 
 // PITFALLS: 6 (mode A is 16-bit due to `longa`), 7 (arithmetic truncation

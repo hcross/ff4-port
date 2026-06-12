@@ -10,11 +10,11 @@ static void MagicEffect_20_c(Snes *snes) {
     Cpu *cpu = snes->cpu;
 
     cpu->x = 3;                          // ldx #3
-    uint8_t a = 5;                       // lda #5
-    cpu->a = a;
+    cpu->a = 5;                          // lda #5
     cpu->mf = true;                      // 8-bit A for RandXA
-    uint8_t rand = rand_xa_emu(snes);    // jsr RandXA
-    uint8_t y = rand;                    // tay
+    RandXA_emu(snes);                    // jsr RandXA
+    uint8_t rand = cpu->a;               // returned in A
+    cpu->y = rand;                       // tay
     ram[0x00A9] = rand;                  // sta a:$00a9
 
     cpu->c = true;                       // sec
@@ -24,23 +24,23 @@ static void MagicEffect_20_c(Snes *snes) {
         cpu->c = val & 1;                // lsb → C
         val = (val >> 1) | (carry << 15); // ror
         write16(ram, 0x28A4, val);
-        y--;                             // dey
-    } while (y != 0);                    // bne @dca8
+        cpu->y--;                        // dey
+    } while (cpu->y != 0);               // bne @dca8
 
     uint8_t stored = ram[0x00A9];        // lda a:$00a9
     if (stored == 5) {                   // cmp #$05 / beq @dcb8
         // jmp SetMagicStatus2
-        set_magic_status2_emu(snes);
+        SetMagicStatus2_emu(snes);
     } else {
         // jmp SleepParalyzeEffect
-        sleep_paralyze_effect_emu(snes);
+        SleepParalyzeEffect_emu(snes);
     }
 }
 
 // PITFALLS: 1 (DB=$7E for WRAM access), 6 (mode A 8-bit assumed),
 //           7 (16-bit rotate must preserve carry chain)
-// HELPERS: rand_xa_emu(snes), set_magic_status2_emu(snes),
-//          sleep_paralyze_effect_emu(snes)
+// HELPERS: RandXA_emu(snes), SetMagicStatus2_emu(snes),
+//          SleepParalyzeEffect_emu(snes)
 // CONTRACT:
 //   inputs_reg:  none
 //   inputs_ram:  none
