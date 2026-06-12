@@ -178,6 +178,37 @@ def build_user_prompt(r: RoutineInfo, mode: str, task_template: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Post-processing — make the LLM output portable to any external build
+# ---------------------------------------------------------------------------
+#
+# The LLM is prompted to produce C that fits the spike harness, which
+# already provides snes/snes.h and ignores trailing non-C sentinels.
+# Downstream consumers (the retro-go-sd ARM cross-compile, anyone
+# building these standalone) do NOT have either property, so we
+# normalise the output before writing it to disk. See Phase 5 of the
+# session-restart-guide for the frictions that motivated this.
+
+_SNES_INCLUDE_LINE = '#include "snes/snes.h"'
+_REVERSED_FUNCTION_RE = re.compile(r"^REVERSED_FUNCTION:.*$", re.MULTILINE)
+
+
+def post_process_c(code: str) -> str:
+    """Make an LLM-emitted translation portable to a standalone build.
+
+    1. Prepend `#include "snes/snes.h"` if the file doesn't already
+       include it. The spike harness implicitly provided it; external
+       builds compile each .c in isolation.
+    2. Comment-out the `REVERSED_FUNCTION: ...` sentinel line. It is a
+       human-readable marker, not valid C — leaving it raw breaks
+       compilers that don't pre-include snes.h.
+    """
+    if _SNES_INCLUDE_LINE not in code:
+        code = f"{_SNES_INCLUDE_LINE}\n\n" + code
+    code = _REVERSED_FUNCTION_RE.sub(lambda m: "// " + m.group(0), code)
+    return code
+
+
+# ---------------------------------------------------------------------------
 # Delegate path — emit the wrapper directly (zero token)
 # ---------------------------------------------------------------------------
 
@@ -357,7 +388,7 @@ def main(argv: list[str] | None = None) -> int:
                 record["error"] = stats.error
             if code and not args.dry_run:
                 out_path = out_module_dir / f"{r.name}.c"
-                out_path.write_text(code)
+                out_path.write_text(post_process_c(code))
                 n_translate_done += 1
                 if args.validate:
                     gen = subprocess.run(

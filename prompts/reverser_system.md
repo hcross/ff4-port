@@ -200,6 +200,30 @@ Discovered during CalcDmg translation (M5): trials with atk_mult=1 had
 asm=9999 (saturated via overflow) and c=7942 (no saturation). Diff
 explained by B≠0 on entry to `lda $38fc`.
 
+## Pitfall 10 — Goto labels followed by a declaration
+
+The desktop spike harness compiles with clang, which tolerates a goto
+label immediately followed by a variable declaration. The downstream
+ARM cross-compile (arm-none-eabi-gcc 10, the G&W toolchain) does NOT
+and reports:
+
+    error: a label can only be part of a statement and a declaration
+           is not a statement
+
+Workaround: insert an empty statement (`;`) right after the label, or
+move the declaration above the label.
+
+    // WRONG (clang OK, ARM GCC error):
+    loop_974a:
+        uint8_t a = ram[0x3601];
+
+    // RIGHT:
+    loop_974a:;
+        uint8_t a = ram[0x3601];
+
+Discovered during Phase 5 scaffold of external/ff4/ in retro-go-sd
+(GetPendingAction.c was the lone offender out of 88 PASS routines).
+
 # Output format
 
 ## For `mode: translate`

@@ -47,6 +47,7 @@ from batch_translate import (  # noqa: E402  (sibling module, intentional)
     hydrate,
     load_prompts,
     build_user_prompt,
+    post_process_c,
 )
 from llm_providers import create_provider, DEFAULT_MODELS  # noqa: E402
 
@@ -316,9 +317,10 @@ def main(argv: list[str] | None = None) -> int:
             out_record["status"] = "no_code_extracted"
             n_no_code += 1
         else:
-            c_path.write_text(code)
+            normalised = post_process_c(code)
+            c_path.write_text(normalised)
             out_record["status"] = "rewritten"
-            out_record["bytes"] = len(code)
+            out_record["bytes"] = len(normalised)
             n_rewritten += 1
 
         log_fp.write(json.dumps(out_record) + "\n")
