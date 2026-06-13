@@ -121,13 +121,36 @@ def extract_c_code(text: str) -> str | None:
 
 
 def post_process_code(code: str) -> str:
-    """Apply uniform post-processing: strip static, prepend snes/snes.h
-    include if missing."""
+    """Apply uniform post-processing:
+      - strip leading `static` from the exported `_c` function
+      - prepend `#include "snes/snes.h"` if missing
+      - comment out any trailing METADATA: line that the model emitted
+        as bare text (REVERSED_FUNCTION:, DELEGATED_FUNCTION:, etc.)
+        — without the `//` prefix the C compiler rejects them.
+    """
     code = re.sub(r"^\s*static\s+(?=void\s+\w+_c\s*\()", "", code,
                    count=1, flags=re.MULTILINE)
     if '#include "snes/snes.h"' not in code:
         code = '#include "snes/snes.h"\n\n' + code
-    return code
+    # Normalise trailing bare metadata lines. The pattern matches lines
+    # like `REVERSED_FUNCTION: field::Pow10Hi ($C3:7F)` that the LLM
+    # sometimes emits without the `//` comment prefix. We comment them
+    # out idempotently (skip lines that already begin with `//`).
+    METADATA_KEYS = (
+        "REVERSED_FUNCTION", "DELEGATED_FUNCTION", "PITFALLS", "HELPERS",
+        "CONTRACT", "inputs_reg", "inputs_ram", "output_ram", "entry_mode",
+        "entry_flags",
+    )
+    fixed = []
+    for line in code.split("\n"):
+        stripped = line.lstrip()
+        if not stripped.startswith("//") and not stripped.startswith("/*"):
+            for key in METADATA_KEYS:
+                if stripped.startswith(key + ":") or stripped.startswith(key + " "):
+                    line = "// " + line.lstrip()
+                    break
+        fixed.append(line)
+    return "\n".join(fixed)
 
 
 # ─────────────────────────────────────────────────────────────────────
