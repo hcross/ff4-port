@@ -140,7 +140,9 @@ def translate_then_validate(mod: str, name: str, prompts_dir: Path,
         )
     except subprocess.TimeoutExpired:
         return {"status": "validate_timeout", "c_path": str(c_path)}
-    out = proc.stdout
+    # Concatenate stdout + stderr so we capture both the spike summary and
+    # the gcc compile errors (which go to stderr).
+    out = proc.stdout + "\n--- stderr ---\n" + proc.stderr
     import re
     m = re.search(r"=== summary === trials: (\d+), fails: (\d+)", out)
     if m and int(m.group(2)) == 0:
@@ -158,21 +160,27 @@ def translate_then_validate(mod: str, name: str, prompts_dir: Path,
     return {"status": "fail", "c_path": str(c_path), "tail": out[-800:]}
 
 
-def call_critic(current_system_md: Path, asm_file: Path, routine_name: str,
+def call_critic(current_dir: Path, asm_file: Path, routine_name: str,
                   generated_c: Path, error_class: str, error_message: str,
                   out_system_md: Path, api_key: str,
-                  timeout: int = 600) -> bool:
-    """Call gpt_oss_critic.py. Returns True if a new prompt was produced."""
+                  timeout: int = 600,
+                  temperature: float = 0.2) -> bool:
+    """Call gpt_oss_critic.py. current_dir is the prompts/history/vK/
+    directory; the critic gets system + examples + task md context.
+    Returns True if a new prompt was produced."""
     cmd = [
         sys.executable, str(CRITIC),
-        "--system-md", str(current_system_md),
+        "--system-md", str(current_dir / "reverser_system.md"),
+        "--examples-md", str(current_dir / "reverser_examples.md"),
+        "--task-md", str(current_dir / "reverser_task.md"),
         "--asm-file", str(asm_file),
         "--routine-name", routine_name,
         "--generated-c", str(generated_c),
         "--error-class", error_class,
-        "--error-message", error_message[:2000],
+        "--error-message", error_message[:4000],
         "--out-system-md", str(out_system_md),
         "--api-key", api_key,
+        "--temperature", str(temperature),
     ]
     try:
         proc = subprocess.run(cmd, cwd=str(ROOT), capture_output=True,
@@ -292,6 +300,9 @@ def main():
     ap.add_argument("--max-iterations", type=int, default=5)
     ap.add_argument("--pass-rate-target", type=float, default=0.50)
     ap.add_argument("--max-consecutive-rejects", type=int, default=10)
+    ap.add_argument("--candidates-per-iter", type=int, default=3,
+                    help="how many critic candidates to try per FAIL routine "
+                         "(temperatures 0.2/0.6/0.9 picked in order)")
     ap.add_argument("--regression-parallel", type=int, default=4)
     ap.add_argument("--api-key", default=None)
     ap.add_argument("--out-root", type=Path,
@@ -344,66 +355,16 @@ def main():
         sys.stderr.write(f"  baseline: {bl['status']}\n")
 
         # Step 2 — ask critic for a mutated prompt
-        candidate_dir = HISTORY_DIR / f"_candidate_v{K+1}"
-        candidate_dir.mkdir(parents=True, exist_ok=True)
-        new_system = candidate_dir / "reverser_system.md"
-        # Prefer the fresh error message from the just-failed baseline
-        # (the JSONL one is stale and often just the trailing make line).
+        # ---- multi-pass critic ----
         fresh_err = bl.get("tail") or bl.get("stderr_tail") or ""
         live_error_class = bl["status"].upper() if bl["status"] in (
             "compile_error", "fail", "ram_diverge") else fail["error_class"]
-        ok = call_critic(
-            current_dir / "reverser_system.md",
-            asm_file, name,
-            Path(bl.get("c_path", "/dev/null")),
-            live_error_class,
-            fresh_err or fail["error_message"],
-            new_system, api_key,
-        )
-        if not ok:
-            sys.stderr.write("  -> critic produced no candidate\n")
-            log_iteration({"iter": it, "fail": fail, "verdict": "critic_empty"})
-            rejects_in_a_row += 1
-            if rejects_in_a_row >= args.max_consecutive_rejects:
-                break
-            continue
-        # carry over task + examples unchanged for now
-        shutil.copy(current_dir / "reverser_task.md",
-                    candidate_dir / "reverser_task.md")
-        shutil.copy(current_dir / "reverser_examples.md",
-                    candidate_dir / "reverser_examples.md")
 
-        # Step 3 — re-test the FAIL routine with candidate
-        cand_dir_out = args.out_root / f"candidate_v{K+1}_{name}"
-        ct = translate_then_validate(mod, name, candidate_dir, cand_dir_out,
-                                       args.model, api_key)
-        if ct["status"] != "pass":
-            sys.stderr.write(f"  -> candidate STILL fails on {name} "
-                             f"({ct['status']}), rejecting\n")
-            log_iteration({"iter": it, "fail": fail,
-                           "verdict": "candidate_fail",
-                           "candidate_status": ct["status"]})
-            rejects_in_a_row += 1
-            if rejects_in_a_row >= args.max_consecutive_rejects:
-                break
-            continue
-
-        sys.stderr.write(f"  ✓ candidate passes on {name}\n")
-
-        # Step 4 — regression suite
-        reg_out = args.out_root / f"regression_v{K+1}"
-        reg = run_regression(candidate_dir, reg_out, args.model, api_key,
-                              parallel=args.regression_parallel)
-        cand_pass = reg.get("pass_count", -1)
-        cand_total = reg.get("suite_size", -1)
-        sys.stderr.write(f"  regression v{K+1} candidate: "
-                         f"{cand_pass}/{cand_total}\n")
-
+        # Bootstrap baseline regression ONCE per current vK (cached across
+        # all multi-pass candidates of this and future iters until adoption).
         baseline_pass = (last_regression or {}).get("pass_count")
         if baseline_pass is None:
-            # bootstrap: score the current_dir as baseline once
-            sys.stderr.write("  bootstrapping baseline regression for v"
-                             f"{K}\n")
+            sys.stderr.write(f"  bootstrapping baseline regression for v{K}\n")
             reg_baseline_out = args.out_root / f"regression_v{K}_baseline"
             last_regression = run_regression(current_dir, reg_baseline_out,
                                               args.model, api_key,
@@ -412,24 +373,83 @@ def main():
             sys.stderr.write(f"  baseline v{K} regression: "
                              f"{baseline_pass}/{last_regression.get('suite_size', -1)}\n")
 
-        if cand_pass < baseline_pass:
-            sys.stderr.write(f"  -> STRICT regression detected "
-                             f"({cand_pass} < {baseline_pass}), rejecting\n")
+        # Try N candidates at varying temperatures, keep the best.
+        TEMPS = [0.2, 0.6, 0.9][:args.candidates_per_iter]
+        candidates_summary = []
+        best = None  # tuple (cand_dir, cand_system_md, reg)
+        for ci, temp in enumerate(TEMPS):
+            tag = "abc"[ci]
+            candidate_dir = HISTORY_DIR / f"_candidate_v{K+1}_{tag}"
+            candidate_dir.mkdir(parents=True, exist_ok=True)
+            new_system = candidate_dir / "reverser_system.md"
+            sys.stderr.write(f"  [{tag}] critic temp={temp}\n")
+            ok = call_critic(
+                current_dir,
+                asm_file, name,
+                Path(bl.get("c_path", "/dev/null")),
+                live_error_class,
+                fresh_err or fail["error_message"],
+                new_system, api_key,
+                temperature=temp,
+            )
+            if not ok:
+                candidates_summary.append({"tag": tag, "result": "critic_empty"})
+                continue
+            shutil.copy(current_dir / "reverser_task.md",
+                        candidate_dir / "reverser_task.md")
+            shutil.copy(current_dir / "reverser_examples.md",
+                        candidate_dir / "reverser_examples.md")
+
+            # Re-test FAIL routine
+            cand_dir_out = args.out_root / f"candidate_v{K+1}_{tag}_{name}"
+            ct = translate_then_validate(mod, name, candidate_dir, cand_dir_out,
+                                           args.model, api_key)
+            if ct["status"] != "pass":
+                candidates_summary.append({
+                    "tag": tag, "result": f"target_fail_{ct['status']}"
+                })
+                continue
+            sys.stderr.write(f"  [{tag}] ✓ candidate passes on {name}\n")
+
+            # Regression suite
+            reg_out = args.out_root / f"regression_v{K+1}_{tag}"
+            reg = run_regression(candidate_dir, reg_out, args.model, api_key,
+                                  parallel=args.regression_parallel)
+            cand_pass = reg.get("pass_count", -1)
+            cand_total = reg.get("suite_size", -1)
+            sys.stderr.write(f"  [{tag}] regression: {cand_pass}/{cand_total}"
+                             f" (baseline {baseline_pass})\n")
+            candidates_summary.append({
+                "tag": tag, "result": "scored",
+                "cand_pass": cand_pass, "cand_total": cand_total,
+            })
+            if cand_pass < baseline_pass:
+                continue  # STRICT regression
+            if best is None or cand_pass > best["reg"]["pass_count"]:
+                best = {"dir": candidate_dir, "system_md": new_system,
+                        "reg": reg, "tag": tag, "temp": temp}
+
+        if best is None:
+            sys.stderr.write(f"  -> all {len(TEMPS)} candidates rejected\n")
             log_iteration({
-                "iter": it, "fail": fail, "verdict": "regression",
-                "baseline_pass": baseline_pass, "cand_pass": cand_pass,
-                "cand_total": cand_total,
+                "iter": it, "fail": fail, "verdict": "multipass_all_rejected",
+                "candidates": candidates_summary,
+                "baseline_pass": baseline_pass,
             })
             rejects_in_a_row += 1
             if rejects_in_a_row >= args.max_consecutive_rejects:
                 break
             continue
 
-        # Step 5 — adopt
+        # Adopt the best candidate
         new_version = f"v{K+1}"
-        mut_summary = f"fixed {mod}:{name} ({fail['error_class']})"
-        new_dir = adopt_candidate(new_system, current_dir, new_version,
-                                    mut_summary, reg, f"{mod}:{name}")
+        mut_summary = (f"fixed {mod}:{name} ({fail['error_class']}) "
+                       f"via tag={best['tag']} temp={best['temp']}")
+        new_dir = adopt_candidate(best["system_md"], current_dir, new_version,
+                                    mut_summary, best["reg"], f"{mod}:{name}")
+        reg = best["reg"]
+        cand_pass = reg["pass_count"]
+        cand_total = reg["suite_size"]
         sys.stderr.write(f"  ✓✓ ADOPTED {new_version}: {mut_summary}\n")
         log_iteration({
             "iter": it, "fail": fail, "verdict": "adopted",

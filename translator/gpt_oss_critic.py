@@ -75,14 +75,14 @@ the loop):
 
 
 def call_gpt_oss(messages: list[dict], api_base: str, api_key: str,
-                  max_output_tokens: int) -> str:
+                  max_output_tokens: int, temperature: float = 0.2) -> str:
     """POST to OpenAI-compatible /chat/completions and return the assistant
     message content. Returns empty string on extraction failure."""
     payload = {
         "model": CRITIC_MODEL,
         "messages": messages,
         "max_tokens": max_output_tokens,
-        "temperature": 0.2,
+        "temperature": temperature,
     }
     req = urllib.request.Request(
         f"{api_base.rstrip('/')}/chat/completions",
@@ -128,9 +128,16 @@ def propose_mutation(
     api_base: str,
     api_key: str,
     max_output_tokens: int = 16384,
+    temperature: float = 0.2,
+    examples_md: str = "",
+    task_md: str = "",
 ) -> str:
     """Call the critic. Return the new system prompt (or empty string on
     failure)."""
+    examples_section = (f"\n# Current few-shot examples (read-only context)\n\n"
+                         f"```markdown\n{examples_md}\n```\n") if examples_md else ""
+    task_section = (f"\n# Current per-task template (read-only context)\n\n"
+                    f"```markdown\n{task_md}\n```\n") if task_md else ""
     user_msg = f"""# Failed routine
 
 Name: `{routine_name}`
@@ -148,18 +155,18 @@ Failure class: `{error_class}`
 {generated_c}
 ```
 
-# Failure evidence
+# Failure evidence (verbatim — focus on the FIRST `error:` line)
 
 ```
 {error_message}
 ```
 
-# Current system prompt (in use NOW — produces ~23% PASS)
+# Current system prompt (in use NOW)
 
 ```markdown
 {current_system_md}
 ```
-
+{examples_section}{task_section}
 # Your output
 
 Produce the NEW full system prompt that would have helped this routine
@@ -169,7 +176,8 @@ succeed. Output markdown only, no preamble.
         {"role": "system", "content": CRITIC_SYSTEM_PROMPT},
         {"role": "user", "content": user_msg},
     ]
-    return call_gpt_oss(messages, api_base, api_key, max_output_tokens)
+    return call_gpt_oss(messages, api_base, api_key, max_output_tokens,
+                          temperature=temperature)
 
 
 def main():
@@ -186,6 +194,9 @@ def main():
     ap.add_argument("--api-base", default=DEFAULT_API_BASE)
     ap.add_argument("--api-key", default=None)
     ap.add_argument("--max-output-tokens", type=int, default=16384)
+    ap.add_argument("--temperature", type=float, default=0.2)
+    ap.add_argument("--examples-md", type=Path, default=None)
+    ap.add_argument("--task-md", type=Path, default=None)
     ap.add_argument("--asm-window", type=int, default=200,
                     help="how many lines of asm context around the routine to send")
     args = ap.parse_args()
@@ -210,10 +221,15 @@ def main():
 
     generated_c = args.generated_c.read_text() if args.generated_c.exists() else "(empty)"
 
+    examples_md = args.examples_md.read_text() if args.examples_md and args.examples_md.exists() else ""
+    task_md = args.task_md.read_text() if args.task_md and args.task_md.exists() else ""
+
     new_prompt = propose_mutation(
         current_system_md, asm_excerpt, args.routine_name,
         generated_c, args.error_class, args.error_message,
         args.api_base, api_key, args.max_output_tokens,
+        temperature=args.temperature,
+        examples_md=examples_md, task_md=task_md,
     )
 
     if not new_prompt.strip():
