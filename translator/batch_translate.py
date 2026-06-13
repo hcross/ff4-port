@@ -73,7 +73,7 @@ def _bridge(*args: str, cwd: Path = ROOT) -> str:
     """Invoke the ca65-bridge CLI installed in its local venv."""
     bridge_bin = ROOT / "ca65-bridge" / ".venv" / "bin" / "ca65-bridge"
     cmd = [str(bridge_bin), "--root", str(UPSTREAM)] + list(args)
-    res = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+    res = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd, timeout=30)
     if res.returncode != 0:
         raise RuntimeError(f"ca65-bridge {args} failed:\n{res.stderr}")
     return res.stdout
@@ -327,28 +327,37 @@ def main(argv: list[str] | None = None) -> int:
     n_delegate_done = 0
     log_fp = log_path.open("a")
 
+    _trace_idx = 0
     for r in routines:
+        _trace_idx += 1
+        sys.stderr.write(f"[trace] {_trace_idx}/{len(routines)} {r.name} decision={r.decision} (filter)\n")
+        sys.stderr.flush()
         if args.only_translate and r.decision != "translate":
             continue
         if args.only_delegate and r.decision != "delegate":
             continue
         if (args.exclude_indexed_store and r.decision == "translate"
                 and asm_has_indexed_store(r.name)):
+            sys.stderr.write(f"[trace]   skip indexed_store\n"); sys.stderr.flush()
             continue
         # Skip parser artefact labels with no asm body.
         if args.min_instr_count > 0:
             try:
                 rh = hydrate(r)
             except Exception:
+                sys.stderr.write(f"[trace]   hydrate1 exception\n"); sys.stderr.flush()
                 continue
             if rh.instr_count < args.min_instr_count:
+                sys.stderr.write(f"[trace]   skip instr_count={rh.instr_count}\n"); sys.stderr.flush()
                 continue
             r = rh
         if n_processed >= args.max_functions:
             sys.stderr.write(f"[batch] reached --max-functions={args.max_functions}, stopping\n")
             break
 
+        sys.stderr.write(f"[trace]   hydrate2 BEFORE\n"); sys.stderr.flush()
         r = hydrate(r)
+        sys.stderr.write(f"[trace]   hydrate2 OK instr={r.instr_count} asm_len={len(r.asm_body)}\n"); sys.stderr.flush()
 
         record = {
             "name": r.name,
@@ -368,6 +377,7 @@ def main(argv: list[str] | None = None) -> int:
             n_delegate_done += 1
         else:
             user_prompt = build_user_prompt(r, "translate", prompts["task_template"])
+            sys.stderr.write(f"[trace]   translate START prompt_len={len(user_prompt)}\n"); sys.stderr.flush()
             code, stats = provider.translate(
                 system=prompts["system"],
                 examples=prompts["examples"],
@@ -376,6 +386,7 @@ def main(argv: list[str] | None = None) -> int:
                 max_output_tokens=args.max_output_tokens,
                 dry_run=args.dry_run,
             )
+            sys.stderr.write(f"[trace]   translate END code_len={len(code) if code else 0} cost={stats.cost_usd}\n"); sys.stderr.flush()
             total_cost += stats.cost_usd
             record["status"] = "dry_run" if args.dry_run else ("translated" if code else "no_code_extracted")
             record["provider"] = stats.provider

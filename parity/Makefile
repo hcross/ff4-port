@@ -5,7 +5,7 @@ LAKESNES := ../LakeSnes
 ROM       := ../upstream/rom/ff4-jp1.sfc
 
 CC       := clang
-CFLAGS   := -O2 -Wall -Wextra -std=c11 -I$(LAKESNES)/snes -I$(LAKESNES)/zip
+CFLAGS   := -O2 -Wall -Wextra -std=c11 -I$(LAKESNES) -I$(LAKESNES)/snes -I$(LAKESNES)/zip
 LDFLAGS  :=
 
 CORE_SRC := \
@@ -2199,3 +2199,2111 @@ ff4-spike-qwen3_after_retry-validateaitarget: src/spike_validateaitarget_qwen3_a
 # AUTO (qwen3_after_retry): spike for ValidateChar
 ff4-spike-qwen3_after_retry-validatechar: src/spike_validatechar_qwen3_after_retry.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_validatechar_qwen3_after_retry.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for CreditsStarsTileTbl
+ff4-spike-qwen3_cutscene-creditsstarstiletbl: src/spike_creditsstarstiletbl_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_creditsstarstiletbl_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for DoTextCmd
+ff4-spike-qwen3_cutscene-dotextcmd: src/spike_dotextcmd_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dotextcmd_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for DrawOtherPlanet
+ff4-spike-qwen3_cutscene-drawotherplanet: src/spike_drawotherplanet_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawotherplanet_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for EndCredits
+ff4-spike-qwen3_cutscene-endcredits: src/spike_endcredits_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for FadeIn
+ff4-spike-qwen3_cutscene-fadein: src/spike_fadein_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadein_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for FadeOut
+ff4-spike-qwen3_cutscene-fadeout: src/spike_fadeout_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeout_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for GetEarthSpritePos
+ff4-spike-qwen3_cutscene-getearthspritepos: src/spike_getearthspritepos_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for GetMoonTile
+ff4-spike-qwen3_cutscene-getmoontile: src/spike_getmoontile_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getmoontile_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for GetOtherPlanetTile
+ff4-spike-qwen3_cutscene-getotherplanettile: src/spike_getotherplanettile_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for HDMATbl
+ff4-spike-qwen3_cutscene-hdmatbl: src/spike_hdmatbl_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_hdmatbl_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for InitStars
+ff4-spike-qwen3_cutscene-initstars: src/spike_initstars_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for LoadCreditsStarsGfx
+ff4-spike-qwen3_cutscene-loadcreditsstarsgfx: src/spike_loadcreditsstarsgfx_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadcreditsstarsgfx_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for LoadTheEndGfx
+ff4-spike-qwen3_cutscene-loadtheendgfx: src/spike_loadtheendgfx_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadtheendgfx_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for MoonTileTbl
+ff4-spike-qwen3_cutscene-moontiletbl: src/spike_moontiletbl_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_moontiletbl_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for Mult16_1
+ff4-spike-qwen3_cutscene-mult16_1: src/spike_mult16_1_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult16_1_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for NewLine
+ff4-spike-qwen3_cutscene-newline: src/spike_newline_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for SolarSystem2
+ff4-spike-qwen3_cutscene-solarsystem2: src/spike_solarsystem2_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_solarsystem2_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for UpdateMoon1
+ff4-spike-qwen3_cutscene-updatemoon1: src/spike_updatemoon1_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemoon1_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for UpdateMoon2
+ff4-spike-qwen3_cutscene-updatemoon2: src/spike_updatemoon2_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemoon2_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for UpdateSun
+ff4-spike-qwen3_cutscene-updatesun: src/spike_updatesun_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatesun_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for WaitVBlank
+ff4-spike-qwen3_cutscene-waitvblank: src/spike_waitvblank_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblank_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13d87f
+ff4-spike-qwen3_cutscene-_13d87f: src/spike__13d87f_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d87f_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13d89a
+ff4-spike-qwen3_cutscene-_13d89a: src/spike__13d89a_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d89a_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13d92d
+ff4-spike-qwen3_cutscene-_13d92d: src/spike__13d92d_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d92d_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13d977
+ff4-spike-qwen3_cutscene-_13d977: src/spike__13d977_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d977_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13db10
+ff4-spike-qwen3_cutscene-_13db10: src/spike__13db10_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13db10_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13db23
+ff4-spike-qwen3_cutscene-_13db23: src/spike__13db23_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13db23_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13ddd6
+ff4-spike-qwen3_cutscene-_13ddd6: src/spike__13ddd6_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ddd6_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13df4d
+ff4-spike-qwen3_cutscene-_13df4d: src/spike__13df4d_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13df4d_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13e058
+ff4-spike-qwen3_cutscene-_13e058: src/spike__13e058_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e058_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13e07d
+ff4-spike-qwen3_cutscene-_13e07d: src/spike__13e07d_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e07d_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13e4f2
+ff4-spike-qwen3_cutscene-_13e4f2: src/spike__13e4f2_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e4f2_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13e565
+ff4-spike-qwen3_cutscene-_13e565: src/spike__13e565_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e565_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13e578
+ff4-spike-qwen3_cutscene-_13e578: src/spike__13e578_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e578_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13e58b
+ff4-spike-qwen3_cutscene-_13e58b: src/spike__13e58b_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e58b_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13eb60
+ff4-spike-qwen3_cutscene-_13eb60: src/spike__13eb60_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13eb60_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13ebb8
+ff4-spike-qwen3_cutscene-_13ebb8: src/spike__13ebb8_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ebb8_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13ec24
+ff4-spike-qwen3_cutscene-_13ec24: src/spike__13ec24_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ec24_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene): spike for _13ef4c
+ff4-spike-qwen3_cutscene-_13ef4c: src/spike__13ef4c_qwen3_cutscene.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ef4c_qwen3_cutscene.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for CreditsStarsTileTbl
+ff4-spike-qwen3_cutscene_v2-creditsstarstiletbl: src/spike_creditsstarstiletbl_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_creditsstarstiletbl_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for DoTextCmd
+ff4-spike-qwen3_cutscene_v2-dotextcmd: src/spike_dotextcmd_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dotextcmd_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for DrawOtherPlanet
+ff4-spike-qwen3_cutscene_v2-drawotherplanet: src/spike_drawotherplanet_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawotherplanet_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for EndCredits
+ff4-spike-qwen3_cutscene_v2-endcredits: src/spike_endcredits_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for FadeIn
+ff4-spike-qwen3_cutscene_v2-fadein: src/spike_fadein_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadein_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for FadeOut
+ff4-spike-qwen3_cutscene_v2-fadeout: src/spike_fadeout_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeout_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for GetEarthSpritePos
+ff4-spike-qwen3_cutscene_v2-getearthspritepos: src/spike_getearthspritepos_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for GetMoonTile
+ff4-spike-qwen3_cutscene_v2-getmoontile: src/spike_getmoontile_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getmoontile_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for GetOtherPlanetTile
+ff4-spike-qwen3_cutscene_v2-getotherplanettile: src/spike_getotherplanettile_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for HDMATbl
+ff4-spike-qwen3_cutscene_v2-hdmatbl: src/spike_hdmatbl_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_hdmatbl_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for InitStars
+ff4-spike-qwen3_cutscene_v2-initstars: src/spike_initstars_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for LoadCreditsStarsGfx
+ff4-spike-qwen3_cutscene_v2-loadcreditsstarsgfx: src/spike_loadcreditsstarsgfx_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadcreditsstarsgfx_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for LoadTheEndGfx
+ff4-spike-qwen3_cutscene_v2-loadtheendgfx: src/spike_loadtheendgfx_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadtheendgfx_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for MoonTileTbl
+ff4-spike-qwen3_cutscene_v2-moontiletbl: src/spike_moontiletbl_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_moontiletbl_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for Mult16_1
+ff4-spike-qwen3_cutscene_v2-mult16_1: src/spike_mult16_1_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult16_1_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for NewLine
+ff4-spike-qwen3_cutscene_v2-newline: src/spike_newline_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for SolarSystem2
+ff4-spike-qwen3_cutscene_v2-solarsystem2: src/spike_solarsystem2_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_solarsystem2_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for UpdateMoon1
+ff4-spike-qwen3_cutscene_v2-updatemoon1: src/spike_updatemoon1_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemoon1_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for UpdateMoon2
+ff4-spike-qwen3_cutscene_v2-updatemoon2: src/spike_updatemoon2_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemoon2_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for UpdateSun
+ff4-spike-qwen3_cutscene_v2-updatesun: src/spike_updatesun_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatesun_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for WaitVBlank
+ff4-spike-qwen3_cutscene_v2-waitvblank: src/spike_waitvblank_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblank_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13d87f
+ff4-spike-qwen3_cutscene_v2-_13d87f: src/spike__13d87f_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d87f_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13d89a
+ff4-spike-qwen3_cutscene_v2-_13d89a: src/spike__13d89a_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d89a_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13d92d
+ff4-spike-qwen3_cutscene_v2-_13d92d: src/spike__13d92d_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d92d_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13d977
+ff4-spike-qwen3_cutscene_v2-_13d977: src/spike__13d977_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d977_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13db10
+ff4-spike-qwen3_cutscene_v2-_13db10: src/spike__13db10_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13db10_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13db23
+ff4-spike-qwen3_cutscene_v2-_13db23: src/spike__13db23_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13db23_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13ddd6
+ff4-spike-qwen3_cutscene_v2-_13ddd6: src/spike__13ddd6_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ddd6_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13df4d
+ff4-spike-qwen3_cutscene_v2-_13df4d: src/spike__13df4d_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13df4d_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13e058
+ff4-spike-qwen3_cutscene_v2-_13e058: src/spike__13e058_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e058_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13e07d
+ff4-spike-qwen3_cutscene_v2-_13e07d: src/spike__13e07d_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e07d_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13e4f2
+ff4-spike-qwen3_cutscene_v2-_13e4f2: src/spike__13e4f2_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e4f2_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13e565
+ff4-spike-qwen3_cutscene_v2-_13e565: src/spike__13e565_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e565_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13e578
+ff4-spike-qwen3_cutscene_v2-_13e578: src/spike__13e578_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e578_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13e58b
+ff4-spike-qwen3_cutscene_v2-_13e58b: src/spike__13e58b_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e58b_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13eb60
+ff4-spike-qwen3_cutscene_v2-_13eb60: src/spike__13eb60_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13eb60_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13ebb8
+ff4-spike-qwen3_cutscene_v2-_13ebb8: src/spike__13ebb8_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ebb8_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13ec24
+ff4-spike-qwen3_cutscene_v2-_13ec24: src/spike__13ec24_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ec24_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v2): spike for _13ef4c
+ff4-spike-qwen3_cutscene_v2-_13ef4c: src/spike__13ef4c_qwen3_cutscene_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ef4c_qwen3_cutscene_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for CreditsStarsTileTbl
+ff4-spike-qwen3_cutscene_v3-creditsstarstiletbl: src/spike_creditsstarstiletbl_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_creditsstarstiletbl_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for DoTextCmd
+ff4-spike-qwen3_cutscene_v3-dotextcmd: src/spike_dotextcmd_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dotextcmd_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for DrawOtherPlanet
+ff4-spike-qwen3_cutscene_v3-drawotherplanet: src/spike_drawotherplanet_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawotherplanet_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for EndCredits
+ff4-spike-qwen3_cutscene_v3-endcredits: src/spike_endcredits_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for FadeIn
+ff4-spike-qwen3_cutscene_v3-fadein: src/spike_fadein_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadein_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for FadeOut
+ff4-spike-qwen3_cutscene_v3-fadeout: src/spike_fadeout_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeout_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for GetEarthSpritePos
+ff4-spike-qwen3_cutscene_v3-getearthspritepos: src/spike_getearthspritepos_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for GetMoonTile
+ff4-spike-qwen3_cutscene_v3-getmoontile: src/spike_getmoontile_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getmoontile_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for GetOtherPlanetTile
+ff4-spike-qwen3_cutscene_v3-getotherplanettile: src/spike_getotherplanettile_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for HDMATbl
+ff4-spike-qwen3_cutscene_v3-hdmatbl: src/spike_hdmatbl_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_hdmatbl_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for InitStars
+ff4-spike-qwen3_cutscene_v3-initstars: src/spike_initstars_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for LoadCreditsStarsGfx
+ff4-spike-qwen3_cutscene_v3-loadcreditsstarsgfx: src/spike_loadcreditsstarsgfx_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadcreditsstarsgfx_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for LoadTheEndGfx
+ff4-spike-qwen3_cutscene_v3-loadtheendgfx: src/spike_loadtheendgfx_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadtheendgfx_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for MoonTileTbl
+ff4-spike-qwen3_cutscene_v3-moontiletbl: src/spike_moontiletbl_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_moontiletbl_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for Mult16_1
+ff4-spike-qwen3_cutscene_v3-mult16_1: src/spike_mult16_1_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult16_1_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for NewLine
+ff4-spike-qwen3_cutscene_v3-newline: src/spike_newline_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for SolarSystem2
+ff4-spike-qwen3_cutscene_v3-solarsystem2: src/spike_solarsystem2_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_solarsystem2_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for UpdateMoon1
+ff4-spike-qwen3_cutscene_v3-updatemoon1: src/spike_updatemoon1_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemoon1_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for UpdateMoon2
+ff4-spike-qwen3_cutscene_v3-updatemoon2: src/spike_updatemoon2_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemoon2_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for UpdateSun
+ff4-spike-qwen3_cutscene_v3-updatesun: src/spike_updatesun_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatesun_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for WaitVBlank
+ff4-spike-qwen3_cutscene_v3-waitvblank: src/spike_waitvblank_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblank_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13d87f
+ff4-spike-qwen3_cutscene_v3-_13d87f: src/spike__13d87f_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d87f_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13d89a
+ff4-spike-qwen3_cutscene_v3-_13d89a: src/spike__13d89a_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d89a_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13d92d
+ff4-spike-qwen3_cutscene_v3-_13d92d: src/spike__13d92d_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d92d_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13d977
+ff4-spike-qwen3_cutscene_v3-_13d977: src/spike__13d977_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13d977_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13db10
+ff4-spike-qwen3_cutscene_v3-_13db10: src/spike__13db10_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13db10_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13db23
+ff4-spike-qwen3_cutscene_v3-_13db23: src/spike__13db23_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13db23_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13ddd6
+ff4-spike-qwen3_cutscene_v3-_13ddd6: src/spike__13ddd6_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ddd6_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13df4d
+ff4-spike-qwen3_cutscene_v3-_13df4d: src/spike__13df4d_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13df4d_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13e058
+ff4-spike-qwen3_cutscene_v3-_13e058: src/spike__13e058_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e058_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13e07d
+ff4-spike-qwen3_cutscene_v3-_13e07d: src/spike__13e07d_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e07d_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13e4f2
+ff4-spike-qwen3_cutscene_v3-_13e4f2: src/spike__13e4f2_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e4f2_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13e565
+ff4-spike-qwen3_cutscene_v3-_13e565: src/spike__13e565_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e565_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13e578
+ff4-spike-qwen3_cutscene_v3-_13e578: src/spike__13e578_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e578_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13e58b
+ff4-spike-qwen3_cutscene_v3-_13e58b: src/spike__13e58b_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13e58b_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13eb60
+ff4-spike-qwen3_cutscene_v3-_13eb60: src/spike__13eb60_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13eb60_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13ebb8
+ff4-spike-qwen3_cutscene_v3-_13ebb8: src/spike__13ebb8_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ebb8_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13ec24
+ff4-spike-qwen3_cutscene_v3-_13ec24: src/spike__13ec24_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ec24_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_cutscene_v3): spike for _13ef4c
+ff4-spike-qwen3_cutscene_v3-_13ef4c: src/spike__13ef4c_qwen3_cutscene_v3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ef4c_qwen3_cutscene_v3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_sound): spike for ExecInterrupt
+ff4-spike-qwen3_sound-execinterrupt: src/spike_execinterrupt_qwen3_sound.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execinterrupt_qwen3_sound.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_sound): spike for ExecSound_ext
+ff4-spike-qwen3_sound-execsound_ext: src/spike_execsound_ext_qwen3_sound.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execsound_ext_qwen3_sound.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_sound): spike for InitSound_ext
+ff4-spike-qwen3_sound-initsound_ext: src/spike_initsound_ext_qwen3_sound.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initsound_ext_qwen3_sound.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_sound): spike for PlayGameSfx
+ff4-spike-qwen3_sound-playgamesfx: src/spike_playgamesfx_qwen3_sound.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_qwen3_sound.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (qwen3_sound): spike for PlaySystemSfx
+ff4-spike-qwen3_sound-playsystemsfx: src/spike_playsystemsfx_qwen3_sound.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_qwen3_sound.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for AfterBattle
+ff4-spike-gemma4_field-afterbattle: src/spike_afterbattle_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for AfterCutscene
+ff4-spike-gemma4_field-aftercutscene: src/spike_aftercutscene_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aftercutscene_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for BoardBkChoco
+ff4-spike-gemma4_field-boardbkchoco: src/spike_boardbkchoco_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardbkchoco_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for BoardChoco
+ff4-spike-gemma4_field-boardchoco: src/spike_boardchoco_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for BoardShip
+ff4-spike-gemma4_field-boardship: src/spike_boardship_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardship_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for BoardWhale
+ff4-spike-gemma4_field-boardwhale: src/spike_boardwhale_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardwhale_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for CheckNPCBlock
+ff4-spike-gemma4_field-checknpcblock: src/spike_checknpcblock_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcblock_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for CheckNPCMap2
+ff4-spike-gemma4_field-checknpcmap2: src/spike_checknpcmap2_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcmap2_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for CheckNPCSwitch
+ff4-spike-gemma4_field-checknpcswitch: src/spike_checknpcswitch_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcswitch_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for CheckTilePass
+ff4-spike-gemma4_field-checktilepass: src/spike_checktilepass_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktilepass_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ChocoSpriteTbl
+ff4-spike-gemma4_field-chocospritetbl: src/spike_chocospritetbl_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_chocospritetbl_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ChooseRandBattle
+ff4-spike-gemma4_field-chooserandbattle: src/spike_chooserandbattle_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_chooserandbattle_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ClearPlayerNPCMap
+ff4-spike-gemma4_field-clearplayernpcmap: src/spike_clearplayernpcmap_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearplayernpcmap_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ClearPrologueVRAM
+ff4-spike-gemma4_field-clearprologuevram: src/spike_clearprologuevram_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearprologuevram_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for CloseDlgWindow
+ff4-spike-gemma4_field-closedlgwindow: src/spike_closedlgwindow_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closedlgwindow_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for CloseYesNoWindow
+ff4-spike-gemma4_field-closeyesnowindow: src/spike_closeyesnowindow_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for DecBrightness
+ff4-spike-gemma4_field-decbrightness: src/spike_decbrightness_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_decbrightness_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for DlgTilesBtm
+ff4-spike-gemma4_field-dlgtilesbtm: src/spike_dlgtilesbtm_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dlgtilesbtm_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for DlgTilesMid
+ff4-spike-gemma4_field-dlgtilesmid: src/spike_dlgtilesmid_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dlgtilesmid_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for DlgTilesTop
+ff4-spike-gemma4_field-dlgtilestop: src/spike_dlgtilestop_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dlgtilestop_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for DrawItemCursor
+ff4-spike-gemma4_field-drawitemcursor: src/spike_drawitemcursor_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawitemcursor_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EnterWhale
+ff4-spike-gemma4_field-enterwhale: src/spike_enterwhale_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_enterwhale_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_d0
+ff4-spike-gemma4_field-eventcmd_d0: src/spike_eventcmd_d0_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d0_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_d1
+ff4-spike-gemma4_field-eventcmd_d1: src/spike_eventcmd_d1_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d1_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_d2
+ff4-spike-gemma4_field-eventcmd_d2: src/spike_eventcmd_d2_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d2_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_d7
+ff4-spike-gemma4_field-eventcmd_d7: src/spike_eventcmd_d7_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d7_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_d8
+ff4-spike-gemma4_field-eventcmd_d8: src/spike_eventcmd_d8_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d8_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_dd
+ff4-spike-gemma4_field-eventcmd_dd: src/spike_eventcmd_dd_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_dd_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_e0
+ff4-spike-gemma4_field-eventcmd_e0: src/spike_eventcmd_e0_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_e0_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_e6
+ff4-spike-gemma4_field-eventcmd_e6: src/spike_eventcmd_e6_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_e6_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_ea
+ff4-spike-gemma4_field-eventcmd_ea: src/spike_eventcmd_ea_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_ea_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for EventCmd_f9
+ff4-spike-gemma4_field-eventcmd_f9: src/spike_eventcmd_f9_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_f9_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ExecDMA
+ff4-spike-gemma4_field-execdma: src/spike_execdma_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execdma_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ExplosionPosTbl
+ff4-spike-gemma4_field-explosionpostbl: src/spike_explosionpostbl_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_explosionpostbl_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for FadeInSong
+ff4-spike-gemma4_field-fadeinsong: src/spike_fadeinsong_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeinsong_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for FadeOutSongFast
+ff4-spike-gemma4_field-fadeoutsongfast: src/spike_fadeoutsongfast_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeoutsongfast_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for FadeOutSongSlow
+ff4-spike-gemma4_field-fadeoutsongslow: src/spike_fadeoutsongslow_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeoutsongslow_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for FieldMain
+ff4-spike-gemma4_field-fieldmain: src/spike_fieldmain_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fieldmain_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for FindEventTerminator
+ff4-spike-gemma4_field-findeventterminator: src/spike_findeventterminator_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_findeventterminator_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetBattleBG
+ff4-spike-gemma4_field-getbattlebg: src/spike_getbattlebg_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbattlebg_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetCurrGil
+ff4-spike-gemma4_field-getcurrgil: src/spike_getcurrgil_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getcurrgil_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetDlgID
+ff4-spike-gemma4_field-getdlgid: src/spike_getdlgid_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgid_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetDlgPtr0
+ff4-spike-gemma4_field-getdlgptr0: src/spike_getdlgptr0_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr0_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetDlgPtr1H
+ff4-spike-gemma4_field-getdlgptr1h: src/spike_getdlgptr1h_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetDlgPtr1L
+ff4-spike-gemma4_field-getdlgptr1l: src/spike_getdlgptr1l_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1l_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetDlgPtr2
+ff4-spike-gemma4_field-getdlgptr2: src/spike_getdlgptr2_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr2_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetDoorTiles
+ff4-spike-gemma4_field-getdoortiles: src/spike_getdoortiles_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdoortiles_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetEventSwitchOffset
+ff4-spike-gemma4_field-geteventswitchoffset: src/spike_geteventswitchoffset_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_geteventswitchoffset_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetNPCMapPtr
+ff4-spike-gemma4_field-getnpcmapptr: src/spike_getnpcmapptr_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcmapptr_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetNPCPtr
+ff4-spike-gemma4_field-getnpcptr: src/spike_getnpcptr_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcptr_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetNPCScriptByte
+ff4-spike-gemma4_field-getnpcscriptbyte: src/spike_getnpcscriptbyte_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcscriptbyte_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetNextByte
+ff4-spike-gemma4_field-getnextbyte: src/spike_getnextbyte_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnextbyte_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetNextEventByte
+ff4-spike-gemma4_field-getnexteventbyte: src/spike_getnexteventbyte_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnexteventbyte_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetTileProp
+ff4-spike-gemma4_field-gettileprop: src/spike_gettileprop_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettileprop_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetTopCharPtr
+ff4-spike-gemma4_field-gettopcharptr: src/spike_gettopcharptr_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettopcharptr_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetTreasurePtr
+ff4-spike-gemma4_field-gettreasureptr: src/spike_gettreasureptr_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettreasureptr_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GetTreasureTiles
+ff4-spike-gemma4_field-gettreasuretiles: src/spike_gettreasuretiles_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettreasuretiles_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GilWindowTiles1
+ff4-spike-gemma4_field-gilwindowtiles1: src/spike_gilwindowtiles1_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gilwindowtiles1_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GilWindowTiles3
+ff4-spike-gemma4_field-gilwindowtiles3: src/spike_gilwindowtiles3_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gilwindowtiles3_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GilWindowTiles4
+ff4-spike-gemma4_field-gilwindowtiles4: src/spike_gilwindowtiles4_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gilwindowtiles4_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for GiveGil
+ff4-spike-gemma4_field-givegil: src/spike_givegil_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_givegil_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for HideMapTitle
+ff4-spike-gemma4_field-hidemaptitle: src/spike_hidemaptitle_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_hidemaptitle_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for IncBrightness
+ff4-spike-gemma4_field-incbrightness: src/spike_incbrightness_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_incbrightness_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for IncZoomMult
+ff4-spike-gemma4_field-inczoommult: src/spike_inczoommult_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_inczoommult_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for InitDMA
+ff4-spike-gemma4_field-initdma: src/spike_initdma_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initdma_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for InitDlgIRQ
+ff4-spike-gemma4_field-initdlgirq: src/spike_initdlgirq_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initdlgirq_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for InitInterrupts
+ff4-spike-gemma4_field-initinterrupts: src/spike_initinterrupts_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initinterrupts_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for InitItemWindowIRQ
+ff4-spike-gemma4_field-inititemwindowirq: src/spike_inititemwindowirq_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_inititemwindowirq_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for InitMapRAM
+ff4-spike-gemma4_field-initmapram: src/spike_initmapram_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initmapram_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LandBkChoco
+ff4-spike-gemma4_field-landbkchoco: src/spike_landbkchoco_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_landbkchoco_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LandHover
+ff4-spike-gemma4_field-landhover: src/spike_landhover_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_landhover_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LavaAnimPal
+ff4-spike-gemma4_field-lavaanimpal: src/spike_lavaanimpal_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_lavaanimpal_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LiftoffBkChoco
+ff4-spike-gemma4_field-liftoffbkchoco: src/spike_liftoffbkchoco_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_liftoffbkchoco_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LiftoffEnterprise
+ff4-spike-gemma4_field-liftoffenterprise: src/spike_liftoffenterprise_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_liftoffenterprise_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LiftoffFalcon
+ff4-spike-gemma4_field-liftofffalcon: src/spike_liftofffalcon_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_liftofffalcon_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LiftoffWhale
+ff4-spike-gemma4_field-liftoffwhale: src/spike_liftoffwhale_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_liftoffwhale_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LoadNPCGfx
+ff4-spike-gemma4_field-loadnpcgfx: src/spike_loadnpcgfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadnpcgfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LoadOverworldIntro
+ff4-spike-gemma4_field-loadoverworldintro: src/spike_loadoverworldintro_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadoverworldintro_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LoadPlayerGfx
+ff4-spike-gemma4_field-loadplayergfx: src/spike_loadplayergfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadplayergfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LoadSpriteGfx
+ff4-spike-gemma4_field-loadspritegfx: src/spike_loadspritegfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadspritegfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for LoadTitleGfx
+ff4-spike-gemma4_field-loadtitlegfx: src/spike_loadtitlegfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadtitlegfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for MapGfxBankTbl
+ff4-spike-gemma4_field-mapgfxbanktbl: src/spike_mapgfxbanktbl_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for MapTitleTilesBtm
+ff4-spike-gemma4_field-maptitletilesbtm: src/spike_maptitletilesbtm_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_maptitletilesbtm_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for MapTitleTilesTop
+ff4-spike-gemma4_field-maptitletilestop: src/spike_maptitletilestop_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_maptitletilestop_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for MoveCursor
+ff4-spike-gemma4_field-movecursor: src/spike_movecursor_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_movecursor_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for NextChar
+ff4-spike-gemma4_field-nextchar: src/spike_nextchar_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_nextchar_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for PlayCursorSfx
+ff4-spike-gemma4_field-playcursorsfx: src/spike_playcursorsfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playcursorsfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for PlayMapSong
+ff4-spike-gemma4_field-playmapsong: src/spike_playmapsong_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playmapsong_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for PlaySongEvent
+ff4-spike-gemma4_field-playsongevent: src/spike_playsongevent_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsongevent_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for PlayerSpritePosTbl
+ff4-spike-gemma4_field-playerspritepostbl: src/spike_playerspritepostbl_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playerspritepostbl_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for PrologueSpriteTbl
+ff4-spike-gemma4_field-prologuespritetbl: src/spike_prologuespritetbl_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_prologuespritetbl_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ReloadNPCs
+ff4-spike-gemma4_field-reloadnpcs: src/spike_reloadnpcs_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_reloadnpcs_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for RotateWord
+ff4-spike-gemma4_field-rotateword: src/spike_rotateword_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_rotateword_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ScrollItemListDown
+ff4-spike-gemma4_field-scrollitemlistdown: src/spike_scrollitemlistdown_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_scrollitemlistdown_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ScrollItemListUp
+ff4-spike-gemma4_field-scrollitemlistup: src/spike_scrollitemlistup_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_scrollitemlistup_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for SetCurrGil
+ff4-spike-gemma4_field-setcurrgil: src/spike_setcurrgil_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_setcurrgil_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_02
+ff4-spike-gemma4_field-special_02: src/spike_special_02_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_02_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_06
+ff4-spike-gemma4_field-special_06: src/spike_special_06_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_0a
+ff4-spike-gemma4_field-special_0a: src/spike_special_0a_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_0a_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_0b
+ff4-spike-gemma4_field-special_0b: src/spike_special_0b_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_0b_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_0d
+ff4-spike-gemma4_field-special_0d: src/spike_special_0d_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_0d_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_12
+ff4-spike-gemma4_field-special_12: src/spike_special_12_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_12_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_13
+ff4-spike-gemma4_field-special_13: src/spike_special_13_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_13_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_15
+ff4-spike-gemma4_field-special_15: src/spike_special_15_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_15_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_19
+ff4-spike-gemma4_field-special_19: src/spike_special_19_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_19_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_1a
+ff4-spike-gemma4_field-special_1a: src/spike_special_1a_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1a_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_1b
+ff4-spike-gemma4_field-special_1b: src/spike_special_1b_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1b_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_1c
+ff4-spike-gemma4_field-special_1c: src/spike_special_1c_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1c_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_1d
+ff4-spike-gemma4_field-special_1d: src/spike_special_1d_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1d_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_1e
+ff4-spike-gemma4_field-special_1e: src/spike_special_1e_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1e_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_28
+ff4-spike-gemma4_field-special_28: src/spike_special_28_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_28_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_29
+ff4-spike-gemma4_field-special_29: src/spike_special_29_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_29_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_2d
+ff4-spike-gemma4_field-special_2d: src/spike_special_2d_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_2d_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_2e
+ff4-spike-gemma4_field-special_2e: src/spike_special_2e_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_2e_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_2f
+ff4-spike-gemma4_field-special_2f: src/spike_special_2f_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_2f_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_30
+ff4-spike-gemma4_field-special_30: src/spike_special_30_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_30_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_31
+ff4-spike-gemma4_field-special_31: src/spike_special_31_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_31_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Special_3a
+ff4-spike-gemma4_field-special_3a: src/spike_special_3a_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_3a_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrBG2Tilemap
+ff4-spike-gemma4_field-tfrbg2tilemap: src/spike_tfrbg2tilemap_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrbg2tilemap_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrBGAnimGfx
+ff4-spike-gemma4_field-tfrbganimgfx: src/spike_tfrbganimgfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrbganimgfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrBGGfx
+ff4-spike-gemma4_field-tfrbggfx: src/spike_tfrbggfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrbggfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrCaveWaterGfx
+ff4-spike-gemma4_field-tfrcavewatergfx: src/spike_tfrcavewatergfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrcavewatergfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrInvertPal
+ff4-spike-gemma4_field-tfrinvertpal: src/spike_tfrinvertpal_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrinvertpal_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrLavaGfx
+ff4-spike-gemma4_field-tfrlavagfx: src/spike_tfrlavagfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrlavagfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrTitleCrystalTiles
+ff4-spike-gemma4_field-tfrtitlecrystaltiles: src/spike_tfrtitlecrystaltiles_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrtitlecrystaltiles_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrVRAM
+ff4-spike-gemma4_field-tfrvram: src/spike_tfrvram_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrvram_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrWaterLavaGfx
+ff4-spike-gemma4_field-tfrwaterlavagfx: src/spike_tfrwaterlavagfx_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrwaterlavagfx_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TfrWaterTiles
+ff4-spike-gemma4_field-tfrwatertiles: src/spike_tfrwatertiles_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrwatertiles_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TitleCrystalVRAMTbl
+ff4-spike-gemma4_field-titlecrystalvramtbl: src/spike_titlecrystalvramtbl_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_titlecrystalvramtbl_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for TowerAnimBluePal
+ff4-spike-gemma4_field-toweranimbluepal: src/spike_toweranimbluepal_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_toweranimbluepal_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for UpdateBattleParams
+ff4-spike-gemma4_field-updatebattleparams: src/spike_updatebattleparams_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatebattleparams_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for UpdateMode7Regs
+ff4-spike-gemma4_field-updatemode7regs: src/spike_updatemode7regs_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemode7regs_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for UpdatePlayerSpeed
+ff4-spike-gemma4_field-updateplayerspeed: src/spike_updateplayerspeed_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updateplayerspeed_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for UpdateTopChar
+ff4-spike-gemma4_field-updatetopchar: src/spike_updatetopchar_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatetopchar_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for UpdateWhalePal
+ff4-spike-gemma4_field-updatewhalepal: src/spike_updatewhalepal_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for UpdateWipeIRQ
+ff4-spike-gemma4_field-updatewipeirq: src/spike_updatewipeirq_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewipeirq_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for UpdateWipeNMI
+ff4-spike-gemma4_field-updatewipenmi: src/spike_updatewipenmi_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewipenmi_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for ValidateTopChar
+ff4-spike-gemma4_field-validatetopchar: src/spike_validatetopchar_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_validatetopchar_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for Vectors
+ff4-spike-gemma4_field-vectors: src/spike_vectors_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_vectors_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for VehicleSpriteTbl
+ff4-spike-gemma4_field-vehiclespritetbl: src/spike_vehiclespritetbl_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_vehiclespritetbl_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WaitKeyDown
+ff4-spike-gemma4_field-waitkeydown: src/spike_waitkeydown_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitkeydown_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WaitKeyUp
+ff4-spike-gemma4_field-waitkeyup: src/spike_waitkeyup_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitkeyup_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WaitSpecial
+ff4-spike-gemma4_field-waitspecial: src/spike_waitspecial_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WaitVblankEvent
+ff4-spike-gemma4_field-waitvblankevent: src/spike_waitvblankevent_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblankevent_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WaitVblankLong
+ff4-spike-gemma4_field-waitvblanklong: src/spike_waitvblanklong_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblanklong_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WaitVblankShort
+ff4-spike-gemma4_field-waitvblankshort: src/spike_waitvblankshort_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblankshort_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WipeIn
+ff4-spike-gemma4_field-wipein: src/spike_wipein_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_wipein_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WipeOut
+ff4-spike-gemma4_field-wipeout: src/spike_wipeout_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_wipeout_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for WipeScanlineTbl
+ff4-spike-gemma4_field-wipescanlinetbl: src/spike_wipescanlinetbl_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_wipescanlinetbl_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00a51a
+ff4-spike-gemma4_field-_00a51a: src/spike__00a51a_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00a51a_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00a527
+ff4-spike-gemma4_field-_00a527: src/spike__00a527_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00a527_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00bdb0
+ff4-spike-gemma4_field-_00bdb0: src/spike__00bdb0_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00bdb0_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00bfe3
+ff4-spike-gemma4_field-_00bfe3: src/spike__00bfe3_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00bfe3_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00cb05
+ff4-spike-gemma4_field-_00cb05: src/spike__00cb05_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cb05_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00cb72
+ff4-spike-gemma4_field-_00cb72: src/spike__00cb72_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cb72_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00cc32
+ff4-spike-gemma4_field-_00cc32: src/spike__00cc32_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cc32_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00cec5
+ff4-spike-gemma4_field-_00cec5: src/spike__00cec5_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cec5_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00cf98
+ff4-spike-gemma4_field-_00cf98: src/spike__00cf98_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cf98_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00d95b
+ff4-spike-gemma4_field-_00d95b: src/spike__00d95b_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00d95b_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00da79
+ff4-spike-gemma4_field-_00da79: src/spike__00da79_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00da79_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00dd3a
+ff4-spike-gemma4_field-_00dd3a: src/spike__00dd3a_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00dd3a_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00de04
+ff4-spike-gemma4_field-_00de04: src/spike__00de04_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00de04_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00de1b
+ff4-spike-gemma4_field-_00de1b: src/spike__00de1b_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00de1b_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00de2a
+ff4-spike-gemma4_field-_00de2a: src/spike__00de2a_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00de2a_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00de43
+ff4-spike-gemma4_field-_00de43: src/spike__00de43_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00de43_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00df33
+ff4-spike-gemma4_field-_00df33: src/spike__00df33_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00df33_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00df43
+ff4-spike-gemma4_field-_00df43: src/spike__00df43_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00df43_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00df53
+ff4-spike-gemma4_field-_00df53: src/spike__00df53_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00df53_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00e9cf
+ff4-spike-gemma4_field-_00e9cf: src/spike__00e9cf_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00e9cf_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00ea14
+ff4-spike-gemma4_field-_00ea14: src/spike__00ea14_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00ea14_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00edf6
+ff4-spike-gemma4_field-_00edf6: src/spike__00edf6_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00edf6_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _00f922
+ff4-spike-gemma4_field-_00f922: src/spike__00f922_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00f922_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _14f380
+ff4-spike-gemma4_field-_14f380: src/spike__14f380_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__14f380_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _14f3a1
+ff4-spike-gemma4_field-_14f3a1: src/spike__14f3a1_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__14f3a1_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _14f58e
+ff4-spike-gemma4_field-_14f58e: src/spike__14f58e_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__14f58e_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _15b866
+ff4-spike-gemma4_field-_15b866: src/spike__15b866_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15b866_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _15b8c9
+ff4-spike-gemma4_field-_15b8c9: src/spike__15b8c9_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15b8c9_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _15bb6a
+ff4-spike-gemma4_field-_15bb6a: src/spike__15bb6a_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15bb6a_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _15c144
+ff4-spike-gemma4_field-_15c144: src/spike__15c144_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15c144_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for _15c23d
+ff4-spike-gemma4_field-_15c23d: src/spike__15c23d_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15c23d_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for fade_song_half
+ff4-spike-gemma4_field-fade_song_half: src/spike_fade_song_half_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fade_song_half_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field): spike for update_dlg_irq
+ff4-spike-gemma4_field-update_dlg_irq: src/spike_update_dlg_irq_gemma4_field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_update_dlg_irq_gemma4_field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for AfterBattle
+ff4-spike-gemma4_field_v2-afterbattle: src/spike_afterbattle_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for AfterCutscene
+ff4-spike-gemma4_field_v2-aftercutscene: src/spike_aftercutscene_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aftercutscene_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for BoardBkChoco
+ff4-spike-gemma4_field_v2-boardbkchoco: src/spike_boardbkchoco_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardbkchoco_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for BoardChoco
+ff4-spike-gemma4_field_v2-boardchoco: src/spike_boardchoco_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for BoardShip
+ff4-spike-gemma4_field_v2-boardship: src/spike_boardship_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardship_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for BoardWhale
+ff4-spike-gemma4_field_v2-boardwhale: src/spike_boardwhale_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardwhale_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for CheckNPCBlock
+ff4-spike-gemma4_field_v2-checknpcblock: src/spike_checknpcblock_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcblock_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for CheckNPCMap2
+ff4-spike-gemma4_field_v2-checknpcmap2: src/spike_checknpcmap2_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcmap2_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for CheckNPCSwitch
+ff4-spike-gemma4_field_v2-checknpcswitch: src/spike_checknpcswitch_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcswitch_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for CheckTilePass
+ff4-spike-gemma4_field_v2-checktilepass: src/spike_checktilepass_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktilepass_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ChocoSpriteTbl
+ff4-spike-gemma4_field_v2-chocospritetbl: src/spike_chocospritetbl_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_chocospritetbl_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ChooseRandBattle
+ff4-spike-gemma4_field_v2-chooserandbattle: src/spike_chooserandbattle_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_chooserandbattle_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ClearPlayerNPCMap
+ff4-spike-gemma4_field_v2-clearplayernpcmap: src/spike_clearplayernpcmap_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearplayernpcmap_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ClearPrologueVRAM
+ff4-spike-gemma4_field_v2-clearprologuevram: src/spike_clearprologuevram_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearprologuevram_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for CloseDlgWindow
+ff4-spike-gemma4_field_v2-closedlgwindow: src/spike_closedlgwindow_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closedlgwindow_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for CloseYesNoWindow
+ff4-spike-gemma4_field_v2-closeyesnowindow: src/spike_closeyesnowindow_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for DecBrightness
+ff4-spike-gemma4_field_v2-decbrightness: src/spike_decbrightness_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_decbrightness_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for DlgTilesMid
+ff4-spike-gemma4_field_v2-dlgtilesmid: src/spike_dlgtilesmid_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dlgtilesmid_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for DlgTilesTop
+ff4-spike-gemma4_field_v2-dlgtilestop: src/spike_dlgtilestop_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dlgtilestop_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for DrawItemCursor
+ff4-spike-gemma4_field_v2-drawitemcursor: src/spike_drawitemcursor_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawitemcursor_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EnterWhale
+ff4-spike-gemma4_field_v2-enterwhale: src/spike_enterwhale_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_enterwhale_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_d0
+ff4-spike-gemma4_field_v2-eventcmd_d0: src/spike_eventcmd_d0_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d0_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_d1
+ff4-spike-gemma4_field_v2-eventcmd_d1: src/spike_eventcmd_d1_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d1_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_d2
+ff4-spike-gemma4_field_v2-eventcmd_d2: src/spike_eventcmd_d2_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d2_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_d7
+ff4-spike-gemma4_field_v2-eventcmd_d7: src/spike_eventcmd_d7_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d7_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_d8
+ff4-spike-gemma4_field_v2-eventcmd_d8: src/spike_eventcmd_d8_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d8_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_dd
+ff4-spike-gemma4_field_v2-eventcmd_dd: src/spike_eventcmd_dd_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_dd_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_e0
+ff4-spike-gemma4_field_v2-eventcmd_e0: src/spike_eventcmd_e0_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_e0_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_e6
+ff4-spike-gemma4_field_v2-eventcmd_e6: src/spike_eventcmd_e6_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_e6_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_ea
+ff4-spike-gemma4_field_v2-eventcmd_ea: src/spike_eventcmd_ea_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_ea_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for EventCmd_f9
+ff4-spike-gemma4_field_v2-eventcmd_f9: src/spike_eventcmd_f9_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_f9_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ExecDMA
+ff4-spike-gemma4_field_v2-execdma: src/spike_execdma_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execdma_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ExplosionPosTbl
+ff4-spike-gemma4_field_v2-explosionpostbl: src/spike_explosionpostbl_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_explosionpostbl_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for FadeInSong
+ff4-spike-gemma4_field_v2-fadeinsong: src/spike_fadeinsong_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeinsong_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for FadeOutSongFast
+ff4-spike-gemma4_field_v2-fadeoutsongfast: src/spike_fadeoutsongfast_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeoutsongfast_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for FadeOutSongSlow
+ff4-spike-gemma4_field_v2-fadeoutsongslow: src/spike_fadeoutsongslow_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeoutsongslow_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for FieldMain
+ff4-spike-gemma4_field_v2-fieldmain: src/spike_fieldmain_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fieldmain_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for FindEventTerminator
+ff4-spike-gemma4_field_v2-findeventterminator: src/spike_findeventterminator_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_findeventterminator_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetBattleBG
+ff4-spike-gemma4_field_v2-getbattlebg: src/spike_getbattlebg_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbattlebg_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetCurrGil
+ff4-spike-gemma4_field_v2-getcurrgil: src/spike_getcurrgil_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getcurrgil_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetDlgID
+ff4-spike-gemma4_field_v2-getdlgid: src/spike_getdlgid_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgid_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetDlgPtr0
+ff4-spike-gemma4_field_v2-getdlgptr0: src/spike_getdlgptr0_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr0_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetDlgPtr1H
+ff4-spike-gemma4_field_v2-getdlgptr1h: src/spike_getdlgptr1h_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetDlgPtr1L
+ff4-spike-gemma4_field_v2-getdlgptr1l: src/spike_getdlgptr1l_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1l_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetDlgPtr2
+ff4-spike-gemma4_field_v2-getdlgptr2: src/spike_getdlgptr2_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr2_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetDoorTiles
+ff4-spike-gemma4_field_v2-getdoortiles: src/spike_getdoortiles_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdoortiles_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetEventSwitchOffset
+ff4-spike-gemma4_field_v2-geteventswitchoffset: src/spike_geteventswitchoffset_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_geteventswitchoffset_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetNPCMapPtr
+ff4-spike-gemma4_field_v2-getnpcmapptr: src/spike_getnpcmapptr_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcmapptr_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetNPCPtr
+ff4-spike-gemma4_field_v2-getnpcptr: src/spike_getnpcptr_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcptr_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetNPCScriptByte
+ff4-spike-gemma4_field_v2-getnpcscriptbyte: src/spike_getnpcscriptbyte_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcscriptbyte_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetNextByte
+ff4-spike-gemma4_field_v2-getnextbyte: src/spike_getnextbyte_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnextbyte_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetNextEventByte
+ff4-spike-gemma4_field_v2-getnexteventbyte: src/spike_getnexteventbyte_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnexteventbyte_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetTileProp
+ff4-spike-gemma4_field_v2-gettileprop: src/spike_gettileprop_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettileprop_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetTopCharPtr
+ff4-spike-gemma4_field_v2-gettopcharptr: src/spike_gettopcharptr_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettopcharptr_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetTreasurePtr
+ff4-spike-gemma4_field_v2-gettreasureptr: src/spike_gettreasureptr_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettreasureptr_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GetTreasureTiles
+ff4-spike-gemma4_field_v2-gettreasuretiles: src/spike_gettreasuretiles_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettreasuretiles_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GilWindowTiles1
+ff4-spike-gemma4_field_v2-gilwindowtiles1: src/spike_gilwindowtiles1_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gilwindowtiles1_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GilWindowTiles3
+ff4-spike-gemma4_field_v2-gilwindowtiles3: src/spike_gilwindowtiles3_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gilwindowtiles3_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GilWindowTiles4
+ff4-spike-gemma4_field_v2-gilwindowtiles4: src/spike_gilwindowtiles4_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gilwindowtiles4_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for GiveGil
+ff4-spike-gemma4_field_v2-givegil: src/spike_givegil_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_givegil_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for HideMapTitle
+ff4-spike-gemma4_field_v2-hidemaptitle: src/spike_hidemaptitle_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_hidemaptitle_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for IncBrightness
+ff4-spike-gemma4_field_v2-incbrightness: src/spike_incbrightness_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_incbrightness_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for IncZoomMult
+ff4-spike-gemma4_field_v2-inczoommult: src/spike_inczoommult_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_inczoommult_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for InitDMA
+ff4-spike-gemma4_field_v2-initdma: src/spike_initdma_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initdma_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for InitDlgIRQ
+ff4-spike-gemma4_field_v2-initdlgirq: src/spike_initdlgirq_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initdlgirq_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for InitInterrupts
+ff4-spike-gemma4_field_v2-initinterrupts: src/spike_initinterrupts_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initinterrupts_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for InitItemWindowIRQ
+ff4-spike-gemma4_field_v2-inititemwindowirq: src/spike_inititemwindowirq_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_inititemwindowirq_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for InitMapRAM
+ff4-spike-gemma4_field_v2-initmapram: src/spike_initmapram_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initmapram_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LandBkChoco
+ff4-spike-gemma4_field_v2-landbkchoco: src/spike_landbkchoco_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_landbkchoco_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LandHover
+ff4-spike-gemma4_field_v2-landhover: src/spike_landhover_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_landhover_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LavaAnimPal
+ff4-spike-gemma4_field_v2-lavaanimpal: src/spike_lavaanimpal_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_lavaanimpal_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LiftoffBkChoco
+ff4-spike-gemma4_field_v2-liftoffbkchoco: src/spike_liftoffbkchoco_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_liftoffbkchoco_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LiftoffEnterprise
+ff4-spike-gemma4_field_v2-liftoffenterprise: src/spike_liftoffenterprise_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_liftoffenterprise_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LiftoffFalcon
+ff4-spike-gemma4_field_v2-liftofffalcon: src/spike_liftofffalcon_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_liftofffalcon_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LiftoffWhale
+ff4-spike-gemma4_field_v2-liftoffwhale: src/spike_liftoffwhale_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_liftoffwhale_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LoadNPCGfx
+ff4-spike-gemma4_field_v2-loadnpcgfx: src/spike_loadnpcgfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadnpcgfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LoadOverworldIntro
+ff4-spike-gemma4_field_v2-loadoverworldintro: src/spike_loadoverworldintro_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadoverworldintro_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LoadPlayerGfx
+ff4-spike-gemma4_field_v2-loadplayergfx: src/spike_loadplayergfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadplayergfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LoadSpriteGfx
+ff4-spike-gemma4_field_v2-loadspritegfx: src/spike_loadspritegfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadspritegfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for LoadTitleGfx
+ff4-spike-gemma4_field_v2-loadtitlegfx: src/spike_loadtitlegfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadtitlegfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for MapGfxBankTbl
+ff4-spike-gemma4_field_v2-mapgfxbanktbl: src/spike_mapgfxbanktbl_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for MapTitleTilesBtm
+ff4-spike-gemma4_field_v2-maptitletilesbtm: src/spike_maptitletilesbtm_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_maptitletilesbtm_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for MapTitleTilesTop
+ff4-spike-gemma4_field_v2-maptitletilestop: src/spike_maptitletilestop_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_maptitletilestop_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for MoveCursor
+ff4-spike-gemma4_field_v2-movecursor: src/spike_movecursor_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_movecursor_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for NextChar
+ff4-spike-gemma4_field_v2-nextchar: src/spike_nextchar_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_nextchar_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for PlayCursorSfx
+ff4-spike-gemma4_field_v2-playcursorsfx: src/spike_playcursorsfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playcursorsfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for PlayMapSong
+ff4-spike-gemma4_field_v2-playmapsong: src/spike_playmapsong_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playmapsong_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for PlaySongEvent
+ff4-spike-gemma4_field_v2-playsongevent: src/spike_playsongevent_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsongevent_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for PlayerSpritePosTbl
+ff4-spike-gemma4_field_v2-playerspritepostbl: src/spike_playerspritepostbl_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playerspritepostbl_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for PrologueSpriteTbl
+ff4-spike-gemma4_field_v2-prologuespritetbl: src/spike_prologuespritetbl_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_prologuespritetbl_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ReloadNPCs
+ff4-spike-gemma4_field_v2-reloadnpcs: src/spike_reloadnpcs_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_reloadnpcs_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for RotateWord
+ff4-spike-gemma4_field_v2-rotateword: src/spike_rotateword_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_rotateword_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ScrollItemListDown
+ff4-spike-gemma4_field_v2-scrollitemlistdown: src/spike_scrollitemlistdown_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_scrollitemlistdown_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ScrollItemListUp
+ff4-spike-gemma4_field_v2-scrollitemlistup: src/spike_scrollitemlistup_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_scrollitemlistup_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for SetCurrGil
+ff4-spike-gemma4_field_v2-setcurrgil: src/spike_setcurrgil_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_setcurrgil_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_02
+ff4-spike-gemma4_field_v2-special_02: src/spike_special_02_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_02_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_06
+ff4-spike-gemma4_field_v2-special_06: src/spike_special_06_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_0a
+ff4-spike-gemma4_field_v2-special_0a: src/spike_special_0a_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_0a_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_0b
+ff4-spike-gemma4_field_v2-special_0b: src/spike_special_0b_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_0b_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_0d
+ff4-spike-gemma4_field_v2-special_0d: src/spike_special_0d_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_0d_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_12
+ff4-spike-gemma4_field_v2-special_12: src/spike_special_12_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_12_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_13
+ff4-spike-gemma4_field_v2-special_13: src/spike_special_13_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_13_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_15
+ff4-spike-gemma4_field_v2-special_15: src/spike_special_15_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_15_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_19
+ff4-spike-gemma4_field_v2-special_19: src/spike_special_19_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_19_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_1a
+ff4-spike-gemma4_field_v2-special_1a: src/spike_special_1a_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1a_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_1b
+ff4-spike-gemma4_field_v2-special_1b: src/spike_special_1b_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1b_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_1c
+ff4-spike-gemma4_field_v2-special_1c: src/spike_special_1c_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1c_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_1d
+ff4-spike-gemma4_field_v2-special_1d: src/spike_special_1d_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1d_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_1e
+ff4-spike-gemma4_field_v2-special_1e: src/spike_special_1e_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_1e_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_28
+ff4-spike-gemma4_field_v2-special_28: src/spike_special_28_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_28_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_29
+ff4-spike-gemma4_field_v2-special_29: src/spike_special_29_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_29_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_2d
+ff4-spike-gemma4_field_v2-special_2d: src/spike_special_2d_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_2d_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_2e
+ff4-spike-gemma4_field_v2-special_2e: src/spike_special_2e_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_2e_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_2f
+ff4-spike-gemma4_field_v2-special_2f: src/spike_special_2f_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_2f_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_30
+ff4-spike-gemma4_field_v2-special_30: src/spike_special_30_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_30_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_31
+ff4-spike-gemma4_field_v2-special_31: src/spike_special_31_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_31_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Special_3a
+ff4-spike-gemma4_field_v2-special_3a: src/spike_special_3a_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_3a_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrBG2Tilemap
+ff4-spike-gemma4_field_v2-tfrbg2tilemap: src/spike_tfrbg2tilemap_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrbg2tilemap_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrBGAnimGfx
+ff4-spike-gemma4_field_v2-tfrbganimgfx: src/spike_tfrbganimgfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrbganimgfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrBGGfx
+ff4-spike-gemma4_field_v2-tfrbggfx: src/spike_tfrbggfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrbggfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrCaveWaterGfx
+ff4-spike-gemma4_field_v2-tfrcavewatergfx: src/spike_tfrcavewatergfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrcavewatergfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrInvertPal
+ff4-spike-gemma4_field_v2-tfrinvertpal: src/spike_tfrinvertpal_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrinvertpal_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrLavaGfx
+ff4-spike-gemma4_field_v2-tfrlavagfx: src/spike_tfrlavagfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrlavagfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrTitleCrystalTiles
+ff4-spike-gemma4_field_v2-tfrtitlecrystaltiles: src/spike_tfrtitlecrystaltiles_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrtitlecrystaltiles_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrVRAM
+ff4-spike-gemma4_field_v2-tfrvram: src/spike_tfrvram_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrvram_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrWaterLavaGfx
+ff4-spike-gemma4_field_v2-tfrwaterlavagfx: src/spike_tfrwaterlavagfx_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrwaterlavagfx_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TfrWaterTiles
+ff4-spike-gemma4_field_v2-tfrwatertiles: src/spike_tfrwatertiles_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrwatertiles_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TitleCrystalVRAMTbl
+ff4-spike-gemma4_field_v2-titlecrystalvramtbl: src/spike_titlecrystalvramtbl_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_titlecrystalvramtbl_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for TowerAnimBluePal
+ff4-spike-gemma4_field_v2-toweranimbluepal: src/spike_toweranimbluepal_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_toweranimbluepal_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for UpdateBattleParams
+ff4-spike-gemma4_field_v2-updatebattleparams: src/spike_updatebattleparams_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatebattleparams_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for UpdateMode7Regs
+ff4-spike-gemma4_field_v2-updatemode7regs: src/spike_updatemode7regs_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemode7regs_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for UpdatePlayerSpeed
+ff4-spike-gemma4_field_v2-updateplayerspeed: src/spike_updateplayerspeed_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updateplayerspeed_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for UpdateTopChar
+ff4-spike-gemma4_field_v2-updatetopchar: src/spike_updatetopchar_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatetopchar_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for UpdateWhalePal
+ff4-spike-gemma4_field_v2-updatewhalepal: src/spike_updatewhalepal_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for UpdateWipeIRQ
+ff4-spike-gemma4_field_v2-updatewipeirq: src/spike_updatewipeirq_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewipeirq_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for ValidateTopChar
+ff4-spike-gemma4_field_v2-validatetopchar: src/spike_validatetopchar_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_validatetopchar_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for Vectors
+ff4-spike-gemma4_field_v2-vectors: src/spike_vectors_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_vectors_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for VehicleSpriteTbl
+ff4-spike-gemma4_field_v2-vehiclespritetbl: src/spike_vehiclespritetbl_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_vehiclespritetbl_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WaitKeyDown
+ff4-spike-gemma4_field_v2-waitkeydown: src/spike_waitkeydown_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitkeydown_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WaitKeyUp
+ff4-spike-gemma4_field_v2-waitkeyup: src/spike_waitkeyup_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitkeyup_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WaitSpecial
+ff4-spike-gemma4_field_v2-waitspecial: src/spike_waitspecial_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WaitVblankEvent
+ff4-spike-gemma4_field_v2-waitvblankevent: src/spike_waitvblankevent_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblankevent_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WaitVblankLong
+ff4-spike-gemma4_field_v2-waitvblanklong: src/spike_waitvblanklong_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblanklong_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WaitVblankShort
+ff4-spike-gemma4_field_v2-waitvblankshort: src/spike_waitvblankshort_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblankshort_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WipeIn
+ff4-spike-gemma4_field_v2-wipein: src/spike_wipein_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_wipein_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WipeOut
+ff4-spike-gemma4_field_v2-wipeout: src/spike_wipeout_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_wipeout_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for WipeScanlineTbl
+ff4-spike-gemma4_field_v2-wipescanlinetbl: src/spike_wipescanlinetbl_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_wipescanlinetbl_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00a51a
+ff4-spike-gemma4_field_v2-_00a51a: src/spike__00a51a_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00a51a_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00a527
+ff4-spike-gemma4_field_v2-_00a527: src/spike__00a527_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00a527_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00bdb0
+ff4-spike-gemma4_field_v2-_00bdb0: src/spike__00bdb0_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00bdb0_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00bfe3
+ff4-spike-gemma4_field_v2-_00bfe3: src/spike__00bfe3_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00bfe3_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00cb05
+ff4-spike-gemma4_field_v2-_00cb05: src/spike__00cb05_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cb05_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00cb72
+ff4-spike-gemma4_field_v2-_00cb72: src/spike__00cb72_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cb72_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00cc32
+ff4-spike-gemma4_field_v2-_00cc32: src/spike__00cc32_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cc32_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00cec5
+ff4-spike-gemma4_field_v2-_00cec5: src/spike__00cec5_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cec5_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00cf98
+ff4-spike-gemma4_field_v2-_00cf98: src/spike__00cf98_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00cf98_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00d95b
+ff4-spike-gemma4_field_v2-_00d95b: src/spike__00d95b_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00d95b_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00da79
+ff4-spike-gemma4_field_v2-_00da79: src/spike__00da79_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00da79_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00dd3a
+ff4-spike-gemma4_field_v2-_00dd3a: src/spike__00dd3a_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00dd3a_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00de04
+ff4-spike-gemma4_field_v2-_00de04: src/spike__00de04_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00de04_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00de1b
+ff4-spike-gemma4_field_v2-_00de1b: src/spike__00de1b_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00de1b_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00de2a
+ff4-spike-gemma4_field_v2-_00de2a: src/spike__00de2a_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00de2a_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00de43
+ff4-spike-gemma4_field_v2-_00de43: src/spike__00de43_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00de43_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00df33
+ff4-spike-gemma4_field_v2-_00df33: src/spike__00df33_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00df33_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00df43
+ff4-spike-gemma4_field_v2-_00df43: src/spike__00df43_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00df43_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00df53
+ff4-spike-gemma4_field_v2-_00df53: src/spike__00df53_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00df53_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00e9cf
+ff4-spike-gemma4_field_v2-_00e9cf: src/spike__00e9cf_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00e9cf_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00ea14
+ff4-spike-gemma4_field_v2-_00ea14: src/spike__00ea14_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00ea14_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00edf6
+ff4-spike-gemma4_field_v2-_00edf6: src/spike__00edf6_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00edf6_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _00f922
+ff4-spike-gemma4_field_v2-_00f922: src/spike__00f922_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00f922_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _14f380
+ff4-spike-gemma4_field_v2-_14f380: src/spike__14f380_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__14f380_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _14f3a1
+ff4-spike-gemma4_field_v2-_14f3a1: src/spike__14f3a1_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__14f3a1_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _14f58e
+ff4-spike-gemma4_field_v2-_14f58e: src/spike__14f58e_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__14f58e_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _15b866
+ff4-spike-gemma4_field_v2-_15b866: src/spike__15b866_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15b866_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _15b8c9
+ff4-spike-gemma4_field_v2-_15b8c9: src/spike__15b8c9_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15b8c9_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _15bb6a
+ff4-spike-gemma4_field_v2-_15bb6a: src/spike__15bb6a_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15bb6a_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _15c144
+ff4-spike-gemma4_field_v2-_15c144: src/spike__15c144_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15c144_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for _15c23d
+ff4-spike-gemma4_field_v2-_15c23d: src/spike__15c23d_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__15c23d_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for fade_song_half
+ff4-spike-gemma4_field_v2-fade_song_half: src/spike_fade_song_half_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fade_song_half_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (gemma4_field_v2): spike for update_dlg_irq
+ff4-spike-gemma4_field_v2-update_dlg_irq: src/spike_update_dlg_irq_gemma4_field_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_update_dlg_irq_gemma4_field_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for MagicEffect_24
+ff4-spike-auto-magiceffect_24: src/spike_magiceffect_24_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_24_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for EventCmd_d0
+ff4-spike-auto-eventcmd_d0: src/spike_eventcmd_d0_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_eventcmd_d0_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for TimerDur_02
+ff4-spike-auto-timerdur_02: src/spike_timerdur_02_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_timerdur_02_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for MagicEffect_08
+ff4-spike-auto-magiceffect_08: src/spike_magiceffect_08_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magiceffect_08_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for AICond_0a
+ff4-spike-auto-aicond_0a: src/spike_aicond_0a_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_0a_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for DlgTilesTop
+ff4-spike-auto-dlgtilestop: src/spike_dlgtilestop_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_dlgtilestop_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for CmdTbl
+ff4-spike-auto-cmdtbl: src/spike_cmdtbl_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmdtbl_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for _13ddd6
+ff4-spike-auto-_13ddd6: src/spike__13ddd6_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__13ddd6_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for Special_06
+ff4-spike-auto-special_06: src/spike_special_06_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for MapGfxBankTbl
+ff4-spike-auto-mapgfxbanktbl: src/spike_mapgfxbanktbl_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for UpdateWhalePal
+ff4-spike-auto-updatewhalepal: src/spike_updatewhalepal_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for WaitSpecial
+ff4-spike-auto-waitspecial: src/spike_waitspecial_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for EndCredits
+ff4-spike-auto-endcredits: src/spike_endcredits_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for GetDlgPtr1H
+ff4-spike-auto-getdlgptr1h: src/spike_getdlgptr1h_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for UpdateCtrl
+ff4-spike-auto-updatectrl: src/spike_updatectrl_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for InitCtrl
+ff4-spike-auto-initctrl: src/spike_initctrl_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for MagicMultiTarget
+ff4-spike-auto-magicmultitarget: src/spike_magicmultitarget_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_magicmultitarget_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for _00bfe3
+ff4-spike-auto-_00bfe3: src/spike__00bfe3_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00bfe3_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for AICondTbl
+ff4-spike-auto-aicondtbl: src/spike_aicondtbl_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtbl_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for Rand
+ff4-spike-auto-rand: src/spike_rand_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_rand_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for SpellListTbl
+ff4-spike-auto-spelllisttbl: src/spike_spelllisttbl_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_spelllisttbl_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for Max99
+ff4-spike-auto-max99: src/spike_max99_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_max99_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for RotateWord
+ff4-spike-auto-rotateword: src/spike_rotateword_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_rotateword_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for CreditsStarsTileTbl
+ff4-spike-auto-creditsstarstiletbl: src/spike_creditsstarstiletbl_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_creditsstarstiletbl_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for BtnAction
+ff4-spike-t1415menu-btnaction: src/spike_btnaction_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_btnaction_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415field): spike for HexToDec
+ff4-spike-t1415field-hextodec: src/spike_hextodec_t1415field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_hextodec_t1415field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for CharOrderTbl
+ff4-spike-t1415menu-charordertbl: src/spike_charordertbl_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_charordertbl_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415field): spike for Mult16
+ff4-spike-t1415field-mult16: src/spike_mult16_t1415field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult16_t1415field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for ClearText_ext
+ff4-spike-t1415menu-cleartext_ext: src/spike_cleartext_ext_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cleartext_ext_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415field): spike for Pow10Hi
+ff4-spike-t1415field-pow10hi: src/spike_pow10hi_t1415field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_pow10hi_t1415field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415field): spike for Pow10Lo
+ff4-spike-t1415field-pow10lo: src/spike_pow10lo_t1415field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_pow10lo_t1415field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415field): spike for TfrChestDoor
+ff4-spike-t1415field-tfrchestdoor: src/spike_tfrchestdoor_t1415field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrchestdoor_t1415field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415field): spike for UpdateZoomHDMA
+ff4-spike-t1415field-updatezoomhdma: src/spike_updatezoomhdma_t1415field.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatezoomhdma_t1415field.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for InitCtrl
+ff4-spike-t1415menu-initctrl: src/spike_initctrl_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for InitCtrl_ext2
+ff4-spike-t1415menu-initctrl_ext2: src/spike_initctrl_ext2_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_ext2_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for RestoreDlgGfx_ext
+ff4-spike-t1415menu-restoredlggfx_ext: src/spike_restoredlggfx_ext_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_restoredlggfx_ext_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for SaveDlgGfx
+ff4-spike-t1415menu-savedlggfx: src/spike_savedlggfx_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_savedlggfx_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for SpellListTbl
+ff4-spike-t1415menu-spelllisttbl: src/spike_spelllisttbl_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_spelllisttbl_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for UpdateCtrl
+ff4-spike-t1415menu-updatectrl: src/spike_updatectrl_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for UpdateCtrl_ext
+ff4-spike-t1415menu-updatectrl_ext: src/spike_updatectrl_ext_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_ext_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for UpdateScrollRegs_ext
+ff4-spike-t1415menu-updatescrollregs_ext: src/spike_updatescrollregs_ext_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatescrollregs_ext_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for UpdateWindowColor
+ff4-spike-t1415menu-updatewindowcolor: src/spike_updatewindowcolor_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewindowcolor_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (t1415menu): spike for UpdateWindowColor_ext
+ff4-spike-t1415menu-updatewindowcolor_ext: src/spike_updatewindowcolor_ext_t1415menu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewindowcolor_ext_t1415menu.c $(CORE_SRC) $(LDFLAGS)

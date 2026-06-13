@@ -1,0 +1,6 @@
+[validate_run] qwen3_sound: 5 C files to validate
+
+[validate_run] qwen3_sound summary:
+  pass                  5
+  TOTAL                 5
+  pass rate          100.0%

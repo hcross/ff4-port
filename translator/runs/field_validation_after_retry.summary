@@ -1,0 +1,10 @@
+[validate_run] gemma4_field_v2: 336 C files to validate
+
+[validate_run] gemma4_field_v2 summary:
+  unknown             138
+  custom_spike         85
+  pass                 58
+  compile_error        52
+  no_contract           3
+  TOTAL               336
+  pass rate          17.3%

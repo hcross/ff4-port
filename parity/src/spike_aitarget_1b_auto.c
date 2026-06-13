@@ -25,20 +25,41 @@ static inline void write16(uint8_t *ram, int addr, uint16_t v);
 // translation but not defined in port/battle/AITarget_1b.c).
 // ---------------------------------------------------------------------------
 
-// (no auto-emitted helpers)
+// Auto-emitted delegation wrapper for TargetMonsterTypeAll @ $03B93D (referenced as target_monster_type_all_emu)
+static uint16_t target_monster_type_all_emu(Snes *snes) {
+    Cpu *c = snes->cpu;
+    uint16_t saved_a=c->a, saved_x=c->x, saved_y=c->y, saved_sp=c->sp;
+    uint16_t saved_pc=c->pc, saved_dp=c->dp;
+    uint8_t saved_k=c->k, saved_db=c->db;
+    bool saved_mf=c->mf, saved_xf=c->xf;
+    c->dp = 0; c->db = 0x7E;
+    c->mf = true; c->xf = false;
+    run_emulated_func(snes, 0x03B93Du);
+    uint16_t result = c->a;
+    c->x=saved_x; c->y=saved_y;
+    c->sp=saved_sp; c->pc=saved_pc; c->dp=saved_dp;
+    c->k=saved_k; c->db=saved_db;
+    c->mf=saved_mf; c->xf=saved_xf;
+    c->a = saved_a;
+    return result;
+}
+
 
 // ---------------------------------------------------------------------------
 // LLM-translated C function (verbatim copy from port/battle/AITarget_1b.c)
 // ---------------------------------------------------------------------------
 
-// Sets A to 2 and jumps to TargetMonsterTypeAll.
-// Entry mode: A 8-bit (inherited), X 16-bit (battle convention)
-// No flags or RAM inputs; output determined by TargetMonsterTypeAll
+#include "snes/snes.h"
+
+// This function sets A=2 and jumps to TargetMonsterTypeAll.
+// Entry mode: A 8-bit (mf=1), X 16-bit (xf=0), DB=$7E, DP=0
+// No inputs from registers; A is set before jump.
+// Output depends on TargetMonsterTypeAll implementation.
 static void AITarget_1b_c(Snes *snes) {
-    Cpu *cpu = snes->cpu;
-    cpu->a = 2;                            // lda #2
-    cpu->mf = true;                        // ensure A is 8-bit for emulation
-    run_emulated_func(snes, 0xB93Du);      // jmp TargetMonsterTypeAll
+    // lda #2
+    snes->cpu->a = 2;
+    // jmp TargetMonsterTypeAll
+    target_monster_type_all_emu(snes);
 }
 
 
@@ -113,15 +134,16 @@ static inline void write16(uint8_t *ram, int addr, uint16_t v) {
 // asm wrapper from the contract
 // ---------------------------------------------------------------------------
 
-static void run_asm(Snes *snes) {
+static void run_asm(Snes *snes, uint8_t arg_a) {
     Cpu *c = snes->cpu;
     c->dp = 0;
     c->db = 0x7E;
-    c->mf = false;
+    c->mf = true;
     c->xf = false;
     c->a = 0; c->x = 0; c->y = 0;
-    // no register inputs
-    // no entry flags
+    c->a = arg_a;
+    c->z = (arg_a == 0);
+    c->n = ((arg_a & 0x80) != 0);
     run_emulated_func(snes, TARGET_ADDR_24);
 }
 
@@ -168,19 +190,19 @@ int main(int argc, char **argv) {
 
         // Randomise inputs.
         // no RAM inputs
-
+        uint8_t arg_a = (uint8_t)host_rng();
 
         // Pre-call snapshot for replaying C with the exact same state.
         Snap pre;
         snap_take(&pre, snes);
 
         // Run ASM
-        run_asm(snes);
+        run_asm(snes, arg_a);
         uint16_t out_asm = 0; (void)snes;
 
         // Restore and run C
         snap_restore(&pre, snes);
-        AITarget_1b_c(snes);
+        AITarget_1b_c(snes, arg_a);
         uint16_t out_c = 0;
 
         bool ok = (out_asm == out_c);

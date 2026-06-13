@@ -314,13 +314,21 @@ class OpenAiCompatProvider:
             return None, CallStats(provider=self.name, model=model)
 
         text = ""
+        reasoning = ""
         try:
-            text = data["choices"][0]["message"]["content"]
+            msg = data["choices"][0]["message"]
+            text = msg.get("content") or ""
+            # Reasoning models (glm-5.1, kimi-k2.x on Ollama Cloud) put their
+            # chain-of-thought in a non-standard `reasoning` field. If the
+            # response was truncated by max_tokens before content was emitted,
+            # the code block may still be present in the reasoning tail.
+            reasoning = msg.get("reasoning") or ""
         except (KeyError, IndexError):
             sys.stderr.write(f"[openai-compat] unexpected response shape\n")
             return None, CallStats(provider=self.name, model=model)
 
         usage = data.get("usage", {})
+        finish_reason = data["choices"][0].get("finish_reason", "")
         stats = CallStats(
             tokens_in=usage.get("prompt_tokens", 0),
             tokens_out=usage.get("completion_tokens", 0),
@@ -328,7 +336,16 @@ class OpenAiCompatProvider:
             model=model,
         )
         stats.cost_usd = _price_anthropic_style(stats, model)
-        return extract_c_code(text), stats
+
+        code = extract_c_code(text)
+        if code is None and reasoning:
+            # Fallback: pull a ```c block from the reasoning tail.
+            code = extract_c_code(reasoning)
+            if code:
+                stats.error = f"recovered from reasoning (finish={finish_reason})"
+        if code is None and finish_reason == "length":
+            stats.error = f"truncated by max_tokens (out={stats.tokens_out})"
+        return code, stats
 
 
 # ===========================================================================

@@ -1,0 +1,40 @@
+{"file": "port/_runs/qwen3-coder_480b/cutscene/CreditsStarsTileTbl.c", "name": "CreditsStarsTileTbl", "exit": 2, "status": "compile_error", "error_message": "called object type 'const uint8_t[64]' (aka 'const unsigned char[64]') is not a function or function pointer"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/DoTextCmd.c", "name": "DoTextCmd", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $EB:0005 but ca65-bridge says $13:EB05. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/DrawOtherPlanet.c", "name": "DrawOtherPlanet", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function '_da70_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/EndCredits.c", "name": "EndCredits", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function '_d66b_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/FadeIn.c", "name": "FadeIn", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $D7:0018 but ca65-bridge says $13:D718. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/FadeOut.c", "name": "FadeOut", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $D7:0005 but ca65-bridge says $13:D705. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/GetEarthSpritePos.c", "name": "GetEarthSpritePos", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/GetMoonTile.c", "name": "GetMoonTile", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $E2:00E2 but ca65-bridge says $13:E2E2. Trusting the bridge.", "GetMoonTile asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/GetOtherPlanetTile.c", "name": "GetOtherPlanetTile", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/HDMATbl.c", "name": "HDMATbl", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'HDMATbl_c'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/InitStars.c", "name": "InitStars", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/LoadCreditsStarsGfx.c", "name": "LoadCreditsStarsGfx", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 4 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/LoadTheEndGfx.c", "name": "LoadTheEndGfx", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/MoonTileTbl.c", "name": "MoonTileTbl", "exit": 2, "status": "compile_error", "error_message": "called object type 'const uint8_t[32]' (aka 'const unsigned char[32]') is not a function or function pointer"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/Mult16_1.c", "name": "Mult16_1", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/NewLine.c", "name": "NewLine", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/SolarSystem2.c", "name": "SolarSystem2", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function '_d66b_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/UpdateMoon1.c", "name": "UpdateMoon1", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $E1:00E1 but ca65-bridge says $13:E1E1. Trusting the bridge.", "UpdateMoon1 asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/UpdateMoon2.c", "name": "UpdateMoon2", "exit": 1, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $E2:0081 but ca65-bridge says $13:E281. Trusting the bridge.", "UpdateMoon2 asm vs C : 100 trials"]}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/UpdateSun.c", "name": "UpdateSun", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/WaitVBlank.c", "name": "WaitVBlank", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] skipping malformed RAM spec part: '0x41=1     // assumed post-condition: cleared by NMI'", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13d87f.c", "name": "_13d87f", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13d89a.c", "name": "_13d89a", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13d92d.c", "name": "_13d92d", "exit": 124, "status": "unknown", "stderr_tail": ["[gen] WARNING: REVERSED_FUNCTION says $D9:002D but ca65-bridge says $13:D92D. Trusting the bridge.", "[gen] spike binary exceeded 20s \u2014 likely infinite loop in the translated C body."]}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13d977.c", "name": "_13d977", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13db10.c", "name": "_13db10", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13db23.c", "name": "_13db23", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13ddd6.c", "name": "_13ddd6", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13df4d.c", "name": "_13df4d", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13df57.c", "name": "_13df57", "exit": 0, "status": "custom_spike"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13e058.c", "name": "_13e058", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13e07d.c", "name": "_13e07d", "exit": 2, "status": "compile_error", "error_message": "too many arguments to function call, expected single argument 'snes', have 2 arguments"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13e4f2.c", "name": "_13e4f2", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13e565.c", "name": "_13e565", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13e578.c", "name": "_13e578", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13e58b.c", "name": "_13e58b", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'mult16_2_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13eb60.c", "name": "_13eb60", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13ebb8.c", "name": "_13ebb8", "exit": 0, "fails": 0, "status": "pass"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13ec24.c", "name": "_13ec24", "exit": 2, "status": "compile_error", "error_message": "call to undeclared function 'mult16_1_emu'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]"}
+{"file": "port/_runs/qwen3-coder_480b/cutscene/_13ef4c.c", "name": "_13ef4c", "exit": 0, "fails": 0, "status": "pass"}

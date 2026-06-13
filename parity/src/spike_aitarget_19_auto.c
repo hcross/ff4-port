@@ -25,8 +25,8 @@ static inline void write16(uint8_t *ram, int addr, uint16_t v);
 // translation but not defined in port/battle/AITarget_19.c).
 // ---------------------------------------------------------------------------
 
-// Auto-emitted delegation wrapper for TargetMonsterTypeAll @ $03B93D (referenced as TargetMonsterTypeAll_emu)
-static uint16_t TargetMonsterTypeAll_emu(Snes *snes) {
+// Auto-emitted delegation wrapper for TargetMonsterTypeAll @ $03B93D (referenced as target_monster_type_all_emu)
+static uint16_t target_monster_type_all_emu(Snes *snes) {
     Cpu *c = snes->cpu;
     uint16_t saved_a=c->a, saved_x=c->x, saved_y=c->y, saved_sp=c->sp;
     uint16_t saved_pc=c->pc, saved_dp=c->dp;
@@ -49,11 +49,18 @@ static uint16_t TargetMonsterTypeAll_emu(Snes *snes) {
 // LLM-translated C function (verbatim copy from port/battle/AITarget_19.c)
 // ---------------------------------------------------------------------------
 
-// This function sets A=0 and jumps to TargetMonsterTypeAll.
-// It acts as a wrapper to target all monster types with a multiplier of 0.
+#include "snes/snes.h"
+
+// Entry mode: A 8-bit (mf=1), X 16-bit (xf=0), DB=$7E, DP=0
+// Entry: no input registers required
+// Logic: set A=0 and jump to TargetMonsterTypeAll
 static void AITarget_19_c(Snes *snes) {
+    // lda #0
     snes->cpu->a = 0;
-    TargetMonsterTypeAll_emu(snes);
+    snes->cpu->z = true;   // Z flag set because A == 0
+    snes->cpu->n = false;  // N flag clear because A >= 0
+    // jmp TargetMonsterTypeAll
+    target_monster_type_all_emu(snes);
 }
 
 

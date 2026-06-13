@@ -1,0 +1,9 @@
+[validate_run] qwen3_cutscene_v2: 40 C files to validate
+
+[validate_run] qwen3_cutscene_v2 summary:
+  pass                 19
+  compile_error        12
+  unknown               8
+  custom_spike          1
+  TOTAL                40
+  pass rate          47.5%

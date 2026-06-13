@@ -1,0 +1,30 @@
+#include "snes/snes.h"
+
+// This "routine" is actually a data table containing tile indices for the
+// bottom of the dialogue window. In a native C reimplementation, this is
+// represented as a constant array.
+static const uint8_t DlgTilesBtm_data[] = {
+    0x00, 0x20, 0x19, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20,
+    0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20,
+    0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20,
+    0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0xFF, 0x20, 0x1A, 0x20, 0x00, 0x20
+};
+
+// Since the parity harness expects a function signature 'static void <Name>_c(Snes *snes)',
+// and this is purely data, we provide a dummy function body. The actual data is 
+// accessed via the table.
+static void DlgTilesBtm_c(Snes *snes) {
+    // This is a data table. Logic for reading this table is handled by the caller.
+    (void)snes;
+}
+
+// PITFALLS: none (Data table, no CPU logic)
+// HELPERS: none
+// CONTRACT:
+//   inputs_reg:  none
+//   inputs_ram:  none
+//   output_ram:  none
+//   entry_mode:  mf=true, xf=false, dp=0x0, db=0x0
+//   entry_flags: auto
+// CUSTOM_SPIKE: yes
+// REVERSED_FUNCTION: field::DlgTilesBtm ($F7:56)
