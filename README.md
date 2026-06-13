@@ -6,11 +6,23 @@ following the `snesrev/zelda3` shadow-execution pattern. Target platform:
 
 ## Status
 
-**Experimental — Phase 4 scaffold complete.** Six validated spikes (M1–M6)
-prove the shadow-execution architecture works on FF4 with unmodified
-LakeSnes upstream. Three functions translated to native C with parity
-validation (1000+ trials each), two functions classified as delegated
-under [ADR-003](docs/adr-003-classification.md).
+**Phase 5 — Boots to the title screen on real G&W hardware.**
+Final Fantasy IV boots all the way to the Square Enix splash + title
+on a real Game & Watch Mario (STM32H7B0VBT6, 64 MB extflash mod), via
+the [`hcross/ff4-gnw`](https://github.com/hcross/ff4-gnw) overlay
+inside [`hcross/game-and-watch-retro-go-sd`](https://github.com/hcross/game-and-watch-retro-go-sd)
+(branch `feat/ff4-port-scaffold`).
+
+  - **168 routines** native-C in the dispatch table (battle 77 ✓,
+    field 65, menu 9, cutscene 12, sound 2)
+  - **26 % dispatch hit rate** on the boot-to-title sequence
+    (`dispatch=142/546` at host frame 175 — the absolute hit count
+    matches the title-screen execution; the miss denominator
+    drops as each native-C body eliminates its sub-routine JSRs)
+  - Translation pipeline runs **autonomously** end-to-end (see
+    "Translation pipeline" below), with hardware verification via a
+    diagnostic harness baked into the firmware behind
+    `-DFF4_AUTOBOOT=1`.
 
 ## What this project is
 
@@ -180,6 +192,49 @@ Note: "routines" includes internal sub-labels; the practical count of
 "business functions" requiring real translation is ~200–400. Estimated
 LLM budget for a full pass (Sonnet + cache): **$3–15**.
 
+## Translation pipeline
+
+The `translator/` directory now contains an autonomous reverse-
+engineering pipeline. Three stages, each cheap-first, with verbatim-
+error multi-turn refinement at every stage.
+
+| Tool                          | Role                                                              |
+|-------------------------------|-------------------------------------------------------------------|
+| `cascade_translate.py`        | 3-stage adaptive cascade: gemma4:31b ↦ gpt-oss:120b critic ↦ deepseek-v4-pro. Per-routine early-exit on `pass` / `delegate_pass` / `custom_spike`. |
+| `hardcore_translate.py`       | Single-model multi-turn translator. The conversation history is preserved across turns so the model sees its own failed attempt and the verbatim build / spike error tail. |
+| `gpt_oss_critic.py`           | gpt-oss-120b prompt-mutation critic. Reads the failed turns + spike output, proposes an additive full-replacement system prompt. |
+| `prompt_mutation_loop.py`     | P3 prompt-mutation outer loop. Adopts a candidate prompt only under STRICT no-regression against a 16-routine regression suite. |
+| `regression_suite.py`         | The 16-routine suite (4 battle + 4 cutscene + 4 field + 4 menu + 3 sound) used by the prompt-mutation loop. |
+| `port_validated.py`           | One-command end-to-end port: pick PASSes from the cascade log, copy into `ff4-gnw/<mod>/`, regen dispatch, commit + push both repos, bump submodule, build, flash, monitor 35 s, parse dispatch hit rate, diff vs baseline, write JSON report. |
+| `volume_iterate.py`           | Autonomous batch runner: walks an entire candidates list, runs the cascade chunk-by-chunk, quick-build-checks each chunk, retries minus offenders on a build break, hard-fails the chunk if even that doesn't link. |
+
+**Prompt versions:**
+- `prompts/reverser_system.md` — v2 (398 lines, 12 Pitfalls). Used by
+  cascade stage 1 (gemma4) and `prompt_mutation_loop.py`.
+- `prompts/reverser_hardcore.md` — 624 lines extending v2 with 5
+  hardcore sections H1-H5 (extended Snes/Cpu/Ppu/Apu/Dma API,
+  anti-hallucination table, 3 extra few-shots, "delegate not
+  invent" gate, 4-step self-check). Used by cascade stage 3
+  (deepseek-v4-pro).
+- `prompts/history/v0/`, `v1/`, `v2/` — adopted prompt versions
+  with manifests recording the routine that drove each mutation
+  and the regression score at adoption.
+
+**Audit trail:** every cascade / hardcore / mutation / volume run
+appends a JSONL record under `translator/runs/`. The schema is
+shared so any of the orchestrators can be re-run from another's log.
+
+Single-command run (autonomous):
+
+```bash
+# Build a candidates list of "translate-eligible, not yet dispatched"
+# routines from upstream/<mod>/*.asm (see translator/runs/ for examples).
+python3 translator/volume_iterate.py \
+    --names-file /tmp/candidates.txt \
+    --chunk-size 5 --max-chunks 50 \
+    --max-turns 2 --enable-critic
+```
+
 ## Roadmap
 
 - ✅ Phase 1 — Toolchain bring-up + byte-identical ROM rebuild
@@ -187,9 +242,16 @@ LLM budget for a full pass (Sonnet + cache): **$3–15**.
 - ✅ Phase 3 — ca65-bridge + prompt templates
 - ✅ Phase 3.5 — Spike journey (M1–M6) + 10 documented pitfalls
 - ✅ Phase 4.0–4.2 — Classifier + multi-provider batch translator
-- ⏳ Phase 4.3 — Auto-spike generator for parity validation
-- ⏳ Phase 4.4 — First end-to-end run on `damage.asm`
-- ⏳ Phase 5 — Integration into `game-and-watch-retro-go-sd/external/ff4/`
+- ✅ Phase 4.3 — Auto-spike generator for parity validation
+- ✅ Phase 4.4 — First real `battle/` batch run with auto-spike validation
+- ✅ Phase 4.5 — P3 prompt-mutation loop (v0 → v1 → v2, +Pitfall 11, 12)
+- ✅ Phase 4.6 — Hardcore deepseek-v4-pro tier for the hard tail
+- ✅ Phase 4.7 — Multi-turn iterative refinement (the "human-pushing-LLM" pattern)
+- ✅ Phase 4.8 — 3-stage adaptive cascade (gemma4 → critic → deepseek)
+- ✅ Phase 5 — Initial integration into [`hcross/ff4-gnw`](https://github.com/hcross/ff4-gnw) + `game-and-watch-retro-go-sd`. Boots to title screen on real hardware.
+- ⏳ Phase 5.1 — Lift dispatch hit rate beyond 26 % via `volume_iterate.py` sweeps
+- ⏳ Phase 5.2 — Implement `RunEmulatedFunc` on G&W so `*_emu` delegates execute the original asm at runtime instead of being weak no-ops
+- ⏳ Phase 5.3 — Savestate loading harness to measure dispatch hit rate inside battle / gameplay (currently only the boot-to-title path is exercised)
 
 ## License
 
