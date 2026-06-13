@@ -1,0 +1,47 @@
+{
+  "start_line": 10,
+  "chunks": [
+    {
+      "chunk_id": "c1_line10",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 169.3
+    },
+    {
+      "chunk_id": "c2_line15",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 140.6
+    },
+    {
+      "chunk_id": "c3_line20",
+      "targets_count": 5,
+      "passes_count": 1,
+      "build": "ok",
+      "ff4_gnw_sha": "3dcdd2a",
+      "cascade_sec": 191.4
+    },
+    {
+      "chunk_id": "c4_line25",
+      "targets_count": 5,
+      "passes_count": 1,
+      "build": "ok",
+      "ff4_gnw_sha": "07875a5",
+      "cascade_sec": 67.1
+    }
+  ],
+  "totals": {
+    "attempted": 20,
+    "passed": 2,
+    "ported": 2,
+    "rejected_by_build": 0,
+    "commits": [
+      "3dcdd2a",
+      "07875a5"
+    ]
+  }
+}
