@@ -1,0 +1,25 @@
+{
+  "version": "v0",
+  "parent": null,
+  "created_at": "2026-06-13",
+  "description": "Baseline prompt (pre-P3 prompt-mutation loop). Frozen snapshot of the 3 reverser_*.md files as they existed when the P3 loop was first turned on.",
+  "baseline_metrics": {
+    "T1_gemma4_31b_pass_rate": "23%",
+    "T1_gemma4_31b_pass_count": 7,
+    "T1_gemma4_31b_total": 30,
+    "source": "translator/runs/calibration_matrix_v2.jsonl",
+    "top_failure_classes": {
+      "WRONG_SIGNATURE": "~50%",
+      "COMPILE_ERROR": "~30%",
+      "NO_CODE_OR_TRUNCATED": "~20%"
+    }
+  },
+  "files": [
+    "reverser_system.md",
+    "reverser_task.md",
+    "reverser_examples.md"
+  ],
+  "p3_target_pass_rate": "50-60%",
+  "p3_critic_model": "gpt-oss:120b (Ollama Cloud)",
+  "p3_target_model": "gemma4:31b (Ollama Cloud)"
+}

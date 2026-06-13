@@ -153,11 +153,12 @@ def hydrate(r: RoutineInfo) -> RoutineInfo:
 # Prompt assembly
 # ---------------------------------------------------------------------------
 
-def load_prompts() -> dict[str, str]:
+def load_prompts(prompts_dir: Path = None) -> dict[str, str]:
+    pd = prompts_dir if prompts_dir else PROMPTS_DIR
     return {
-        "system": (PROMPTS_DIR / "reverser_system.md").read_text(),
-        "examples": (PROMPTS_DIR / "reverser_examples.md").read_text(),
-        "task_template": (PROMPTS_DIR / "reverser_task.md").read_text(),
+        "system": (pd / "reverser_system.md").read_text(),
+        "examples": (pd / "reverser_examples.md").read_text(),
+        "task_template": (pd / "reverser_task.md").read_text(),
     }
 
 
@@ -252,6 +253,8 @@ static void {r.name}_emu(Snes *snes) {{
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--prompts-dir", type=Path, default=None,
+                    help="override prompts/ directory (e.g. prompts/history/v3/) — defaults to repo prompts/")
     ap.add_argument("--module", required=True, help="battle, menu, field, btlgfx, sound, cutscene")
     ap.add_argument("--max-functions", type=int, default=5)
     ap.add_argument("--budget-usd", type=float, default=DEFAULT_BUDGET,
@@ -307,7 +310,7 @@ def main(argv: list[str] | None = None) -> int:
         api_key=args.api_key or os.environ.get("OPENAI_API_KEY"),
     )
 
-    prompts = load_prompts()
+    prompts = load_prompts(args.prompts_dir)
 
     sys.stderr.write(f"[batch] enumerating module={args.module}\n")
     routines = enumerate_module(args.module)

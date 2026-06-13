@@ -27,6 +27,8 @@ def main():
     ap.add_argument("--out-dir", type=Path, default=THIS.parent / "port")
     ap.add_argument("--log", type=Path, default=THIS / "runs/targeted_log.jsonl")
     ap.add_argument("--max-output-tokens", type=int, default=4096)
+    ap.add_argument("--prompts-dir", type=Path, default=None,
+                    help="override prompts/ directory (e.g. prompts/history/v3/) — defaults to repo prompts/")
     args = ap.parse_args()
 
     targets = []
@@ -48,7 +50,7 @@ def main():
         args.llm, bin_path=None,
         api_base=args.api_base, api_key=api_key,
     )
-    prompts = bt.load_prompts()
+    prompts = bt.load_prompts(args.prompts_dir)
     args.log.parent.mkdir(exist_ok=True, parents=True)
     log_fp = args.log.open("a")
 
