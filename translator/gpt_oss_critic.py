@@ -40,23 +40,37 @@ Snes* struct, follow a strict signature `void <Name>_c(Snes *snes)`, and pass
 a runtime fuzz parity test against the original asm.
 
 The system prompt currently produces ~23% PASS. You are given:
-  - The CURRENT system prompt (the one being used now).
+  - The CURRENT system prompt (the one being used now, ~340 lines, with
+    10 numbered Pitfalls and other key sections).
   - The asm source of a routine that FAILED.
   - The C output gemma4 produced (which failed).
   - The failure class (WRONG_SIGNATURE / COMPILE_ERROR / NO_CODE /
-    TRUNCATED / HALLUCINATED / RAM_DIVERGE / ORACLE_BLIND).
+    TRUNCATED / HALLUCINATED / RAM_DIVERGE / ORACLE_BLIND / FAIL).
   - The verbatim error message or evidence.
 
-Your task: produce a NEW full replacement of the system prompt that would
-likely have made this one routine succeed AND would not break other
-routines that currently succeed. The change should be minimal and
-defensible — add or refine a pitfall, clarify a convention, NOT a wholesale
-rewrite. Keep all existing pitfalls (1..10) unless one is provably
-detrimental.
+CRITICAL OUTPUT RULES (your output MUST comply; non-compliance breaks
+the loop):
 
-Output ONLY the new system prompt (markdown), no preamble, no explanation
-outside the prompt itself. Start with the same `# Language requirement`
-section the original uses.
+1. Output the COMPLETE new system prompt, verbatim ready to be saved
+   as reverser_system.md. Do NOT abbreviate, summarize, or shorten any
+   section. The output is loaded as-is into gemma4's context.
+
+2. PRESERVE EVERY SECTION of the current prompt verbatim unless a
+   section directly causes this failure. In particular keep ALL the
+   numbered Pitfalls (Pitfall 1..10), the API reference, the Output
+   format, the Architecture context — copy them character-for-character.
+
+3. Your change should be ADDITIVE: introduce a new numbered Pitfall
+   (continue the numbering: 11, 12, ...) OR refine the wording of ONE
+   existing pitfall by appending a clarifying example. Do NOT remove
+   any pitfall.
+
+4. Your output length must be AT LEAST as long as the input prompt (in
+   line count). If you find yourself shortening anything, you are
+   doing it wrong — re-emit the omitted content verbatim.
+
+5. Output markdown only, no preamble, no commentary outside the prompt
+   itself. Start with the same `# Language requirement` section.
 """
 
 

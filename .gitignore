@@ -83,3 +83,9 @@ port/**/_failed/
 # Workspace-specific (not for public repo)
 # ============================================================================
 # (none for now)
+
+# P3 prompt-mutation loop intermediate artifacts
+prompts/history/_candidate_*/
+port/_mutation/
+port/_regression/
+translator/runs/reg_*.json

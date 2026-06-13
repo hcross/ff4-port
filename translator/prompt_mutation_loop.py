@@ -64,12 +64,26 @@ def load_fail_routines(jsonl_path: Path, tier_filter: str = "gemma4:31b") -> lis
             continue
         if rec.get("status") in ("pass", "PASS"):
             continue
+        name = rec.get("name", "?")
+        # Skip auto-named routines (_XXXXXX hex labels); they're less
+        # pedagogical for the critic and often poorly addressed in upstream.
+        if name.startswith("_"):
+            continue
+        # Skip routines that the auto-spike pipeline can't validate
+        # (CUSTOM_SPIKE marker, indexed-store edge cases — Pitfall 10).
+        # The critic can't help if the validator refuses to evaluate.
+        tail = (rec.get("spike_tail") or "").lower()
+        if "custom_spike" in tail or "no_contract" in tail or "skipping auto-gen" in tail:
+            continue
         fails.append({
-            "name": rec.get("name", "?"),
-            "mod": rec.get("mod") or rec.get("module") or guess_mod(rec.get("name", "")),
+            "name": name,
+            "mod": rec.get("mod") or rec.get("module") or guess_mod(name),
             "status": rec.get("status"),
-            "error_class": rec.get("error_class") or rec.get("class") or "UNKNOWN",
-            "error_message": rec.get("error_message") or rec.get("stderr") or "",
+            "error_class": rec.get("failure_class") or rec.get("error_class")
+                           or rec.get("class") or "UNKNOWN",
+            "error_message": rec.get("error") or rec.get("error_message")
+                             or rec.get("spike_tail")
+                             or rec.get("stderr") or "",
         })
     return fails
 
@@ -127,9 +141,18 @@ def translate_then_validate(mod: str, name: str, prompts_dir: Path,
     except subprocess.TimeoutExpired:
         return {"status": "validate_timeout", "c_path": str(c_path)}
     out = proc.stdout
-    if "VERDICT: PASS" in out or '"status": "pass"' in out:
-        return {"status": "pass", "c_path": str(c_path)}
-    if "compile error" in out.lower() or "compilation failed" in out.lower():
+    import re
+    m = re.search(r"=== summary === trials: (\d+), fails: (\d+)", out)
+    if m and int(m.group(2)) == 0:
+        return {"status": "pass", "c_path": str(c_path),
+                "trials": int(m.group(1))}
+    if m and int(m.group(2)) > 0:
+        return {"status": "ram_diverge", "c_path": str(c_path),
+                "fails": int(m.group(2))}
+    if "implicit-function-declaration" in out or "undeclared" in out:
+        return {"status": "compile_error", "c_path": str(c_path),
+                "tail": out[-800:]}
+    if "make: ***" in out or "Error 1" in out:
         return {"status": "compile_error", "c_path": str(c_path),
                 "tail": out[-800:]}
     return {"status": "fail", "c_path": str(c_path), "tail": out[-800:]}
@@ -259,9 +282,9 @@ def main():
     ap.add_argument("--start-version", default=None,
                     help="prompts/history/<this>/ to start from. Defaults to latest.")
     ap.add_argument("--fail-source",
-                    default="translator/runs/calibration_matrix_v2.jsonl",
+                    default="translator/runs/calibration_matrix.jsonl",
                     type=Path,
-                    help="JSONL with FAIL routines to attempt to fix")
+                    help="JSONL with FAIL routines to attempt to fix. v1 holds gemma4:31b + qwen3-coder:480b; v2 holds reasoning-models.")
     ap.add_argument("--tier-filter", default="gemma4:31b",
                     help="only consider FAIL records matching this tier_model")
     ap.add_argument("--model", default="gemma4:31b",
@@ -324,11 +347,17 @@ def main():
         candidate_dir = HISTORY_DIR / f"_candidate_v{K+1}"
         candidate_dir.mkdir(parents=True, exist_ok=True)
         new_system = candidate_dir / "reverser_system.md"
+        # Prefer the fresh error message from the just-failed baseline
+        # (the JSONL one is stale and often just the trailing make line).
+        fresh_err = bl.get("tail") or bl.get("stderr_tail") or ""
+        live_error_class = bl["status"].upper() if bl["status"] in (
+            "compile_error", "fail", "ram_diverge") else fail["error_class"]
         ok = call_critic(
             current_dir / "reverser_system.md",
             asm_file, name,
             Path(bl.get("c_path", "/dev/null")),
-            fail["error_class"], fail["error_message"],
+            live_error_class,
+            fresh_err or fail["error_message"],
             new_system, api_key,
         )
         if not ok:

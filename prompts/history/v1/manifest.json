@@ -1,0 +1,23 @@
+{
+  "version": "v1",
+  "parent": "v0",
+  "created_at": "2026-06-13T10:19:28.175874+00:00",
+  "mutation_summary": "fixed field:MapGfxBankTbl (WRONG_SIGNATURE)",
+  "routine_that_drove_mutation": "field:MapGfxBankTbl",
+  "regression_score": {
+    "pass_count": 7,
+    "suite_size": 16,
+    "pass_rate": 0.4375,
+    "by_class": {
+      "unknown": 2,
+      "pass": 7,
+      "fail": 6,
+      "ram_diverge": 1
+    }
+  },
+  "files": [
+    "reverser_system.md",
+    "reverser_task.md",
+    "reverser_examples.md"
+  ]
+}

@@ -37,30 +37,29 @@ GENERATE_SPIKE = THIS / "generate_spike.py"
 
 
 DEFAULT_SUITE = [
-    # Battle (4)
-    ("battle", "AICond_00"),
+    # Battle (5) — confirmed spike-PASS in qwen3_validation_after_retry.jsonl
+    ("battle", "AICondTarget_23"),
+    ("battle", "AICondTarget_25"),
     ("battle", "AICond_02"),
+    ("battle", "AICond_05"),
     ("battle", "AITarget_19"),
-    ("battle", "AITarget_1a"),
-    # Cutscene (4)
+    # Cutscene (4) — confirmed PASS in cutscene_validation_after_retry.jsonl
     ("cutscene", "GetEarthSpritePos"),
     ("cutscene", "GetOtherPlanetTile"),
     ("cutscene", "InitStars"),
     ("cutscene", "NewLine"),
-    # Field (4)
-    ("field", "DrawPos"),
-    ("field", "HexToDec"),
-    ("field", "InitSpellLists"),
-    ("field", "Mult16"),
-    # Menu (4)
-    ("menu", "BtnAction"),
-    ("menu", "BtnDefault"),
-    ("menu", "ClearText"),
-    ("menu", "InitCtrl"),
-    # Sound (3) — InitSound_ext + ExecSound_ext excluded (dispatch skip list)
+    # Field (4) — confirmed PASS in field_validation_after_retry.jsonl
+    ("field", "AfterBattle"),
+    ("field", "BoardChoco"),
+    ("field", "CheckTilePass"),
+    ("field", "CloseYesNoWindow"),
+    # Sound (3) — confirmed PASS in sound_validation.jsonl
+    # (InitSound_ext + ExecSound_ext excluded: dispatch skip list)
     ("sound", "ExecInterrupt"),
     ("sound", "PlayGameSfx"),
     ("sound", "PlaySystemSfx"),
+    # Menu: no dedicated validation jsonl yet; revisit once menu_ext PASS
+    # records are persisted with status field.
 ]
 
 
@@ -109,9 +108,18 @@ def validate_one(c_path: Path, tag: str, timeout: int) -> dict:
     except subprocess.TimeoutExpired:
         return {"status": "timeout"}
     out = proc.stdout
-    if "VERDICT: PASS" in out or '"status": "pass"' in out:
-        return {"status": "pass"}
-    if "compile error" in out.lower() or "compilation failed" in out.lower():
+    # generate_spike emits "=== summary === trials: N, fails: K" on success
+    import re
+    m = re.search(r"=== summary === trials: (\d+), fails: (\d+)", out)
+    if m and int(m.group(2)) == 0:
+        return {"status": "pass", "trials": int(m.group(1))}
+    if m and int(m.group(2)) > 0:
+        return {"status": "ram_diverge", "trials": int(m.group(1)),
+                "fails": int(m.group(2))}
+    # Heuristics on build error
+    if "implicit-function-declaration" in out or "undeclared" in out:
+        return {"status": "compile_error", "tail": out[-500:]}
+    if "make: ***" in out or "Error 1" in out:
         return {"status": "compile_error", "tail": out[-500:]}
     if proc.returncode != 0:
         return {"status": "fail", "tail": out[-500:]}
