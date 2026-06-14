@@ -1,47 +1,254 @@
 {
-  "start_line": 10,
+  "start_line": 30,
   "chunks": [
     {
-      "chunk_id": "c1_line10",
+      "chunk_id": "c1_line30",
+      "targets_count": 5,
+      "passes_count": 2,
+      "build": "ok",
+      "ff4_gnw_sha": "e2f3b2a",
+      "cascade_sec": 157.9
+    },
+    {
+      "chunk_id": "c2_line35",
+      "targets_count": 5,
+      "passes_count": 1,
+      "build": "ok",
+      "ff4_gnw_sha": "120128e",
+      "cascade_sec": 162.6
+    },
+    {
+      "chunk_id": "c3_line40",
+      "targets_count": 5,
+      "passes_count": 3,
+      "build": "ok",
+      "ff4_gnw_sha": "d5096ab",
+      "cascade_sec": 529.7
+    },
+    {
+      "chunk_id": "c4_line45",
+      "targets_count": 5,
+      "passes_count": 2,
+      "build": "ok",
+      "ff4_gnw_sha": "9d4cc3d",
+      "cascade_sec": 185.7
+    },
+    {
+      "chunk_id": "c5_line50",
+      "targets_count": 5,
+      "passes_count": 2,
+      "build": "ok",
+      "ff4_gnw_sha": "e19abcd",
+      "cascade_sec": 313.1
+    },
+    {
+      "chunk_id": "c6_line55",
+      "targets_count": 5,
+      "passes_count": 4,
+      "build": "ok",
+      "ff4_gnw_sha": "f471513",
+      "cascade_sec": 193.3
+    },
+    {
+      "chunk_id": "c7_line60",
+      "targets_count": 5,
+      "passes_count": 2,
+      "build": "ok",
+      "ff4_gnw_sha": "2c6cee9",
+      "cascade_sec": 221.2
+    },
+    {
+      "chunk_id": "c8_line65",
+      "targets_count": 5,
+      "passes_count": 1,
+      "build": "ok",
+      "ff4_gnw_sha": "85857e8",
+      "cascade_sec": 340.1
+    },
+    {
+      "chunk_id": "c9_line70",
       "targets_count": 5,
       "passes_count": 0,
       "build": "ok",
       "ff4_gnw_sha": null,
-      "cascade_sec": 169.3
+      "cascade_sec": 181.0
     },
     {
-      "chunk_id": "c2_line15",
+      "chunk_id": "c10_line75",
+      "targets_count": 5,
+      "passes_count": 4,
+      "build": "ok",
+      "ff4_gnw_sha": "711d9fb",
+      "cascade_sec": 298.3
+    },
+    {
+      "chunk_id": "c11_line80",
+      "targets_count": 5,
+      "passes_count": 1,
+      "build": "ok",
+      "ff4_gnw_sha": "a1f30ca",
+      "cascade_sec": 254.6
+    },
+    {
+      "chunk_id": "c12_line85",
+      "targets_count": 5,
+      "passes_count": 2,
+      "build": "ok",
+      "ff4_gnw_sha": "896d044",
+      "cascade_sec": 184.2
+    },
+    {
+      "chunk_id": "c13_line90",
+      "targets_count": 5,
+      "passes_count": 1,
+      "build": "ok",
+      "ff4_gnw_sha": "87e486d",
+      "cascade_sec": 87.8
+    },
+    {
+      "chunk_id": "c14_line95",
       "targets_count": 5,
       "passes_count": 0,
       "build": "ok",
       "ff4_gnw_sha": null,
-      "cascade_sec": 140.6
+      "cascade_sec": 642.3
     },
     {
-      "chunk_id": "c3_line20",
+      "chunk_id": "c15_line100",
       "targets_count": 5,
       "passes_count": 1,
       "build": "ok",
-      "ff4_gnw_sha": "3dcdd2a",
-      "cascade_sec": 191.4
+      "ff4_gnw_sha": "f7a345e",
+      "cascade_sec": 258.0
     },
     {
-      "chunk_id": "c4_line25",
+      "chunk_id": "c16_line105",
       "targets_count": 5,
       "passes_count": 1,
       "build": "ok",
-      "ff4_gnw_sha": "07875a5",
-      "cascade_sec": 67.1
+      "ff4_gnw_sha": "c8ed58d",
+      "cascade_sec": 434.4
+    },
+    {
+      "chunk_id": "c17_line110",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 675.9
+    },
+    {
+      "chunk_id": "c18_line115",
+      "targets_count": 5,
+      "passes_count": 1,
+      "build": "ok",
+      "ff4_gnw_sha": "5d2e12b",
+      "cascade_sec": 116.4
+    },
+    {
+      "chunk_id": "c19_line120",
+      "targets_count": 5,
+      "passes_count": 3,
+      "build": "ok",
+      "ff4_gnw_sha": "8c2f0b0",
+      "cascade_sec": 228.9
+    },
+    {
+      "chunk_id": "c20_line125",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 141.8
+    },
+    {
+      "chunk_id": "c21_line130",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 84.8
+    },
+    {
+      "chunk_id": "c22_line135",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 95.9
+    },
+    {
+      "chunk_id": "c23_line140",
+      "targets_count": 5,
+      "passes_count": 3,
+      "build": "ok",
+      "ff4_gnw_sha": "50c9cf1",
+      "cascade_sec": 142.9
+    },
+    {
+      "chunk_id": "c24_line145",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 135.1
+    },
+    {
+      "chunk_id": "c25_line150",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 350.1
+    },
+    {
+      "chunk_id": "c26_line155",
+      "targets_count": 5,
+      "passes_count": 1,
+      "build": "ok",
+      "ff4_gnw_sha": "85f020a",
+      "cascade_sec": 231.3
+    },
+    {
+      "chunk_id": "c27_line160",
+      "targets_count": 5,
+      "passes_count": 0,
+      "build": "ok",
+      "ff4_gnw_sha": null,
+      "cascade_sec": 562.7
+    },
+    {
+      "chunk_id": "c28_line165",
+      "targets_count": 5,
+      "passes_count": 2,
+      "build": "hard_fail",
+      "err_tail": "sed [-Wunused-label]\n   44 | _d3b1:\n      | ^~~~~\nexternal/ff4/field/CheckTriggerSub.c: In function 'CheckTriggerSub_c':\nexternal/ff4/field/CheckTriggerSub.c:23:31: error: 'Snes' has no member named 'rom'; did you mean 'ram'?\n   23 |     uint8_t freq_mask = snes->rom[0x9B00 + 0x00]; // Placeholder: Actual ROM offset needed.\n      |                               ^~~\n      |                               ram\nmake: *** [build/ff4/CheckTriggerSub.o] Error 1\nmake: *** Waiting for unfinished jobs....\n"
     }
   ],
   "totals": {
-    "attempted": 20,
-    "passed": 2,
-    "ported": 2,
+    "attempted": 135,
+    "passed": 35,
+    "ported": 35,
     "rejected_by_build": 0,
     "commits": [
-      "3dcdd2a",
-      "07875a5"
+      "e2f3b2a",
+      "120128e",
+      "d5096ab",
+      "9d4cc3d",
+      "e19abcd",
+      "f471513",
+      "2c6cee9",
+      "85857e8",
+      "711d9fb",
+      "a1f30ca",
+      "896d044",
+      "87e486d",
+      "f7a345e",
+      "c8ed58d",
+      "5d2e12b",
+      "8c2f0b0",
+      "50c9cf1",
+      "85f020a"
     ]
   }
 }
