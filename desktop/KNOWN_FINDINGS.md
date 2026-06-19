@@ -83,6 +83,40 @@ their provenance/compat is confirmed.
 on-device battle blue-screen reproduced via native dispatch." The A/B disproved
 that attribution. The hang is real but its cause is not yet localized.
 
+## F3 — `_15cadc_c` OAM-DMA bypass diverges from the original DMA
+
+**Severity:** med · **Found:** M3, 2026-06-19 (A/B oracle) · **Status:** open
+
+The M3 A/B oracle (`ff4-desktop-oracle`, ON vs pure-interpreter on the same
+seed/binary) reports `$15:CADC` (`_15cadc_c`, the NMI sprite/OAM refresh) as
+the **first** diverging hook on BOTH healthy seeds:
+
+| Seed | first WRAM div | first FB div | culprit hook |
+|------|----------------|--------------|--------------|
+| `004-menu.lss`               | frame 4 | frame 7 | `15CADC` |
+| `001-scene-after-leaving.lss`| frame 3 | frame 3 | `15CADC` |
+
+The determinism self-test (`--selftest`, ON vs ON) is green on both seeds, so
+the oracle mechanism is trusted: this is a real behavioural difference, not a
+snapshot/restore artifact.
+
+`_15cadc_c` deliberately replaces the original's DMA-channel-0 OAM blast with a
+manual `snes_writeBBus($2104)` loop, to dodge a savestate-resumed APU hardfault
+on the device (`dma_startDma` → `snes_syncCycles`). So the A/B "ground truth"
+(real DMA under pure interpretation) is precisely what the device cannot run
+post-savestate — **the fix is not "match ground truth" but "make the manual
+OAM loop produce the same OAM state the DMA would."** Candidate causes: OAMADDL
+reset semantics, the $2104 low-table even/odd write latch, or the DMA setup
+registers ($4300-$4306) that the manual path leaves unset.
+
+Note: pass A parks the CPU at `00:FFFF` (a WAI/main-loop spin) at each frame
+boundary while pure interpretation lands at live PCs — expected (the two sides
+run different control flow); the WRAM/FB CRC is the signal, not the PC.
+
+**Next:** localise within `_15cadc_c` whether OAM contents differ (dump OAM
+post-hook in both passes), then correct the manual transfer; re-run the oracle
+to confirm zero divergence on the healthy seeds.
+
 ## Infra note — config parity with the device
 
 The host must define **`FF4_PORT_STATIC_SNES`** (as the device build does):

@@ -43,13 +43,14 @@ GNW_SRC := $(wildcard $(FF4GNW)/snes/*.c) \
 
 BIN     := ff4-desktop-headless
 BIN_SDL := ff4-desktop-sdl
+BIN_ORC := ff4-desktop-oracle
 
 SDL_CFLAGS := $(shell sdl2-config --cflags)
 SDL_LIBS   := $(shell sdl2-config --libs)
 
-.PHONY: all run sdl clean
+.PHONY: all run sdl oracle clean
 
-all: $(BIN) $(BIN_SDL)
+all: $(BIN) $(BIN_SDL) $(BIN_ORC)
 
 $(BIN): harness_headless.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ harness_headless.c $(GNW_SRC) $(LDFLAGS)
@@ -57,11 +58,19 @@ $(BIN): harness_headless.c $(GNW_SRC)
 $(BIN_SDL): main_sdl.c $(GNW_SRC)
 	$(CC) $(CFLAGS) $(SDL_CFLAGS) -o $@ main_sdl.c $(GNW_SRC) $(SDL_LIBS) $(LDFLAGS)
 
+$(BIN_ORC): oracle_ab.c $(GNW_SRC)
+	$(CC) $(CFLAGS) -o $@ oracle_ab.c $(GNW_SRC) $(LDFLAGS)
+
 run: $(BIN)
 	./$(BIN) $(ROM) $(FRAMES)
 
 sdl: $(BIN_SDL)
 	./$(BIN_SDL) $(ROM)
 
+# M3 A/B oracle. SEED=path to a savestate; defaults to the healthy menu seed.
+SEED ?= ../004-menu.lss
+oracle: $(BIN_ORC)
+	./$(BIN_ORC) $(ROM) --load $(SEED) --frames $(FRAMES)
+
 clean:
-	rm -f $(BIN) $(BIN_SDL)
+	rm -f $(BIN) $(BIN_SDL) $(BIN_ORC)

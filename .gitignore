@@ -41,6 +41,7 @@ LakeSnes/LakeSnes.app/
 # Desktop validation host binaries (built from desktop/Makefile, ADR 0001)
 desktop/ff4-desktop-headless
 desktop/ff4-desktop-sdl
+desktop/ff4-desktop-oracle
 
 # Pre-made savestate seeds (provenance unconfirmed, see F2; large binaries)
 *.lss
