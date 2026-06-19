@@ -72,5 +72,12 @@ SEED ?= ../004-menu.lss
 oracle: $(BIN_ORC)
 	./$(BIN_ORC) $(ROM) --load $(SEED) --frames $(FRAMES)
 
+# Clean baseline: exclude the two intentionally-divergent routines (F3 OAM-DMA
+# bypass, F4 sound stub) so any remaining divergence is a real faithful-port
+# bug. Both healthy seeds are IDENTICAL under this exclusion set.
+EXCLUDE ?= --exclude 15cadc --exclude 048004
+oracle-baseline: $(BIN_ORC)
+	./$(BIN_ORC) $(ROM) --load $(SEED) --frames $(FRAMES) $(EXCLUDE)
+
 clean:
 	rm -f $(BIN) $(BIN_SDL) $(BIN_ORC)

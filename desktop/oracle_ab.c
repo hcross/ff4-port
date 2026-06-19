@@ -39,6 +39,12 @@
  *     --report f.txt  also write the verdict to a file
  *     --fb-only       compare framebuffer only (skip WRAM channel)
  *     --wram-only     compare WRAM only (skip framebuffer channel)
+ *     --exclude PC    force a hook (hex original pc) to pure interpretation in
+ *                     BOTH passes; repeatable. Use it to neutralise the
+ *                     intentionally-divergent routines so the remaining
+ *                     faithful ports can be checked. Clean baseline for the
+ *                     healthy seeds: --exclude 15cadc --exclude 048004
+ *                     (F3 OAM-DMA bypass, F4 ExecSound stub — see KNOWN_FINDINGS).
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,6 +53,7 @@
 #include <stdbool.h>
 
 #include "snes/snes.h"   /* Snes, snes_loadState/saveState */
+#include "snes/ppu.h"    /* Ppu, oam/highOam (for the OAM channel) */
 
 /* ff4-gnw glue (ff4-gnw/main.c) */
 extern bool ff4_init(const uint8_t *rom_bytes, int rom_length);
@@ -60,6 +67,18 @@ extern uint32_t ff4_dispatch_hits;
 extern uint32_t ff4_dispatch_misses;
 extern int ff4_dispatch_enabled;
 extern void (*ff4_dispatch_trace)(uint32_t pc);
+extern int  (*ff4_dispatch_filter)(uint32_t pc);
+
+/* --exclude set: hooks forced to pure interpretation in BOTH passes, so an
+ * intentionally-divergent routine stops contaminating the comparison. */
+#define EXCL_CAP 64
+static uint32_t g_excl[EXCL_CAP];
+static int      g_excl_n = 0;
+
+static int dispatch_filter(uint32_t pc) {
+    for (int i = 0; i < g_excl_n; i++) if (g_excl[i] == pc) return 0;
+    return 1;
+}
 
 /* Per-hit dispatch trace: flat event log of (frame, original-pc) appended by
  * trace_cb during pass A, used to attribute the first diverging frame to the
@@ -127,10 +146,19 @@ static uint8_t *read_file(const char *path, long *out_len) {
 typedef struct {
     uint32_t wram;     /* crc32 of the 128 KB WRAM */
     uint32_t fb;       /* crc32 of the blitted RGB565 framebuffer */
+    uint32_t oam;      /* crc32 of PPU OAM (oam[0x100] + highOam[0x20] = 544 B) */
     uint8_t  k;        /* program bank after the frame */
     uint16_t pc;       /* program counter after the frame */
     uint64_t cycles;   /* cumulative cpu cycles (delta exposes a stuck frame) */
 } FrameHash;
+
+/* crc32 over the two non-contiguous OAM tables, chained. */
+static uint32_t oam_crc(Snes *snes) {
+    uint32_t c = crc32((const uint8_t *)snes->ppu->oam, sizeof(snes->ppu->oam));
+    /* fold highOam in by continuing from c's complement (cheap chain). */
+    uint32_t h = crc32(snes->ppu->highOam, sizeof(snes->ppu->highOam));
+    return c ^ (h * 0x9E3779B1u);
+}
 
 /* Run `frames` frames from the CURRENT state, recording a fingerprint per
  * frame into out[]. dispatch_enabled selects the A or B side. */
@@ -145,6 +173,7 @@ static void run_pass(int dispatch_enabled, int frames, FrameHash *out, int trace
         ff4_blit_to_lcd(fb);
         out[i].wram   = crc32(ff4_snes->ram, sizeof(ff4_snes->ram));
         out[i].fb     = crc32((const uint8_t *)fb, sizeof(fb));
+        out[i].oam    = oam_crc(ff4_snes);
         out[i].k      = ff4_snes->cpu->k;
         out[i].pc     = ff4_snes->cpu->pc;
         out[i].cycles = ff4_snes->cycles;
@@ -179,6 +208,9 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--selftest")) selftest = true;
         else if (!strcmp(argv[i], "--fb-only"))   cmp_wram = false;
         else if (!strcmp(argv[i], "--wram-only")) cmp_fb = false;
+        else if (!strcmp(argv[i], "--exclude") && i + 1 < argc) {
+            if (g_excl_n < EXCL_CAP) g_excl[g_excl_n++] = (uint32_t)strtoul(argv[++i], NULL, 16);
+        }
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
     if (frames <= 0) { fprintf(stderr, "error: --frames must be > 0\n"); return 2; }
@@ -201,6 +233,16 @@ int main(int argc, char **argv) {
         if (!ok) { fprintf(stderr, "error: snes_loadState rejected '%s' (%ld bytes)\n", load_path, st_len); free(rom); return 1; }
         printf("loaded seed   : %s (%ld bytes) | pc=%02X:%04X\n",
                load_path, st_len, ff4_snes->cpu->k, ff4_snes->cpu->pc);
+    }
+
+    /* Install the per-hook exclusion filter (applies to BOTH passes, so an
+     * excluded routine is interpreted identically on each side → contributes
+     * zero divergence). */
+    if (g_excl_n > 0) {
+        ff4_dispatch_filter = dispatch_filter;
+        printf("excluded hooks: ");
+        for (int i = 0; i < g_excl_n; i++) printf("%s%06X", i ? ", " : "", g_excl[i]);
+        printf("  (forced to pure interpretation in both passes)\n");
     }
 
     /* Snapshot the common starting point S0 (post-init, post-seed). */
@@ -238,13 +280,15 @@ int main(int argc, char **argv) {
     /* Compare frame by frame. Track first WRAM and first FB divergence
      * separately: WRAM-only divergence may be internal scratch, while a FB
      * divergence is a gameplay-visible difference against ground truth. */
-    int first = -1, first_wram = -1, first_fb = -1;
+    int first = -1, first_wram = -1, first_fb = -1, first_oam = -1;
     const char *channel = "";
     for (int i = 0; i < frames; i++) {
         bool w = cmp_wram && (A[i].wram != B[i].wram);
         bool f = cmp_fb   && (A[i].fb   != B[i].fb);
+        bool m = (A[i].oam != B[i].oam);
         if (w && first_wram < 0) first_wram = i;
         if (f && first_fb   < 0) first_fb   = i;
+        if (m && first_oam  < 0) first_oam  = i;
         if ((w || f) && first < 0) {
             first = i;
             channel = (w && f) ? "WRAM+FB" : (w ? "WRAM" : "FB");
@@ -286,9 +330,11 @@ int main(int argc, char **argv) {
         n += snprintf(buf + n, sizeof(buf) - n,
             "  first WRAM div: frame %d\n", first_wram);
         n += snprintf(buf + n, sizeof(buf) - n,
-            "  first FB   div: frame %s\n", first_fb < 0 ? "(none — output matches ground truth)" : "");
-        if (first_fb >= 0)
-            n += snprintf(buf + n, sizeof(buf) - n, "                  %d\n", first_fb);
+            "  first FB   div: %s%d\n",
+            first_fb < 0 ? "(none — output matches ground truth) " : "frame ", first_fb);
+        n += snprintf(buf + n, sizeof(buf) - n,
+            "  first OAM  div: %s%d\n",
+            first_oam < 0 ? "(none — OAM matches ground truth) " : "frame ", first_oam);
         int p = first > 0 ? first - 1 : first;
         n += snprintf(buf + n, sizeof(buf) - n,
             "  frame %-4d  : A pc=%02X:%04X wram=%08X fb=%08X | B pc=%02X:%04X wram=%08X fb=%08X\n",
@@ -297,6 +343,14 @@ int main(int argc, char **argv) {
             "  frame %-4d  : A pc=%02X:%04X wram=%08X fb=%08X | B pc=%02X:%04X wram=%08X fb=%08X  <-- diverged\n",
             first, A[first].k, A[first].pc, A[first].wram, A[first].fb,
             B[first].k, B[first].pc, B[first].wram, B[first].fb);
+        long long dcyc = (long long)A[first].cycles - (long long)B[first].cycles;
+        long long adcyc = dcyc < 0 ? -dcyc : dcyc;
+        n += snprintf(buf + n, sizeof(buf) - n,
+            "  cycles@%-4d : A=%llu  B=%llu  (delta %+lld — %s)\n",
+            first, (unsigned long long)A[first].cycles, (unsigned long long)B[first].cycles,
+            dcyc,
+            adcyc > 1000 ? "large ⇒ control-flow/timing divergence"
+                         : "small ⇒ localised functional/state divergence");
     }
     fputs(buf, stdout);
 
@@ -308,6 +362,22 @@ int main(int argc, char **argv) {
         if (first > 0) {
             printf("  hooks @frame %-4d (prev)    : ", first - 1);
             print_hooks_for_frame(stdout, first - 1);
+        }
+        /* When the diverging frame has no local hook, the cause is an earlier
+         * hook whose effect surfaced late: list every distinct hook fired in
+         * [0, first] so the suspect set is explicit. */
+        printf("  hooks in [0,%d] (suspects)  : ", first);
+        {
+            uint32_t seen[256]; int sn = 0, any = 0;
+            for (int i = 0; i < g_ev_n; i++) {
+                if (g_ev_frame[i] > first) continue;
+                int dup = 0;
+                for (int j = 0; j < sn; j++) if (seen[j] == g_ev_pc[i]) { dup = 1; break; }
+                if (dup) continue;
+                if (sn < 256) seen[sn++] = g_ev_pc[i];
+                printf("%s%06X", any ? ", " : "", g_ev_pc[i]); any = 1;
+            }
+            printf(any ? "\n" : "(none)\n");
         }
         printf("  (pc → routine: grep the pc in ff4-gnw/dispatch_all.c)\n");
     }

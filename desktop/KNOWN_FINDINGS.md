@@ -83,39 +83,75 @@ their provenance/compat is confirmed.
 on-device battle blue-screen reproduced via native dispatch." The A/B disproved
 that attribution. The hang is real but its cause is not yet localized.
 
-## F3 — `_15cadc_c` OAM-DMA bypass diverges from the original DMA
+## Oracle methodology — the exclusion baseline (M3, 2026-06-19)
 
-**Severity:** med · **Found:** M3, 2026-06-19 (A/B oracle) · **Status:** open
+The M3 A/B oracle (`ff4-desktop-oracle`) compares native dispatch (the ported
+C, = device) against pure LakeSnes interpretation of the original ASM (ground
+truth) on the same seed/binary, frame by frame (WRAM + framebuffer + OAM CRC),
+and attributes the first divergence to the hook(s) that fired. The determinism
+self-test (`--selftest`, ON vs ON) is **green** on both healthy seeds, so the
+snapshot/restore mechanism is trusted — divergences are real, not artifacts.
 
-The M3 A/B oracle (`ff4-desktop-oracle`, ON vs pure-interpreter on the same
-seed/binary) reports `$15:CADC` (`_15cadc_c`, the NMI sprite/OAM refresh) as
-the **first** diverging hook on BOTH healthy seeds:
+**Key methodology insight:** the A/B is only a valid bug-detector for routines
+*meant to be behaviourally identical* to the original. Two ported routines were
+**deliberately** reimplemented to differ, as device workarounds, and they fire
+on the healthy paths — so they diverge from ground truth BY DESIGN and, firing
+early/often, they mask everything downstream. They must be excluded from the
+comparison (`--exclude`, which forces a hook to pure interpretation in BOTH
+passes). With both excluded, **both healthy seeds are IDENTICAL across the
+whole window** (menu 300 frames, scene 120 frames) — i.e. every *faithful*
+ported routine on these paths is bit-exact vs ground truth.
 
-| Seed | first WRAM div | first FB div | culprit hook |
-|------|----------------|--------------|--------------|
-| `004-menu.lss`               | frame 4 | frame 7 | `15CADC` |
-| `001-scene-after-leaving.lss`| frame 3 | frame 3 | `15CADC` |
+**Clean baseline:** `make oracle-baseline` (== `--exclude 15cadc --exclude
+048004`). Any divergence under this set is a genuine faithful-port bug.
 
-The determinism self-test (`--selftest`, ON vs ON) is green on both seeds, so
-the oracle mechanism is trusted: this is a real behavioural difference, not a
-snapshot/restore artifact.
+These two are tracked below as F3 / F4 — they are *not* bugs, they are the
+known intentional divergences that define the baseline.
 
-`_15cadc_c` deliberately replaces the original's DMA-channel-0 OAM blast with a
-manual `snes_writeBBus($2104)` loop, to dodge a savestate-resumed APU hardfault
-on the device (`dma_startDma` → `snes_syncCycles`). So the A/B "ground truth"
-(real DMA under pure interpretation) is precisely what the device cannot run
-post-savestate — **the fix is not "match ground truth" but "make the manual
-OAM loop produce the same OAM state the DMA would."** Candidate causes: OAMADDL
-reset semantics, the $2104 low-table even/odd write latch, or the DMA setup
-registers ($4300-$4306) that the manual path leaves unset.
+## F3 — `_15cadc_c` OAM-DMA bypass diverges from ground truth (intentional)
 
-Note: pass A parks the CPU at `00:FFFF` (a WAI/main-loop spin) at each frame
-boundary while pure interpretation lands at live PCs — expected (the two sides
-run different control flow); the WRAM/FB CRC is the signal, not the PC.
+**Severity:** info (intentional workaround) · **Found:** M3, 2026-06-19 ·
+**Status:** characterised — excluded from the oracle baseline
 
-**Next:** localise within `_15cadc_c` whether OAM contents differ (dump OAM
-post-hook in both passes), then correct the manual transfer; re-run the oracle
-to confirm zero divergence on the healthy seeds.
+`$15:CADC` (`_15cadc_c`, the NMI sprite/OAM refresh) is the first diverging
+hook on both healthy seeds (menu WRAM@4 FB@7; scene WRAM+FB@3). It deliberately
+replaces the original DMA-channel-0 OAM blast with a manual
+`snes_writeBBus($2104)` loop, to dodge a savestate-resumed APU hardfault on the
+device (`dma_startDma` → `snes_syncCycles`).
+
+Decisive characterisation by the oracle:
+- The **OAM channel does NOT diverge** on scene (and diverges only later than
+  WRAM on menu) — so the manual loop's OAM output is *correct*; `_15cadc` is not
+  functionally wrong.
+- The divergence is **timing/control-flow drift**: the manual loop consumes a
+  very different cycle count than the DMA (scene: Δ −356 928 cycles at the
+  diverging frame), shifting where the frame boundary lands so the interpreted
+  main loop drifts in WRAM. `_15cadc` was fingered only because it is the sole
+  hook firing each NMI frame — innocent-bystander timing contamination.
+- **Excluding `15cadc` makes the scene path IDENTICAL across 120 frames** —
+  proof that every other hook on that path is faithful.
+
+The device only ever runs side A (manual loop); there is no DMA ground truth on
+device post-savestate. So this divergence is an oracle-methodology boundary, not
+a device bug. Left as-is; excluded from the baseline. (Optional future work: make
+the manual loop cycle-closer to the DMA, but not required for correctness.)
+
+## F4 — `ExecSound_ext_stub` ($04:8004) diverges from ground truth (intentional)
+
+**Severity:** info (intentional stub) · **Found:** M3, 2026-06-19 ·
+**Status:** characterised — excluded from the oracle baseline
+
+With `15cadc` excluded, the menu path still diverges at frame 8 — with **no
+hook firing in or just before that frame** (late-surfacing effect). The oracle's
+"suspects in [0,first]" list names a single earlier hook: `$04:8004`
+(`ExecSound_ext_stub`), an explicit **stub** that bypasses the SPC sound wait to
+unblock the title. Excluding `15cadc` + `048004` makes the **menu path IDENTICAL
+across 300 frames**.
+
+As a stub it is not a faithful port and is expected to diverge from ground
+truth; excluded from the baseline. The real sound port (`ExecSound_ext`) is the
+eventual replacement — at which point this exclusion can be dropped and the
+oracle will validate it.
 
 ## Infra note — config parity with the device
 
