@@ -153,6 +153,37 @@ truth; excluded from the baseline. The real sound port (`ExecSound_ext`) is the
 eventual replacement — at which point this exclusion can be dropped and the
 oracle will validate it.
 
+## F5 — controller hooks must stay native; global dispatch-off kills input
+
+**Severity:** med (host usability) · **Found:** 2026-06-19 · **Status:** fixed
+(SDL host) · regression probe: `input_probe.c`
+
+The SDL host's `g` key used to flip the global `ff4_dispatch_enabled`. In
+"interpreter" mode all controller input went dead. `input_probe` isolates it
+(boot to title, hold A, native vs interpreter from the same snapshot):
+
+| mode | `portAutoRead[0]` (auto-joypad) | WRAM mirror `$0600..$0603` |
+|------|--------------------------------|----------------------------|
+| native      | `0080` | `80 00 80 00` → title sees A |
+| interpreter | `0080` | `00 00 00 00` → title sees nothing |
+| interp + input kept native | `0080` | `80 00 80 00` → fixed |
+
+Auto-joypad latches the button in **both** modes (`0080`), so input reaches the
+emulated controller fine. The difference is the **WRAM joypad mirror**: the
+ported `update_ctrl_field_emu` (hooks `018010`/`14fd03`) reads `portAutoRead`
+and writes the mirror at `(D+$00..$03)`; the original asm path is incompatible
+with the auto-joypad-enabled harness and does not rebuild it. So these
+controller hooks are a third class of **intentional reimplementation** that
+must stay native — like F3/F4, but input-dependent (invisible to the oracle's
+no-input seed runs).
+
+**Fix:** the host's `g` no longer touches `ff4_dispatch_enabled`. It installs
+`ff4_dispatch_filter = host_keep_native`, which keeps the input hooks
+(`018010`, `14fd03`, `14fd00`) and the sound stub (`048004`) native while every
+faithful routine falls through to the interpreter. `15cadc` is deliberately
+NOT kept native (its real DMA works on desktop → interpreter mode shows
+ground-truth sprites).
+
 ## Infra note — config parity with the device
 
 The host must define **`FF4_PORT_STATIC_SNES`** (as the device build does):

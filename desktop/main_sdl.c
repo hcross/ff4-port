@@ -9,7 +9,10 @@
  *   arrows  d-pad        z B   x A   a Y   s X   d L   c R
  *   RShift  Select       Return Start
  *   Space   pause        .      single-frame step
- *   g       toggle native dispatch  (live A/B: native <-> pure interpreter)
+ *   g       toggle interpreter mode (live A/B). Interpreter mode runs every
+ *           FAITHFUL routine through the interpreter but keeps the host-
+ *           critical reimplementations native (input + sound) so the host
+ *           stays drivable — see host_keep_native().
  *   F5      save state   F9     load state   (slot: --state, default below)
  *   F12     screenshot PPM (/tmp/ff4-desktop-shot.ppm)
  *   Esc     quit
@@ -32,6 +35,21 @@ extern Snes *ff4_snes;
 extern uint32_t ff4_dispatch_hits;
 extern uint32_t ff4_dispatch_misses;
 extern int ff4_dispatch_enabled;
+extern int (*ff4_dispatch_filter)(uint32_t pc);
+
+/* 'g' interpreter mode keeps the host-critical reimplemented routines native
+ * and interprets everything else — a global dispatch-off would break the host:
+ *   018010 UpdateCtrlField_ext, 14fd03 UpdateCtrl_ext, 14fd00 InitCtrl_ext2 —
+ *     read portAutoRead and rebuild the WRAM joypad mirror; the original asm
+ *     input path is incompatible with the auto-joypad-enabled harness, so
+ *     interpreting them kills all controller input (verified via input_probe).
+ *   048004 ExecSound_ext_stub — bypasses the SPC sound wait; interpreting the
+ *     real routine can stall the title.
+ * NOT kept native: 15cadc (OAM-DMA bypass) — its real DMA works on desktop, so
+ * letting it interpret shows ground-truth sprite rendering, which is the point. */
+static int host_keep_native(uint32_t pc) {
+    return pc == 0x018010 || pc == 0x14fd03 || pc == 0x14fd00 || pc == 0x048004;
+}
 
 #define LCD_W 320
 #define LCD_H 240
@@ -129,7 +147,7 @@ int main(int argc, char **argv) {
     SDL_Texture *tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, LCD_W, LCD_H);
 
     static uint16_t fb[LCD_W * LCD_H];
-    bool running = true, paused = false;
+    bool running = true, paused = false, interp_mode = false;
     uint64_t frame = 0;
 
     while (running) {
@@ -146,8 +164,13 @@ int main(int argc, char **argv) {
                     case SDLK_ESCAPE: running = false; break;
                     case SDLK_SPACE:  paused = !paused; printf("[%s]\n", paused ? "paused" : "running"); break;
                     case SDLK_PERIOD: step_once = true; break;
-                    case SDLK_g: ff4_dispatch_enabled = !ff4_dispatch_enabled;
-                                 printf("[dispatch] %s\n", ff4_dispatch_enabled ? "NATIVE" : "interpreter"); break;
+                    case SDLK_g: interp_mode = !interp_mode;
+                                 /* Dispatch stays on; the filter chooses per hook. In interpreter
+                                  * mode every faithful routine falls through to the interpreter,
+                                  * but the host-critical reimplementations stay native. */
+                                 ff4_dispatch_filter = interp_mode ? host_keep_native : NULL;
+                                 printf("[dispatch] %s\n", interp_mode
+                                        ? "interpreter (input+sound kept native)" : "NATIVE"); break;
                     case SDLK_F5:  save_state(state_path); break;
                     case SDLK_F9:  load_state(state_path); break;
                     case SDLK_F12: screenshot_ppm("/tmp/ff4-desktop-shot.ppm", fb); break;
@@ -170,7 +193,7 @@ int main(int argc, char **argv) {
             snprintf(title, sizeof title,
                 "FF4 desktop | pc=%02X:%04X | dispatch %s %.0f%% | frame %llu%s",
                 ff4_snes->cpu->k, ff4_snes->cpu->pc,
-                ff4_dispatch_enabled ? "NATIVE" : "INTERP",
+                interp_mode ? "INTERP" : "NATIVE",
                 tot ? 100.0 * ff4_dispatch_hits / tot : 0.0,
                 (unsigned long long)frame, paused ? " [paused]" : "");
             SDL_SetWindowTitle(win, title);

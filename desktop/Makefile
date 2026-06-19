@@ -61,6 +61,10 @@ $(BIN_SDL): main_sdl.c $(GNW_SRC)
 $(BIN_ORC): oracle_ab.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ oracle_ab.c $(GNW_SRC) $(LDFLAGS)
 
+# Throwaway input-path diagnostic (not part of `all`).
+input_probe: input_probe.c $(GNW_SRC)
+	$(CC) $(CFLAGS) -o $@ input_probe.c $(GNW_SRC) $(LDFLAGS)
+
 run: $(BIN)
 	./$(BIN) $(ROM) $(FRAMES)
 

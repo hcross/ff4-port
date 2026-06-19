@@ -42,6 +42,7 @@ LakeSnes/LakeSnes.app/
 desktop/ff4-desktop-headless
 desktop/ff4-desktop-sdl
 desktop/ff4-desktop-oracle
+desktop/input_probe
 
 # Pre-made savestate seeds (provenance unconfirmed, see F2; large binaries)
 *.lss
