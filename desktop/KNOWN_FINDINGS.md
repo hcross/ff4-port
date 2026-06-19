@@ -201,10 +201,41 @@ faithful routine falls through to the interpreter. `15cadc` is deliberately
 NOT kept native (its real DMA works on desktop → interpreter mode shows
 ground-truth sprites).
 
-## F6 — `TfrSprites_c` ($03:FE03) writes WRAM instead of the DMA registers
+## F6 — `TfrSprites_c` ($03:FE03) wrote WRAM instead of the DMA registers
 
 **Severity:** high (combat) · **Found:** M3, 2026-06-19 (oracle on `006-in-combat`)
-· **Status:** open, root cause understood
+· **Status:** FIXED (manual OAM transfer); now an excluded DMA-bypass like F3
+
+Root cause, confirmed against the real disassembly
+(`upstream/btlgfx/btlgfx.asm:4527` `TfrSprites @fe03`): the routine does
+`phb / clr_a / pha / plb` to set **DB=$00**, then `sta $4340..` writes the
+**DMA channel-1 registers at $00:4340** (MMIO) and triggers `hMDMAEN` ($420B)
+— a real OAM DMA ($0300 → $2104, 544 bytes, channel 1), plus a priority
+rotation via `$7E:F28A/F289`. The port **ignored the `plb`** and wrote to
+`snes->ram[0x4340..]` (WRAM $7E:4340), and additionally read `ram[0x7ef28a]`,
+a 128 KB-out-of-bounds index ($7E:F28A is WRAM offset 0xF28A). So it corrupted
+WRAM, never ran the transfer, and read OOB.
+
+**Fix (`ff4-gnw/field/TfrSprites.c`):** reimplemented as the same manual
+`$2104` OAM loop used by `_15cadc` (device-safe — the LakeSnes DMA path
+hardfaults post-savestate, see F3), plus the priority rotation via
+`$2103/$2102`, reading the correct `ram[0xF28A]/ram[0xF289]`. Verified by the
+oracle: the frame-0 WRAM divergence on `006-in-combat` is gone. Like `_15cadc`,
+the manual loop residually differs from the real-DMA ground truth (a DMA-channel
+side effect surfacing as ~6 downstream WRAM bytes), so `03fe03` joins the
+baseline exclusion set (`make oracle-baseline` now excludes 15cadc/048004/03fe03).
+
+Diagnostics used: `oracle_ab.c` (`--exclude` bisection) + `wram_diff.c` (exact
+byte-level WRAM diff at the diverging frame).
+
+## F8 — next combat divergence cluster (lead)
+
+**Severity:** tbd · **Found:** M3, 2026-06-19 · **Status:** open, not isolated
+
+With F6 fixed/excluded, `006-in-combat` next diverges at **frame 3** (WRAM;
+FB at frame 8; OAM clean). Hooks: `038085`, `03859B` (frame 3), `03805F`
+(frame 2) — battle-gfx routines in bank $03. Bisect with `--exclude` as for F6,
+disassembly in `upstream/btlgfx/btlgfx.asm`.
 
 Pointing the cycle-bounded oracle at `006-in-combat.lss` (`make oracle-baseline`)
 flags a divergence at **frame 0**, WRAM channel, cycle delta **0** (pure

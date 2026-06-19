@@ -61,9 +61,12 @@ $(BIN_SDL): main_sdl.c $(GNW_SRC)
 $(BIN_ORC): oracle_ab.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ oracle_ab.c $(GNW_SRC) $(LDFLAGS)
 
-# Throwaway input-path diagnostic (not part of `all`).
+# Throwaway diagnostics (not part of `all`).
 input_probe: input_probe.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ input_probe.c $(GNW_SRC) $(LDFLAGS)
+
+wram_diff: wram_diff.c $(GNW_SRC)
+	$(CC) $(CFLAGS) -o $@ wram_diff.c $(GNW_SRC) $(LDFLAGS)
 
 run: $(BIN)
 	./$(BIN) $(ROM) $(FRAMES)
@@ -76,10 +79,11 @@ SEED ?= ../004-menu.lss
 oracle: $(BIN_ORC)
 	./$(BIN_ORC) $(ROM) --load $(SEED) --frames $(FRAMES)
 
-# Clean baseline: exclude the two intentionally-divergent routines (F3 OAM-DMA
-# bypass, F4 sound stub) so any remaining divergence is a real faithful-port
-# bug. Both healthy seeds are IDENTICAL under this exclusion set.
-EXCLUDE ?= --exclude 15cadc --exclude 048004
+# Clean baseline: exclude the intentionally DMA-bypassing / stubbed routines
+# (F3 _15cadc OAM-DMA bypass, F4 ExecSound stub, F6 TfrSprites OAM-DMA bypass)
+# so any remaining divergence is a real faithful-port bug. Healthy seeds are
+# IDENTICAL under this set; combat seeds surface the next real divergence.
+EXCLUDE ?= --exclude 15cadc --exclude 048004 --exclude 03fe03
 oracle-baseline: $(BIN_ORC)
 	./$(BIN_ORC) $(ROM) --load $(SEED) --frames $(FRAMES) $(EXCLUDE)
 
