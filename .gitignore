@@ -99,3 +99,4 @@ prompts/history/_candidate_*/
 port/_mutation/
 port/_regression/
 translator/runs/reg_*.json
+desktop/proof_cyc

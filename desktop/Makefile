@@ -89,3 +89,6 @@ oracle-baseline: $(BIN_ORC)
 
 clean:
 	rm -f $(BIN) $(BIN_SDL) $(BIN_ORC)
+
+proof_cyc: proof_cyc.c $(GNW_SRC)
+	$(CC) $(CFLAGS) -o $@ proof_cyc.c $(GNW_SRC) $(LDFLAGS)
