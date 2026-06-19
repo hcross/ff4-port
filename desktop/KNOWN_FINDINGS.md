@@ -301,9 +301,41 @@ comments claimed `ppu_runLine` was bounded to 224 but nothing enforced it.
 runs 600 native frames with no crash; menu self-test + scene baseline stay
 clean. **Device impact:** the device uses the same 224-row buffer, so it almost
 certainly suffered the same overflow at combat entry — this likely fixes a real
-on-device crash, not just the desktop host. (Open follow-up: why line 225 is
-rendered at all — bound `ppu_runLine` at the call site too, or fix the
-vPos==225/inVblank ordering.)
+on-device crash, not just the desktop host.
+
+**UPDATE 2026-06-19 — defensive guard, not the root fix.** The crash is a
+*secondary* effect (see F10): line 225 renders and the corruption happens only
+because native dispatch has already diverged into a wrong PPU/control-flow state.
+The guard correctly prevents the memory corruption (and lets the oracle analyse
+005 without crashing), but the real bug is a rewritten routine — chase F10.
+
+## F10 — native combat entry is a black screen (brightness 0); wrong control flow
+
+**Severity:** high (combat unplayable native) · **Found:** 2026-06-19 ·
+**Status:** open — root cause is a rewritten routine, not yet isolated
+
+User report, reproduced headlessly on `005-pre-combat`: pure interpretation
+renders combat, **native dispatch shows a fully black screen** (framebuffer 0
+non-black bytes vs ~109 k in interpreter). `wram_diff` PPU-state dump at frame
+120:
+
+| | brightness | BG mode | pc |
+|---|---|---|---|
+| native (A)      | **0**  | 0 | 00:FFFF (parked/WAI) |
+| interpreter (B) | **15** | 1 | 02:A350 (in combat) |
+
+Black screen = `brightness=0` (INIDISP $2100 never ramped); and more deeply,
+native and interpreter are in **completely different states** — native diverged
+early and never entered combat properly. The cause is an early **control-flow-
+affecting** rewritten routine on the combat-entry path — NOT the DMA-bypass
+routines (15cadc/03fe03/15ca5e, functionally fine, just need exclusion), and NOT
+`_15ca5e_c`/TfrPal (palette, another benign bypass).
+
+**Next:** with the DMA-bypass routines excluded, oracle-bisect the remaining
+combat-entry divergences (15c163, 15c23d, 0382cb… bank $03/$15) down to the
+routine that flips native onto the wrong branch. brightness-0/mode-0 is the
+downstream tell, not the cause. Diagnostic: `wram_diff` now also dumps PPU state
+(brightness/forcedBlank/cgram/mode) per pass.
 
 ## Infra note — config parity with the device
 

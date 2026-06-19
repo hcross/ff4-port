@@ -12,6 +12,7 @@
 #include <stdbool.h>
 
 #include "snes/snes.h"
+#include "snes/ppu.h"
 
 extern bool ff4_init(const uint8_t *rom_bytes, int rom_length);
 extern void ff4_shutdown(void);
@@ -22,6 +23,13 @@ extern int  (*ff4_dispatch_filter)(uint32_t pc);
 #define EXCL_MAX 16
 static uint32_t excl[EXCL_MAX]; static int excl_n = 0;
 static int filt(uint32_t pc){ for(int i=0;i<excl_n;i++) if(excl[i]==pc) return 0; return 1; }
+
+static void ppu_state(const char *tag) {
+    Ppu *p = ff4_snes->ppu;
+    int cgnz = 0; for (int i = 0; i < 0x100; i++) if (p->cgram[i]) cgnz++;
+    printf("  [%s] brightness=%u forcedBlank=%d cgram_nonzero=%d/256 mode=%u\n",
+           tag, p->brightness, p->forcedBlank, cgnz, p->mode);
+}
 
 static uint8_t *read_file(const char *p, long *n){
     FILE *f=fopen(p,"rb"); if(!f) return NULL;
@@ -47,12 +55,14 @@ int main(int argc,char**argv){
     for(int i=0;i<frames;i++) snes_runFrameBounded(ff4_snes, 8000000);
     memcpy(wramA, ff4_snes->ram, 0x20000);
     uint8_t kA=ff4_snes->cpu->k; uint16_t pcA=ff4_snes->cpu->pc;
+    ppu_state("native A");
 
     snes_loadState(ff4_snes,s0,sz);
     ff4_dispatch_enabled=0;
     for(int i=0;i<frames;i++) snes_runFrameBounded(ff4_snes, 8000000);
     memcpy(wramB, ff4_snes->ram, 0x20000);
     uint8_t kB=ff4_snes->cpu->k; uint16_t pcB=ff4_snes->cpu->pc;
+    ppu_state("interp B");
 
     printf("frames=%d  A(native) pc=%02X:%04X  B(interp) pc=%02X:%04X\n", frames,kA,pcA,kB,pcB);
     int ndiff=0;
