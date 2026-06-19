@@ -52,7 +52,9 @@ identical translation unit; this finding is logged rather than silently fixed.
 
 ## F2 — combat / world-map savestates do not run forward on desktop
 
-**Severity:** med · **Found:** M2a, 2026-06-18 · **Status:** open, uncharacterized
+**Severity:** med · **Found:** M2a, 2026-06-18 · **Status:** worked around
+(fresh seeds captured by this core, 2026-06-19) — root cause of the pre-made
+seeds still uncharacterised
 
 Loading the pre-made `.lss` seeds in `ff4-port/` and running:
 
@@ -82,6 +84,21 @@ their provenance/compat is confirmed.
 **Earlier over-claim, corrected:** the combat hang was first reported as "the
 on-device battle blue-screen reproduced via native dispatch." The A/B disproved
 that attribution. The hang is real but its cause is not yet localized.
+
+**Worked around (2026-06-19):** the predicted fix — capture seeds with *this*
+core via the SDL host (key `5`) instead of the suspect pre-made `.lss` — holds.
+Two fresh, trustworthy seeds were captured and validated to load AND run forward
+in pure interpretation (180 frames, no hang), unlike the pre-made `002`/`003`:
+
+| Seed (gitignored, `*.lss`) | role | entry pc | native | interpreter |
+|----------------------------|------|----------|--------|-------------|
+| `005-pre-combat.lss` | just before a battle | `00:9144` | OK | OK (180f) |
+| `006-in-combat.lss`  | during a battle      | `02:A353` | OK | OK (180f) |
+
+`006-in-combat.lss` is the trustworthy combat seed the M3 oracle needs to chase
+F1 (the `*_emu` battle helpers). The pre-made seeds' own hang root cause remains
+uncharacterised but no longer blocks the work. Next: add the cycle-bounded probe
+to the oracle, then run `oracle-baseline` on `006` to localise the battle bug.
 
 ## Oracle methodology — the exclusion baseline (M3, 2026-06-19)
 
