@@ -258,15 +258,39 @@ via MMIO (`snes_write`/`snes_writeBBus`), NOT the WRAM array. Consequences:
 matching how a real `sta $43xx` reaches the DMA controller. Re-run
 `oracle-baseline SEED=../006-in-combat.lss` to confirm zero divergence after.
 
-## F7 — `005-pre-combat` field cluster diverges at frame 0 (lead)
+## F7 — `_15c163` inverted map check + direct-page base — FIXED
 
-**Severity:** med · **Found:** M3, 2026-06-19 · **Status:** open, not isolated
+**Severity:** med · **Found:** 2026-06-19 · **Status:** FIXED (`ff4-gnw a33d48e`)
 
-`005-pre-combat.lss` also diverges at frame 0 (WRAM only; FB+OAM identical;
-cycle delta -4 = functional). Hooks fired that frame: `15CA5E`, `15C163`,
-`15C23D` (field) + `018010` (input, likely innocent). Not yet narrowed to one
-routine — repeat the `--exclude` bisection as done for F6. Likely the same class
-of MMIO-as-WRAM or DP/DB addressing error.
+The frame-0 divergence on `005-pre-combat` isolated (via `--exclude` bisection +
+the snes-reverse-engineer agent + `wram_diff`) to `$15:C163` (mode-7 zoom HDMA).
+Two bugs vs `upstream/notes/ff4j-sfc.asm:70574`:
+1. **Inverted branch (control flow):** asm is `LDA $1700 / CMP #3 / BNE body /
+   RTL` — body runs when `$1700 != 3`, returns when `== 3`. The port had
+   `if (map_id != 3) return;`, the exact opposite, so it ran the mode-7 setup
+   precisely when it had to skip it.
+2. **Direct page:** `lda $ad` is `[D+$AD]`; field D=$0600 → `$00:06AD`, not
+   `$00:00AD`. Now reads `snes->ram[(uint16_t)(snes->cpu->dp + 0xAD)]`.
+Oracle: the routine now diverges 0 bytes. `15c23d` (debug no-op) was a false
+positive; `15ca5e`/TfrPal is a benign DMA-bypass.
+
+## Oracle ignore-list gap — the CPU stack must be masked (methodology §2)
+
+After F7, `006`/`005` combat still diverge; the next "first divergence" on `005`
+(frame 22, combat-init) isolates to `0382cb` (InitHWRegs) — but `wram_diff`
+shows only 2 bytes differ: `$7E:02E4/02E5`, which are **CPU stack scratch**.
+InitHWRegs_c sets `cpu->db`/`cpu->dp` directly, skipping the asm's
+`pha/plb`/`phx/pld`; those transient pushes leave bytes below SP that the C does
+not reproduce. **InitHWRegs is faithful** (the register writes all match; the
+intentional forced-blank/brightness-0 is correct — screen-on happens later). The
+asm→C methodology (§2) explicitly says to mask the **CPU stack region** in the
+per-frame memcmp; our oracle does not yet, so this is a **false positive** that
+hides the real downstream divergence.
+
+**Next (to resume F10):** add a stack-region ignore-mask to `oracle_ab.c` /
+`wram_diff.c` (determine FF4's stack bounds from SP at battle-init), then
+re-bisect the combat path past frame 22 for the real control-flow culprit that
+leaves native at brightness-0/mode-0.
 
 ## Oracle limitation — `run_emulated_func` inner loop is unbounded
 
