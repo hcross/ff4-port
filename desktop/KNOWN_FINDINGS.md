@@ -361,6 +361,45 @@ routine that flips native onto the wrong branch. brightness-0/mode-0 is the
 downstream tell, not the cause. Diagnostic: `wram_diff` now also dumps PPU state
 (brightness/forcedBlank/cgram/mode) per pass.
 
+## Oracle artifact — per-frame CRC is skewed by un-charged dispatch cycles
+
+**Found:** 2026-06-19 (snes-reverse-engineer agent on InitCharRows)
+
+`ff4_dispatch_try` runs a hooked routine's C body and simulates its RTS/RTL
+WITHOUT advancing `cpu->cycles`. So the native pass (with hooks) consumes fewer
+cycles than the pure-interpreter pass and the two drift in PPU timing; the
+per-frame WRAM **CRC** then gets sampled at slightly different PCs (observed A
+pc=03:8265 vs B pc=03:8266 — one instruction apart, cycle delta +4). This
+produces **false-positive "divergences"** with tiny cycle deltas that vanish
+under a byte-level compare. InitCharRows ($0395CE), Mult16 ($0383B9),
+InitHWRegs ($0382CB) and _15c23d were all flagged by the CRC but verified
+**faithful** by `wram_diff` (0 real bytes).
+
+**Consequence for the hunt:** trust `wram_diff` (full byte compare, stack-
+masked) for the verdict, not the per-frame CRC's frame/hook attribution. Proper
+fix (future): charge each hook's original cycle cost in `ff4_dispatch_try`, or
+have the oracle compare bytes at a cycle-synced point.
+
+## F10 (cont.) — true combat divergence onset is frame 27
+
+Using byte-compare (`wram_diff`, stack-masked, all DMA-bypasses excluded,
+F7 fixed) on `005-pre-combat`: WRAM is **identical through frame 26**, then the
+first REAL divergence appears at **frame 27** (13 bytes), exploding to ~13.9 k by
+frame 40 (the black-screen catastrophe). The 13 onset bytes:
+
+```
+$7E:00A6 00A9 00AB 00AC 00B5 00B7 00DF 00E1 00E2 00E3   (battle low-RAM state)
+$7E:352F
+$7E:393F 3940                                            (Mult16 INPUT operands)
+```
+
+`$393F` is Mult16's *input* (it diverges before Mult16 runs), so the culprit is
+an earlier routine at frame 27 that writes these battle-state bytes wrong — NOT
+Mult16/InitCharRows (both faithful). Next: identify the frame-27 writer of
+`$00A6`/`$393F` (oracle hook trace at frame 27 is unreliable due to the CRC
+skew; find the routine that writes these addresses and bisect with `--exclude`,
+or add a byte-accurate first-divergence frame to the oracle).
+
 ## Infra note — config parity with the device
 
 The host must define **`FF4_PORT_STATIC_SNES`** (as the device build does):
