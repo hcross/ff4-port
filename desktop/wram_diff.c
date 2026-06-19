@@ -67,6 +67,7 @@ int main(int argc,char**argv){
     printf("frames=%d  A(native) pc=%02X:%04X  B(interp) pc=%02X:%04X\n", frames,kA,pcA,kB,pcB);
     int ndiff=0;
     for(int a=0;a<0x20000;a++){
+        if(a>=0x0100 && a<0x0300) continue;  /* mask CPU stack scratch (SP top $02FF) */
         if(wramA[a]!=wramB[a]){
             if(ndiff<64)
                 printf("  off $%05X = $%02X:%04X : A=%02X B=%02X\n",

@@ -143,6 +143,26 @@ static uint32_t crc32(const uint8_t *data, size_t len) {
     return ~crc;
 }
 
+/* FF4's CPU stack: 00/8026 LDX #$02FF / TXS — top $02FF, grows down into pages
+ * 1-2. Bytes below the live SP are dead scratch; a ported routine that sets
+ * cpu->db/dp directly (skipping the asm's pha/phx/pld) leaves different scratch
+ * there. Per the asm→C methodology (§2 ignore-list) the stack region is masked
+ * in the per-frame compare so that scratch is not a false divergence. */
+#define STACK_LO 0x0100u
+#define STACK_HI 0x0300u
+
+/* crc32 over WRAM with [STACK_LO,STACK_HI) treated as zero (stack masked). */
+static uint32_t crc32_wram(const uint8_t *data, size_t len) {
+    uint32_t crc = 0xFFFFFFFFu;
+    for (size_t i = 0; i < len; i++) {
+        uint8_t b = (i >= STACK_LO && i < STACK_HI) ? 0 : data[i];
+        crc ^= b;
+        for (int k = 0; k < 8; k++)
+            crc = (crc >> 1) ^ (0xEDB88320u & (uint32_t)(-(int32_t)(crc & 1)));
+    }
+    return ~crc;
+}
+
 static uint8_t *read_file(const char *path, long *out_len) {
     FILE *f = fopen(path, "rb");
     if (!f) return NULL;
@@ -190,7 +210,7 @@ static int run_pass(int dispatch_enabled, int frames, FrameHash *out, int trace,
         bool done = snes_runFrameBounded(ff4_snes, budget);
         memset(fb, 0, sizeof(fb));
         ff4_blit_to_lcd(fb);
-        out[i].wram   = crc32(ff4_snes->ram, sizeof(ff4_snes->ram));
+        out[i].wram   = crc32_wram(ff4_snes->ram, sizeof(ff4_snes->ram));
         out[i].fb     = crc32((const uint8_t *)fb, sizeof(fb));
         out[i].oam    = oam_crc(ff4_snes);
         out[i].k      = ff4_snes->cpu->k;
