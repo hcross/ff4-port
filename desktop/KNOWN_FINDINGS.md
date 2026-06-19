@@ -278,6 +278,33 @@ own loop (50M-opcode guard) which the frame budget does not see. A native hang
 `ff4_port_wdog`-style budget into `run_emulated_func` too, or have it consult a
 global cycle ceiling. Tracked for the combat-entry crash chase (005).
 
+## F9 — combat-entry crash: PPU renders line 225 past the 224-row pixelBuffer
+
+**Severity:** high (crash; likely on device too) · **Found:** 2026-06-19 ·
+**Status:** FIXED (`ff4-gnw/snes/ppu.c`)
+
+Loading `005-pre-combat` and running forward in **native** mode segfaults within
+~60 frames — the SDL host "crash at combat entry" the user reported. Located by
+lldb watchpoint on `ff4_snes->dma`: `ppu_handlePixel(x=11, y=225)` at `ppu.c`
+writes `ppu->pixelBuffer[row*2048 + …]` with `row = y-1 = 224`, **one row past
+the 224-row buffer** (`pixelBuffer[512*4*224]` under `FF4_PORT_STATIC_SNES`).
+The overflow clobbers the adjacent `Snes` — specifically zeroes a byte of the
+`snes->dma` pointer (`0x100691f00` → `0x100001f00`) — so the next DMA calls
+`dma_handleDma(dma=0x…1f00)` and segfaults.
+
+A vblank-edge race renders line 225 (vblank starts at vPos 225); the static
+config's "224 rows are enough" assumption is then violated. The pre-existing
+comments claimed `ppu_runLine` was bounded to 224 but nothing enforced it.
+
+**Fix:** clamp in `ppu_handlePixel` under `FF4_PORT_STATIC_SNES` — `if (row < 0
+|| row >= 224) return;` before the pixelBuffer writes. Verified: 005-pre-combat
+runs 600 native frames with no crash; menu self-test + scene baseline stay
+clean. **Device impact:** the device uses the same 224-row buffer, so it almost
+certainly suffered the same overflow at combat entry — this likely fixes a real
+on-device crash, not just the desktop host. (Open follow-up: why line 225 is
+rendered at all — bound `ppu_runLine` at the call site too, or fix the
+vPos==225/inVblank ordering.)
+
 ## Infra note — config parity with the device
 
 The host must define **`FF4_PORT_STATIC_SNES`** (as the device build does):
