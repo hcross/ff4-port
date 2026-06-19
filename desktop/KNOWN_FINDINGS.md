@@ -201,6 +201,52 @@ faithful routine falls through to the interpreter. `15cadc` is deliberately
 NOT kept native (its real DMA works on desktop → interpreter mode shows
 ground-truth sprites).
 
+## F6 — `TfrSprites_c` ($03:FE03) writes WRAM instead of the DMA registers
+
+**Severity:** high (combat) · **Found:** M3, 2026-06-19 (oracle on `006-in-combat`)
+· **Status:** open, root cause understood
+
+Pointing the cycle-bounded oracle at `006-in-combat.lss` (`make oracle-baseline`)
+flags a divergence at **frame 0**, WRAM channel, cycle delta **0** (pure
+functional, not timing), OAM identical. Excluding the per-frame input hook
+`14fd03` isolates the sole culprit: **`03FE03` = `TfrSprites_c`** (sprite/OAM
+DMA setup). The menu/scene baselines are identical, so this routine diverges
+**specifically in combat**.
+
+Root cause (confirmed in `ff4-gnw/field/TfrSprites.c`): the port writes the DMA
+channel parameters to **`snes->ram[0x4340..0x4347]`** — i.e. WRAM offset
+0x4340 ($7E:4340) — when `$4340-$4347` are **CPU I/O DMA registers**, reached
+via MMIO (`snes_write`/`snes_writeBBus`), NOT the WRAM array. Consequences:
+1. it corrupts WRAM at $7E:4340.. (what the oracle sees diverge), and
+2. the real sprite DMA is never programmed/triggered (`$420B` MDMAEN is also
+   mis-addressed as `ram[0x4343]`; the comment even says "assuming hMDMAEN is
+   0x4343" — MDMAEN is `$420B`).
+
+**Fix direction:** route every `$43xx`/`$420B` access through the bus
+(`snes_write(snes, 0x004340, …)` / `snes_writeBBus`) instead of `snes->ram[...]`,
+matching how a real `sta $43xx` reaches the DMA controller. Re-run
+`oracle-baseline SEED=../006-in-combat.lss` to confirm zero divergence after.
+
+## F7 — `005-pre-combat` field cluster diverges at frame 0 (lead)
+
+**Severity:** med · **Found:** M3, 2026-06-19 · **Status:** open, not isolated
+
+`005-pre-combat.lss` also diverges at frame 0 (WRAM only; FB+OAM identical;
+cycle delta -4 = functional). Hooks fired that frame: `15CA5E`, `15C163`,
+`15C23D` (field) + `018010` (input, likely innocent). Not yet narrowed to one
+routine — repeat the `--exclude` bisection as done for F6. Likely the same class
+of MMIO-as-WRAM or DP/DB addressing error.
+
+## Oracle limitation — `run_emulated_func` inner loop is unbounded
+
+`snes_runFrameBounded` (M3 anti-hang) bounds the *frame* opcode count, but a
+dispatched routine that delegates via `run_emulated_func` spins that helper's
+own loop (50M-opcode guard) which the frame budget does not see. A native hang
+*inside* a delegated routine therefore still stalls for seconds per frame
+(observed running `005-pre-combat` forward). To bound those, thread an
+`ff4_port_wdog`-style budget into `run_emulated_func` too, or have it consult a
+global cycle ceiling. Tracked for the combat-entry crash chase (005).
+
 ## Infra note — config parity with the device
 
 The host must define **`FF4_PORT_STATIC_SNES`** (as the device build does):

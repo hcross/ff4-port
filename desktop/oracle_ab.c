@@ -115,6 +115,21 @@ static void print_hooks_for_frame(FILE *o, int f) {
     fprintf(o, "\n");
 }
 
+/* Every distinct hook fired in frames [0, upto], first-seen order — the suspect
+ * set when a divergence/hang has no hook in its own frame. */
+static void print_suspects_upto(FILE *o, int upto) {
+    uint32_t seen[256]; int sn = 0, any = 0;
+    for (int i = 0; i < g_ev_n; i++) {
+        if (g_ev_frame[i] > upto) continue;
+        int dup = 0;
+        for (int j = 0; j < sn; j++) if (seen[j] == g_ev_pc[i]) { dup = 1; break; }
+        if (dup) continue;
+        if (sn < 256) seen[sn++] = g_ev_pc[i];
+        fprintf(o, "%s%06X", any ? ", " : "", g_ev_pc[i]); any = 1;
+    }
+    fprintf(o, any ? "\n" : "(none)\n");
+}
+
 #define LCD_W 320
 #define LCD_H 240
 
@@ -162,13 +177,17 @@ static uint32_t oam_crc(Snes *snes) {
 
 /* Run `frames` frames from the CURRENT state, recording a fingerprint per
  * frame into out[]. dispatch_enabled selects the A or B side. */
-static void run_pass(int dispatch_enabled, int frames, FrameHash *out, int trace) {
+/* Run up to `frames` cycle-bounded frames. Returns the frame index at which the
+ * bounded runner stalled (CPU-opcode budget exhausted inside one frame = a
+ * hang), or -1 if all frames completed. The stalled frame's hashes ARE recorded
+ * (the mid-hang state) before returning. */
+static int run_pass(int dispatch_enabled, int frames, FrameHash *out, int trace, uint64_t budget) {
     ff4_dispatch_enabled = dispatch_enabled;
     g_trace_active = trace;
     static uint16_t fb[LCD_W * LCD_H];
     for (int i = 0; i < frames; i++) {
         g_trace_frame = i;
-        ff4_step();
+        bool done = snes_runFrameBounded(ff4_snes, budget);
         memset(fb, 0, sizeof(fb));
         ff4_blit_to_lcd(fb);
         out[i].wram   = crc32(ff4_snes->ram, sizeof(ff4_snes->ram));
@@ -177,7 +196,9 @@ static void run_pass(int dispatch_enabled, int frames, FrameHash *out, int trace
         out[i].k      = ff4_snes->cpu->k;
         out[i].pc     = ff4_snes->cpu->pc;
         out[i].cycles = ff4_snes->cycles;
+        if (!done) return i;   /* budget exhausted: stall/hang at frame i */
     }
+    return -1;
 }
 
 /* Snapshot the live Snes into a freshly malloc'd buffer; caller frees. */
@@ -192,17 +213,19 @@ static uint8_t *snapshot(int *out_size) {
 int main(int argc, char **argv) {
     if (argc < 2) {
         fprintf(stderr,
-            "usage: %s <rom.sfc> [--frames N] [--load f.lss] [--selftest]"
-            " [--report f.txt] [--fb-only|--wram-only]\n", argv[0]);
+            "usage: %s <rom.sfc> [--frames N] [--budget OPS] [--load f.lss]"
+            " [--selftest] [--report f.txt] [--fb-only|--wram-only] [--exclude PC]\n", argv[0]);
         return 2;
     }
     const char *rom_path = argv[1];
     int frames = 600;
+    uint64_t budget = 4000000;   /* CPU-opcode budget per frame; a hang trips it */
     const char *load_path = NULL, *report_path = NULL;
     bool selftest = false, cmp_wram = true, cmp_fb = true;
 
     for (int i = 2; i < argc; i++) {
         if      (!strcmp(argv[i], "--frames") && i + 1 < argc) frames = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--budget") && i + 1 < argc) budget = strtoull(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "--load")   && i + 1 < argc) load_path = argv[++i];
         else if (!strcmp(argv[i], "--report") && i + 1 < argc) report_path = argv[++i];
         else if (!strcmp(argv[i], "--selftest")) selftest = true;
@@ -262,10 +285,12 @@ int main(int argc, char **argv) {
     int sideB = selftest ? 1 : 0;     /* self-test compares ON vs ON */
     ff4_dispatch_trace = trace_cb;
     g_ev_n = 0;
-    printf("\npass A: dispatch=%s, %d frames...\n", sideA ? "ON" : "OFF", frames);
-    run_pass(sideA, frames, A, /*trace=*/1);
+    printf("\npass A: dispatch=%s, %d frames (budget %llu ops/frame)...\n",
+           sideA ? "ON" : "OFF", frames, (unsigned long long)budget);
+    int stallA = run_pass(sideA, frames, A, /*trace=*/1, budget);
     uint32_t hitsA = ff4_dispatch_hits, missA = ff4_dispatch_misses;
     ff4_dispatch_trace = 0;           /* pass B must not append events */
+    if (stallA >= 0) printf("  ⚠ pass A STALLED at frame %d (budget exhausted)\n", stallA);
 
     /* Restore S0 and run pass B on the identical starting state. */
     if (!snes_loadState(ff4_snes, s0, s0_size)) {
@@ -274,15 +299,22 @@ int main(int argc, char **argv) {
     ff4_dispatch_hits = ff4_dispatch_misses = 0;
     printf("pass B: dispatch=%s, %d frames...%s\n",
            sideB ? "ON" : "OFF", frames, selftest ? "  (SELF-TEST)" : "");
-    run_pass(sideB, frames, B, /*trace=*/0);
+    int stallB = run_pass(sideB, frames, B, /*trace=*/0, budget);
     uint32_t hitsB = ff4_dispatch_hits, missB = ff4_dispatch_misses;
+    if (stallB >= 0) printf("  ⚠ pass B STALLED at frame %d (budget exhausted)\n", stallB);
 
     /* Compare frame by frame. Track first WRAM and first FB divergence
      * separately: WRAM-only divergence may be internal scratch, while a FB
      * divergence is a gameplay-visible difference against ground truth. */
+    /* Compare only frames both passes fully completed: a stalled frame's hashes
+     * are mid-hang state, not a meaningful comparison point. */
+    int cmp_lim = frames;
+    if (stallA >= 0 && stallA < cmp_lim) cmp_lim = stallA;
+    if (stallB >= 0 && stallB < cmp_lim) cmp_lim = stallB;
+
     int first = -1, first_wram = -1, first_fb = -1, first_oam = -1;
     const char *channel = "";
-    for (int i = 0; i < frames; i++) {
+    for (int i = 0; i < cmp_lim; i++) {
         bool w = cmp_wram && (A[i].wram != B[i].wram);
         bool f = cmp_fb   && (A[i].fb   != B[i].fb);
         bool m = (A[i].oam != B[i].oam);
@@ -295,8 +327,10 @@ int main(int argc, char **argv) {
         }
     }
 
+    bool native_hang = (stallA >= 0) && (stallB < 0 || stallB > stallA);
+
     /* Verdict. */
-    char buf[2048];
+    char buf[4096];
     int n = 0;
     n += snprintf(buf + n, sizeof(buf) - n, "\n=== A/B oracle verdict ===\n");
     n += snprintf(buf + n, sizeof(buf) - n, "mode          : %s\n",
@@ -307,9 +341,25 @@ int main(int argc, char **argv) {
                   cmp_wram ? "WRAM " : "", cmp_fb ? "FB" : "", (cmp_wram||cmp_fb)?"":"(none!)");
     n += snprintf(buf + n, sizeof(buf) - n, "dispatch A    : %u hits / %u miss\n", hitsA, missA);
     n += snprintf(buf + n, sizeof(buf) - n, "dispatch B    : %u hits / %u miss\n", hitsB, missB);
+    n += snprintf(buf + n, sizeof(buf) - n, "compared      : %d / %d frames%s\n",
+                  cmp_lim, frames, cmp_lim < frames ? " (truncated by a stall)" : "");
+    if (stallA >= 0)
+        n += snprintf(buf + n, sizeof(buf) - n,
+            "stall A (nat) : frame %d — CPU-opcode budget (%llu) exhausted inside one frame = HANG\n",
+            stallA, (unsigned long long)budget);
+    if (stallB >= 0)
+        n += snprintf(buf + n, sizeof(buf) - n,
+            "stall B (int) : frame %d — interpreter also stalled (suspect seed/harness, not the port)\n", stallB);
 
-    if (first < 0) {
-        n += snprintf(buf + n, sizeof(buf) - n, "RESULT        : IDENTICAL across all %d frames.\n", frames);
+    if (first < 0 && native_hang) {
+        n += snprintf(buf + n, sizeof(buf) - n,
+            "RESULT        : NATIVE HANG at frame %d (no functional divergence before it).\n", stallA);
+        n += snprintf(buf + n, sizeof(buf) - n,
+            "              → native dispatch hangs where the interpreter runs on; the culprit hook is\n"
+            "                among those that fired up to this frame.\n");
+    } else if (first < 0) {
+        n += snprintf(buf + n, sizeof(buf) - n, "RESULT        : IDENTICAL across %d frames%s.\n",
+                      cmp_lim, (stallA>=0||stallB>=0) ? " compared" : "");
         if (selftest)
             n += snprintf(buf + n, sizeof(buf) - n,
                 "              → snapshot/restore is deterministic; oracle mechanism TRUSTED for this seed.\n");
@@ -367,18 +417,13 @@ int main(int argc, char **argv) {
          * hook whose effect surfaced late: list every distinct hook fired in
          * [0, first] so the suspect set is explicit. */
         printf("  hooks in [0,%d] (suspects)  : ", first);
-        {
-            uint32_t seen[256]; int sn = 0, any = 0;
-            for (int i = 0; i < g_ev_n; i++) {
-                if (g_ev_frame[i] > first) continue;
-                int dup = 0;
-                for (int j = 0; j < sn; j++) if (seen[j] == g_ev_pc[i]) { dup = 1; break; }
-                if (dup) continue;
-                if (sn < 256) seen[sn++] = g_ev_pc[i];
-                printf("%s%06X", any ? ", " : "", g_ev_pc[i]); any = 1;
-            }
-            printf(any ? "\n" : "(none)\n");
-        }
+        print_suspects_upto(stdout, first);
+        printf("  (pc → routine: grep the pc in ff4-gnw/dispatch_all.c)\n");
+    } else if (!selftest && native_hang) {
+        printf("  hooks @frame %-4d (hang)    : ", stallA);
+        print_hooks_for_frame(stdout, stallA);
+        printf("  hooks in [0,%d] (suspects)  : ", stallA);
+        print_suspects_upto(stdout, stallA);
         printf("  (pc → routine: grep the pc in ff4-gnw/dispatch_all.c)\n");
     }
 
