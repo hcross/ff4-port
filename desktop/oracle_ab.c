@@ -195,13 +195,32 @@ static uint32_t oam_crc(Snes *snes) {
     return c ^ (h * 0x9E3779B1u);
 }
 
-/* Run `frames` frames from the CURRENT state, recording a fingerprint per
- * frame into out[]. dispatch_enabled selects the A or B side. */
+/* Byte-accurate WRAM divergence (authoritative; immune to the per-frame CRC's
+ * cycle-skew false positives). Pass A stores its per-frame WRAM into g_snapA;
+ * pass B compares its live WRAM against it, stack-masked, and records the first
+ * truly-divergent frame and the offending offsets. */
+#define WRAM_SZ 0x20000
+static uint8_t (*g_snapA)[WRAM_SZ] = 0;
+static int      g_snap_cap   = 0;     /* # frames g_snapA can hold */
+static int      g_byte_first = -1;    /* first byte-divergent frame (B vs A), or -1 */
+static uint32_t g_byte_off[16];
+static int      g_byte_noff  = 0;
+
+static int wram_first_diff(const uint8_t *a, const uint8_t *b) {
+    for (int i = 0; i < WRAM_SZ; i++) {
+        if (i >= STACK_LO && i < STACK_HI) continue;  /* mask CPU stack scratch */
+        if (a[i] != b[i]) return i;
+    }
+    return -1;
+}
+
 /* Run up to `frames` cycle-bounded frames. Returns the frame index at which the
  * bounded runner stalled (CPU-opcode budget exhausted inside one frame = a
  * hang), or -1 if all frames completed. The stalled frame's hashes ARE recorded
- * (the mid-hang state) before returning. */
-static int run_pass(int dispatch_enabled, int frames, FrameHash *out, int trace, uint64_t budget) {
+ * (the mid-hang state) before returning. If `snap` is set: store==1 copies WRAM
+ * per frame (pass A); store==0 byte-compares against snap[i] (pass B). */
+static int run_pass(int dispatch_enabled, int frames, FrameHash *out, int trace,
+                    uint64_t budget, uint8_t (*snap)[WRAM_SZ], int store) {
     ff4_dispatch_enabled = dispatch_enabled;
     g_trace_active = trace;
     static uint16_t fb[LCD_W * LCD_H];
@@ -216,6 +235,20 @@ static int run_pass(int dispatch_enabled, int frames, FrameHash *out, int trace,
         out[i].k      = ff4_snes->cpu->k;
         out[i].pc     = ff4_snes->cpu->pc;
         out[i].cycles = ff4_snes->cycles;
+        if (snap && i < g_snap_cap) {
+            if (store) {
+                memcpy(snap[i], ff4_snes->ram, WRAM_SZ);
+            } else if (g_byte_first < 0) {
+                int off = wram_first_diff(snap[i], ff4_snes->ram);
+                if (off >= 0) {
+                    g_byte_first = i;
+                    for (int o = off; o < WRAM_SZ && g_byte_noff < 16; o++) {
+                        if (o >= STACK_LO && o < STACK_HI) continue;
+                        if (snap[i][o] != ff4_snes->ram[o]) g_byte_off[g_byte_noff++] = (uint32_t)o;
+                    }
+                }
+            }
+        }
         if (!done) return i;   /* budget exhausted: stall/hang at frame i */
     }
     return -1;
@@ -303,11 +336,18 @@ int main(int argc, char **argv) {
      * attribution of the diverging frame. */
     int sideA = 1;
     int sideB = selftest ? 1 : 0;     /* self-test compares ON vs ON */
+
+    /* Byte-accurate WRAM snapshots for pass A (authoritative divergence). Cap
+     * the buffer so memory stays bounded; beyond the cap we fall back to CRC. */
+    g_snap_cap = frames < 512 ? frames : 512;
+    g_snapA = malloc((size_t)g_snap_cap * WRAM_SZ);
+    if (!g_snapA) g_snap_cap = 0;     /* OOM → CRC-only, still works */
+
     ff4_dispatch_trace = trace_cb;
     g_ev_n = 0;
     printf("\npass A: dispatch=%s, %d frames (budget %llu ops/frame)...\n",
            sideA ? "ON" : "OFF", frames, (unsigned long long)budget);
-    int stallA = run_pass(sideA, frames, A, /*trace=*/1, budget);
+    int stallA = run_pass(sideA, frames, A, /*trace=*/1, budget, g_snapA, /*store=*/1);
     uint32_t hitsA = ff4_dispatch_hits, missA = ff4_dispatch_misses;
     ff4_dispatch_trace = 0;           /* pass B must not append events */
     if (stallA >= 0) printf("  ⚠ pass A STALLED at frame %d (budget exhausted)\n", stallA);
@@ -319,7 +359,7 @@ int main(int argc, char **argv) {
     ff4_dispatch_hits = ff4_dispatch_misses = 0;
     printf("pass B: dispatch=%s, %d frames...%s\n",
            sideB ? "ON" : "OFF", frames, selftest ? "  (SELF-TEST)" : "");
-    int stallB = run_pass(sideB, frames, B, /*trace=*/0, budget);
+    int stallB = run_pass(sideB, frames, B, /*trace=*/0, budget, g_snapA, /*store=*/0);
     uint32_t hitsB = ff4_dispatch_hits, missB = ff4_dispatch_misses;
     if (stallB >= 0) printf("  ⚠ pass B STALLED at frame %d (budget exhausted)\n", stallB);
 
@@ -405,6 +445,18 @@ int main(int argc, char **argv) {
         n += snprintf(buf + n, sizeof(buf) - n,
             "  first OAM  div: %s%d\n",
             first_oam < 0 ? "(none — OAM matches ground truth) " : "frame ", first_oam);
+        if (g_snap_cap > 0) {
+            if (g_byte_first < 0)
+                n += snprintf(buf + n, sizeof(buf) - n,
+                    "  WRAM bytes    : IDENTICAL (CRC 'WRAM div' above is a cycle-skew false positive)\n");
+            else {
+                n += snprintf(buf + n, sizeof(buf) - n,
+                    "  WRAM bytes    : first real divergence frame %d (authoritative, byte-exact):", g_byte_first);
+                for (int k = 0; k < g_byte_noff; k++)
+                    n += snprintf(buf + n, sizeof(buf) - n, " $%05X", g_byte_off[k]);
+                n += snprintf(buf + n, sizeof(buf) - n, "%s\n", g_byte_noff >= 16 ? " …" : "");
+            }
+        }
         int p = first > 0 ? first - 1 : first;
         n += snprintf(buf + n, sizeof(buf) - n,
             "  frame %-4d  : A pc=%02X:%04X wram=%08X fb=%08X | B pc=%02X:%04X wram=%08X fb=%08X\n",
@@ -425,19 +477,24 @@ int main(int argc, char **argv) {
     fputs(buf, stdout);
 
     /* Hook attribution (A/B only): which native routines fired in/just-before
-     * the diverging frame. The culprit is almost always among these. */
-    if (!selftest && first >= 0) {
-        printf("  hooks @frame %-4d (diverged): ", first);
-        print_hooks_for_frame(stdout, first);
-        if (first > 0) {
-            printf("  hooks @frame %-4d (prev)    : ", first - 1);
-            print_hooks_for_frame(stdout, first - 1);
+     * the diverging frame. Use the byte-accurate frame (g_byte_first) when
+     * available — the CRC `first` can be a cycle-skew false positive a frame
+     * early, mis-attributing the culprit. */
+    int att = (g_snap_cap > 0 && g_byte_first >= 0) ? g_byte_first : first;
+    if (!selftest && g_snap_cap > 0 && g_byte_first < 0 && first >= 0) {
+        printf("  (no byte-level WRAM divergence — skipping hook attribution; FB/OAM or skew only)\n");
+    } else if (!selftest && att >= 0) {
+        printf("  hooks @frame %-4d (diverged): ", att);
+        print_hooks_for_frame(stdout, att);
+        if (att > 0) {
+            printf("  hooks @frame %-4d (prev)    : ", att - 1);
+            print_hooks_for_frame(stdout, att - 1);
         }
         /* When the diverging frame has no local hook, the cause is an earlier
          * hook whose effect surfaced late: list every distinct hook fired in
-         * [0, first] so the suspect set is explicit. */
-        printf("  hooks in [0,%d] (suspects)  : ", first);
-        print_suspects_upto(stdout, first);
+         * [0, att] so the suspect set is explicit. */
+        printf("  hooks in [0,%d] (suspects)  : ", att);
+        print_suspects_upto(stdout, att);
         printf("  (pc → routine: grep the pc in ff4-gnw/dispatch_all.c)\n");
     } else if (!selftest && native_hang) {
         printf("  hooks @frame %-4d (hang)    : ", stallA);
@@ -469,7 +526,7 @@ int main(int argc, char **argv) {
     if (selftest) rc = (first < 0) ? 0 : 3;   /* self-test: divergence is failure */
     else          rc = (first < 0) ? 0 : 1;   /* A/B: divergence found → 1 (signal) */
 
-    free(A); free(B); free(s0);
+    free(A); free(B); free(s0); free(g_snapA);
     ff4_shutdown();
     free(rom);
     return rc;
