@@ -13,8 +13,11 @@
  *           FAITHFUL routine through the interpreter but keeps the host-
  *           critical reimplementations native (input + sound) so the host
  *           stays drivable — see host_keep_native().
- *   F5      save state   F9     load state   (slot: --state, default below)
- *   F12     screenshot PPM (/tmp/ff4-desktop-shot.ppm)
+ *   5 / F5  save state to the next free incremental slot (<prefix>-NNN.lss,
+ *           --save-prefix, default "seed"); numbering resumes across sessions.
+ *           Prefer the digit keys: macOS grabs F5/F9/F12 unless Fn-locked.
+ *   9 / F9  reload the most recent capture (or the --load seed if none)
+ *   0 / F12 screenshot PPM (/tmp/ff4-desktop-shot.ppm)
  *   Esc     quit
  */
 #include <stdio.h>
@@ -103,6 +106,19 @@ static void load_state(const char *path) {
            ff4_snes->cpu->k, ff4_snes->cpu->pc);
 }
 
+/* First index N (1-based) for which "<prefix>-NNN.lss" does not yet exist, so
+ * F5 never clobbers a previous capture and numbering resumes across sessions. */
+static int next_free_index(const char *prefix) {
+    char path[1024];
+    for (int n = 1; n < 100000; n++) {
+        snprintf(path, sizeof path, "%s-%03d.lss", prefix, n);
+        FILE *f = fopen(path, "rb");
+        if (!f) return n;
+        fclose(f);
+    }
+    return 1;
+}
+
 static void screenshot_ppm(const char *path, const uint16_t *fb) {
     FILE *o = fopen(path, "wb");
     if (!o) return;
@@ -119,17 +135,17 @@ static void screenshot_ppm(const char *path, const uint16_t *fb) {
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        fprintf(stderr, "usage: %s <rom.sfc> [--load f.lss] [--state f.lss] [--scale N]\n", argv[0]);
+        fprintf(stderr, "usage: %s <rom.sfc> [--load f.lss] [--save-prefix P] [--scale N]\n", argv[0]);
         return 2;
     }
     const char *rom_path = argv[1];
     const char *load_path = NULL;
-    const char *state_path = "/tmp/ff4-desktop.lss";
+    const char *save_prefix = "seed";   /* F5 -> <prefix>-NNN.lss, incremental */
     int scale = 2;
     for (int i = 2; i < argc; i++) {
-        if      (!strcmp(argv[i], "--load")  && i+1 < argc) load_path  = argv[++i];
-        else if (!strcmp(argv[i], "--state") && i+1 < argc) state_path = argv[++i];
-        else if (!strcmp(argv[i], "--scale") && i+1 < argc) scale = atoi(argv[++i]);
+        if      (!strcmp(argv[i], "--load")        && i+1 < argc) load_path   = argv[++i];
+        else if (!strcmp(argv[i], "--save-prefix") && i+1 < argc) save_prefix = argv[++i];
+        else if (!strcmp(argv[i], "--scale")       && i+1 < argc) scale = atoi(argv[++i]);
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
 
@@ -149,6 +165,12 @@ int main(int argc, char **argv) {
     static uint16_t fb[LCD_W * LCD_H];
     bool running = true, paused = false, interp_mode = false;
     uint64_t frame = 0;
+
+    /* Incremental savestate slots: F5 writes the next free <prefix>-NNN.lss,
+     * F9 reloads the most recent capture (or the --load seed if none yet). */
+    int save_idx = next_free_index(save_prefix);
+    char last_saved[1024]; bool have_saved = false;
+    printf("[seeds] F5 -> %s-%03d.lss (incremental)\n", save_prefix, save_idx);
 
     while (running) {
         SDL_Event e;
@@ -171,9 +193,17 @@ int main(int argc, char **argv) {
                                  ff4_dispatch_filter = interp_mode ? host_keep_native : NULL;
                                  printf("[dispatch] %s\n", interp_mode
                                         ? "interpreter (input+sound kept native)" : "NATIVE"); break;
-                    case SDLK_F5:  save_state(state_path); break;
-                    case SDLK_F9:  load_state(state_path); break;
-                    case SDLK_F12: screenshot_ppm("/tmp/ff4-desktop-shot.ppm", fb); break;
+                    /* F5/F9/F12 are hijacked by macOS unless Fn-locked, so the
+                     * digit aliases 5/9/0 are the reliable bindings. */
+                    case SDLK_F5: case SDLK_5:  /* save to the next free incremental slot */
+                                   snprintf(last_saved, sizeof last_saved, "%s-%03d.lss", save_prefix, save_idx);
+                                   save_state(last_saved);
+                                   have_saved = true; save_idx++; break;
+                    case SDLK_F9: case SDLK_9:  /* reload most recent capture, else the --load seed */
+                                   if (have_saved)      load_state(last_saved);
+                                   else if (load_path)  load_state(load_path);
+                                   else printf("[state] nothing saved yet (press 5/F5)\n"); break;
+                    case SDLK_F12: case SDLK_0: screenshot_ppm("/tmp/ff4-desktop-shot.ppm", fb); break;
                     default: break;
                 }
             }
