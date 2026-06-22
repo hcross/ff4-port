@@ -380,25 +380,41 @@ masked) for the verdict, not the per-frame CRC's frame/hook attribution. Proper
 fix (future): charge each hook's original cycle cost in `ff4_dispatch_try`, or
 have the oracle compare bytes at a cycle-synced point.
 
-## F10 (cont.) — true combat divergence onset is frame 27
+## F10 (cont.) — oracle divergence is a structural execution-speed artefact
 
-Using byte-compare (`wram_diff`, stack-masked, all DMA-bypasses excluded,
-F7 fixed) on `005-pre-combat`: WRAM is **identical through frame 26**, then the
-first REAL divergence appears at **frame 27** (13 bytes), exploding to ~13.9 k by
-frame 40 (the black-screen catastrophe). The 13 onset bytes:
+**Updated 2026-06-22** (supersedes the frame-27 / input-corruption theory).
 
-```
-$7E:00A6 00A9 00AB 00AC 00B5 00B7 00DF 00E1 00E2 00E3   (battle low-RAM state)
-$7E:352F
-$7E:393F 3940                                            (Mult16 INPUT operands)
-```
+Systematic bisect on `005-pre-combat` (F11 excluded) with byte-exact WRAM
+compare shows:
 
-`$393F` is Mult16's *input* (it diverges before Mult16 runs), so the culprit is
-an earlier routine at frame 27 that writes these battle-state bytes wrong — NOT
-Mult16/InitCharRows (both faithful). Next: identify the frame-27 writer of
-`$00A6`/`$393F` (oracle hook trace at frame 27 is unreliable due to the CRC
-skew; find the routine that writes these addresses and bisect with `--exclude`,
-or add a byte-accurate first-divergence frame to the oracle).
+- Frames 1–25: **IDENTICAL** in both passes (WRAM CRC A == B).
+- Frame 26: diverges. Suspects isolated to `Mult16` ($0383B9), `Mult8`
+  ($0383E0), `InitCharRows` ($0395CE) — all frame-26 hooks.
+- Excluding InitCharRows alone: divergence unchanged → InitCharRows is not the
+  cause.
+- Excluding all prior-frame suspects (15C163, 018010, 15C23D, 0382CB, 14FD03):
+  divergence unchanged — the root is in frame-26 hooks.
+- Excluding all frame-26 hooks (Mult16 + Mult8 + InitCharRows) + all prior
+  suspects: divergence *persists* with a different byte set.
+- Budget ×5 (20 M opcodes/frame): divergence is identical; not a budget issue.
+
+**Conclusion:** the A/B oracle divergence is a **structural execution-speed
+artefact**. Pass B (pure interpreter) only reaches `$03:8400` by the time the
+vblank fires; pass A (native hooks) reaches `$03:8F73` — ~1 800 bytes of
+additional battle code executed. The captured WRAM reflects two different
+execution positions in the battle engine, not a faithfulness bug in Mult16/Mult8.
+
+The dispatched routines are not just optimisations: they are **required** for
+the battle engine to make enough forward progress within a single 89 342-cycle
+frame. Without them, the pure interpreter falls behind and the two passes
+diverge in execution position.
+
+**F10 on-device (black screen = brightness 0)** is a distinct bug. The oracle
+A/B comparison cannot isolate it because the two passes are structurally
+out-of-phase at the battle frame boundary. On-device investigation requires
+`proof_cyc.c` tracing on G&W: find which routine should restore brightness
+(`$2100` out of force-blank) and verify it runs correctly with the current
+dispatch table.
 
 ## F11 — `_15ca5e_c` ($15:CA5E) palette DMA bypass is incomplete (intentional exclusion)
 
