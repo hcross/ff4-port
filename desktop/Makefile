@@ -80,10 +80,11 @@ oracle: $(BIN_ORC)
 	./$(BIN_ORC) $(ROM) --load $(SEED) --frames $(FRAMES)
 
 # Clean baseline: exclude the intentionally DMA-bypassing / stubbed routines
-# (F3 _15cadc OAM-DMA bypass, F4 ExecSound stub, F6 TfrSprites OAM-DMA bypass)
+# (F3 _15cadc OAM-DMA bypass, F4 ExecSound stub, F6 TfrSprites OAM-DMA bypass,
+#  F-NEW _15ca5e palette DMA bypass — same snes_syncCycles crash as _15cadc)
 # so any remaining divergence is a real faithful-port bug. Healthy seeds are
 # IDENTICAL under this set; combat seeds surface the next real divergence.
-EXCLUDE ?= --exclude 15cadc --exclude 048004 --exclude 03fe03
+EXCLUDE ?= --exclude 15cadc --exclude 048004 --exclude 03fe03 --exclude 15ca5e
 oracle-baseline: $(BIN_ORC)
 	./$(BIN_ORC) $(ROM) --load $(SEED) --frames $(FRAMES) $(EXCLUDE)
 

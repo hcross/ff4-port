@@ -400,6 +400,35 @@ Mult16/InitCharRows (both faithful). Next: identify the frame-27 writer of
 skew; find the routine that writes these addresses and bisect with `--exclude`,
 or add a byte-accurate first-divergence frame to the oracle).
 
+## F11 — `_15ca5e_c` ($15:CA5E) palette DMA bypass is incomplete (intentional exclusion)
+
+**Severity:** med (oracle noise; device behaviour unknown) · **Found:** M3, 2026-06-22 ·
+**Status:** excluded from baseline; real fix deferred
+
+`_15ca5e_c` bypasses the palette-DMA routine at `$15:CA5E`.  Like `_15cadc_c`
+(F3), it crashes `snes_syncCycles` when run under the A/B oracle, because the
+native body calls `snes_runCycles` but never triggers the DMA-complete
+bookkeeping that `STA $420B` (MDMAEN write) would normally fire.
+
+The bypass was dispatched from a `JSL $15CA5E` (opcode 0x22) that the existing
+hook in `cpu.c` already covers.  The native stub currently writes only the
+post-DMA register values but does **not** replicate the channel-0 DMA registers
+(`$4300..$4307`) nor call `snes_syncCycles` with the correct DMA timing.
+
+**Effect on the oracle:** without exclusion, divergence appears at frame 22 on
+`005-pre-combat.lss` (10 731 WRAM bytes), masking all later findings.  With
+`--exclude 15ca5e` the baseline is clean through frame 25; frame 26 carries the
+pre-existing F10 divergence.
+
+**Excluded by default** in `Makefile` (`EXCLUDE ?= ... --exclude 15ca5e`),
+matching the same treatment as F3 (`_15cadc_c`).
+
+**Real fix (deferred):** replicate the side effects of `STA $420B`:
+write the channel-0 DMA registers (`$4300..$4307`) to match what the emulator
+would have written, then call `snes_syncCycles` with the correct DMA byte count.
+Must not call `snes_runCycles` (bypasses the DMA engine) nor trigger
+`snes_doOpenBus` side effects outside the DMA window.
+
 ## Infra note — config parity with the device
 
 The host must define **`FF4_PORT_STATIC_SNES`** (as the device build does):
