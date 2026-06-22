@@ -336,30 +336,59 @@ The guard correctly prevents the memory corruption (and lets the oracle analyse
 ## F10 — native combat entry is a black screen (brightness 0); wrong control flow
 
 **Severity:** high (combat unplayable native) · **Found:** 2026-06-19 ·
-**Status:** open — root cause is a rewritten routine, not yet isolated
+**Status:** FIXED (2026-06-22) — `$038085 ExecBtlGfx_c` retired from dispatch
 
 User report, reproduced headlessly on `005-pre-combat`: pure interpretation
 renders combat, **native dispatch shows a fully black screen** (framebuffer 0
-non-black bytes vs ~109 k in interpreter). `wram_diff` PPU-state dump at frame
-120:
+non-black bytes vs ~109 k in interpreter).
 
-| | brightness | BG mode | pc |
-|---|---|---|---|
-| native (A)      | **0**  | 0 | 00:FFFF (parked/WAI) |
-| interpreter (B) | **15** | 1 | 02:A350 (in combat) |
+**Root cause (2026-06-22):** `ExecBtlGfx_c` ($038085) intercepts the
+`jsl ExecBtlGfx_ext` in battle.asm and delegates to `ExecBtlGfx_ext_emu`
+— a **no-op stub**.  `ExecBtlGfx_ext` in btlgfx.asm is actually a
+**BtlGfxTbl dispatcher** driven by `cpu->a`:
 
-Black screen = `brightness=0` (INIDISP $2100 never ramped); and more deeply,
-native and interpreter are in **completely different states** — native diverged
-early and never entered combat properly. The cause is an early **control-flow-
-affecting** rewritten routine on the combat-entry path — NOT the DMA-bypass
-routines (15cadc/03fe03/15ca5e, functionally fine, just need exclusion), and NOT
-`_15ca5e_c`/TfrPal (palette, another benign bypass).
+```asm
+ExecBtlGfx_ext → ExecBtlGfx_far → ExecBtlGfx (@800e):
+    asl / tax
+    lda f:BtlGfxTbl,x   ; dispatch table indexed by A
+    jmp ($0002)          ; jump to WaitFrameMain / WaitFrameAnim / DrawMPText …
+```
 
-**Next:** with the DMA-bypass routines excluded, oracle-bisect the remaining
-combat-entry divergences (15c163, 15c23d, 0382cb… bank $03/$15) down to the
-routine that flips native onto the wrong branch. brightness-0/mode-0 is the
-downstream tell, not the cause. Diagnostic: `wram_diff` now also dumps PPU state
-(brightness/forcedBlank/cgram/mode) per pass.
+`WaitFrame` in btlgfx.asm (called everywhere in the gfx engine) does:
+```asm
+WaitFrame:
+    lda #$0f             ; state $0f = WaitFrameAnim
+    jsl ExecBtlGfx_ext  ; dispatch → WaitFrameAnim → jsr WaitVblank
+```
+
+`WaitVblank`:
+```asm
+inc $1811    ; bump frame counter
+lda $1811
+bne loop     ; spin until NMI handler clears $1811 to 0
+```
+
+With the no-op stub, the BtlGfxTbl is never dispatched, the graphics state
+machine never advances, and the battle engine enters an **infinite polling loop**
+that drains the hardware stack ~$2000 bytes/frame, ending in a corrupted PC and
+a dead CPU (SP=$F825 after frame 29, proof_cyc CHARGE=1).
+
+**Observed signature:** `proof_cyc CHARGE=1 005-pre-combat 60 frames`:
+SP drops from $02E3 → $F825 → $D281 → … each frame by ~$2000 — constant
+JSR-induced stack drain, X=$0202 / Y=$000D frozen.
+
+**Fix (2026-06-22):** retired `{ 0x038085, ExecBtlGfx_c }` from
+`dispatch_all.c` (count 201→200). `ExecBtlGfx` + `ExecBtlGfx_ext` run in
+pure interpreter — the BtlGfxTbl dispatch, WaitFrameAnim/WaitVblank NMI sync,
+and the whole graphics state machine work correctly under the interpreter.
+
+**Validation:** `proof_cyc CHARGE=1 005-pre-combat 150 frames`:
+- SP stable in $02D0–$02DE throughout (was crashing at frame 29)
+- brightness=15, forcedBlank=0 from frame 121 onward — combat renders
+
+**Future work:** port `ExecBtlGfx_ext` (the BtlGfxTbl dispatcher +
+all 22 handlers) natively in C; re-add `$038085` to dispatch_all.c. Until
+then the combat graphics run in interpreter — correct but slower.
 
 ## Oracle artifact — per-frame CRC is skewed by un-charged dispatch cycles
 
