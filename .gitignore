@@ -42,8 +42,13 @@ LakeSnes/LakeSnes.app/
 desktop/ff4-desktop-headless
 desktop/ff4-desktop-sdl
 desktop/ff4-desktop-oracle
+desktop/ff4-dbg-scroll
 desktop/input_probe
 desktop/wram_diff
+desktop/wram_diff_dbg
+desktop/miss_profiler
+desktop/trace_interp.txt
+desktop/trace_native.txt
 
 # Pre-made savestate seeds (provenance unconfirmed, see F2; large binaries)
 *.lss
@@ -78,6 +83,9 @@ translator/_failed/
 # generated files. Reviewed wrappers can be committed individually.
 port/**/_pending/
 port/**/_failed/
+port/_cascade/
+port/_hardcore/
+port/_iter1/
 
 # ============================================================================
 # Editor / OS

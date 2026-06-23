@@ -14,8 +14,10 @@ extern void snes_runCycles(Snes* snes, int cycles);
 /* per-hit cycle charge (set via env CHARGE, default 0) */
 static int g_charge = 0;
 static void charge_cb(uint32_t pc) {
-    (void)pc;
-    if (g_charge > 0 && ff4_snes) snes_runCycles(ff4_snes, g_charge);
+    if (ff4_snes) {
+        printf("  HIT frame=%3d pc=%06x\n", ff4_snes->frames, pc);
+        if (g_charge > 0) snes_runCycles(ff4_snes, g_charge);
+    }
 }
 
 /* SP-leak detector: log dispatch hits whose SP looks abnormal, and track the
@@ -44,8 +46,12 @@ int main(int argc, char**argv){
     if(g_charge>0) ff4_dispatch_trace = charge_cb;
     int trace_pc = getenv("TRACEPC") ? 1 : 0;
     for(int i=0;i<frames;i++){ ff4_step();
-        if(trace_pc) printf("  frame %3d post pc=%02x:%04x sp=%04x brt=%u fb=%d\n", i+1,
-            ff4_snes->cpu->k, ff4_snes->cpu->pc, ff4_snes->cpu->sp, ff4_snes->ppu->brightness, ff4_snes->ppu->forcedBlank);
+        if(trace_pc) {
+            Cpu *cpu = ff4_snes->cpu;
+            Ppu *ppu = ff4_snes->ppu;
+            printf("  frame %3d post pc=%02x:%04x sp=%04x a=%04x x=%04x y=%04x db=%02x dp=%04x mf=%d xf=%d brt=%u fb=%d\n", i+1,
+                cpu->k, cpu->pc, cpu->sp, cpu->a, cpu->x, cpu->y, cpu->db, cpu->dp, cpu->mf, cpu->xf, ppu->brightness, ppu->forcedBlank);
+        }
     }
     printf("CHARGE=%d frames=%d brightness=%u forcedBlank=%d pc=%02x:%04x cycles=%llu\n",
         g_charge, frames, ff4_snes->ppu->brightness, ff4_snes->ppu->forcedBlank,

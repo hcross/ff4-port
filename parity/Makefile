@@ -4307,3 +4307,1391 @@ ff4-spike-t1415menu-updatewindowcolor: src/spike_updatewindowcolor_t1415menu.c $
 # AUTO (t1415menu): spike for UpdateWindowColor_ext
 ff4-spike-t1415menu-updatewindowcolor_ext: src/spike_updatewindowcolor_ext_t1415menu.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_updatewindowcolor_ext_t1415menu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for AICond_02
+ff4-spike-reg_v0-aicond_02: src/spike_aicond_02_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for GetOtherPlanetTile
+ff4-spike-reg_v0-getotherplanettile: src/spike_getotherplanettile_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for GetEarthSpritePos
+ff4-spike-reg_v0-getearthspritepos: src/spike_getearthspritepos_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for InitStars
+ff4-spike-reg_v0-initstars: src/spike_initstars_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for AICond_00
+ff4-spike-reg_v0-aicond_00: src/spike_aicond_00_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_00_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for NewLine
+ff4-spike-reg_v0-newline: src/spike_newline_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for HexToDec
+ff4-spike-reg_v0-hextodec: src/spike_hextodec_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_hextodec_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for DrawPos
+ff4-spike-reg_v0-drawpos: src/spike_drawpos_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawpos_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for BtnAction
+ff4-spike-reg_v0-btnaction: src/spike_btnaction_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_btnaction_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for Mult16
+ff4-spike-reg_v0-mult16: src/spike_mult16_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult16_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for ExecInterrupt
+ff4-spike-reg_v0-execinterrupt: src/spike_execinterrupt_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execinterrupt_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for PlayGameSfx
+ff4-spike-reg_v0-playgamesfx: src/spike_playgamesfx_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for PlaySystemSfx
+ff4-spike-reg_v0-playsystemsfx: src/spike_playsystemsfx_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (smoke): spike for AICond_00
+ff4-spike-smoke-aicond_00: src/spike_aicond_00_smoke.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_00_smoke.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (smoke2): spike for AICond_00
+ff4-spike-smoke2-aicond_00: src/spike_aicond_00_smoke2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_00_smoke2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (smoke3): spike for AICondTarget_23
+ff4-spike-smoke3-aicondtarget_23: src/spike_aicondtarget_23_smoke3.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_23_smoke3.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (smoke4): spike for AICond_02
+ff4-spike-smoke4-aicond_02: src/spike_aicond_02_smoke4.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_smoke4.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for AICondTarget_25
+ff4-spike-reg_v0-aicondtarget_25: src/spike_aicondtarget_25_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for AICond_05
+ff4-spike-reg_v0-aicond_05: src/spike_aicond_05_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for AfterBattle
+ff4-spike-reg_v0-afterbattle: src/spike_afterbattle_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for BoardChoco
+ff4-spike-reg_v0-boardchoco: src/spike_boardchoco_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for CheckTilePass
+ff4-spike-reg_v0-checktilepass: src/spike_checktilepass_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktilepass_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v0): spike for CloseYesNoWindow
+ff4-spike-reg_v0-closeyesnowindow: src/spike_closeyesnowindow_reg_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_reg_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v0): spike for _00bfe3
+ff4-spike-mut_v0-_00bfe3: src/spike__00bfe3_mut_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00bfe3_mut_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v1): spike for _00bfe3
+ff4-spike-mut__candidate_v1-_00bfe3: src/spike__00bfe3_mut__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike__00bfe3_mut__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v0): spike for CmdTbl
+ff4-spike-mut_v0-cmdtbl: src/spike_cmdtbl_mut_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmdtbl_mut_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v0): spike for Special_06
+ff4-spike-mut_v0-special_06: src/spike_special_06_mut_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_mut_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v1): spike for Special_06
+ff4-spike-mut__candidate_v1-special_06: src/spike_special_06_mut__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_mut__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v0): spike for MapGfxBankTbl
+ff4-spike-mut_v0-mapgfxbanktbl: src/spike_mapgfxbanktbl_mut_v0.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_mut_v0.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v1): spike for MapGfxBankTbl
+ff4-spike-mut__candidate_v1-mapgfxbanktbl: src/spike_mapgfxbanktbl_mut__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_mut__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for AICondTarget_25
+ff4-spike-reg__candidate_v1-aicondtarget_25: src/spike_aicondtarget_25_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for AICond_02
+ff4-spike-reg__candidate_v1-aicond_02: src/spike_aicond_02_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for AICond_05
+ff4-spike-reg__candidate_v1-aicond_05: src/spike_aicond_05_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for GetOtherPlanetTile
+ff4-spike-reg__candidate_v1-getotherplanettile: src/spike_getotherplanettile_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for GetEarthSpritePos
+ff4-spike-reg__candidate_v1-getearthspritepos: src/spike_getearthspritepos_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for AfterBattle
+ff4-spike-reg__candidate_v1-afterbattle: src/spike_afterbattle_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for NewLine
+ff4-spike-reg__candidate_v1-newline: src/spike_newline_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for BoardChoco
+ff4-spike-reg__candidate_v1-boardchoco: src/spike_boardchoco_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for InitStars
+ff4-spike-reg__candidate_v1-initstars: src/spike_initstars_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for CloseYesNoWindow
+ff4-spike-reg__candidate_v1-closeyesnowindow: src/spike_closeyesnowindow_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for PlaySystemSfx
+ff4-spike-reg__candidate_v1-playsystemsfx: src/spike_playsystemsfx_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for PlayGameSfx
+ff4-spike-reg__candidate_v1-playgamesfx: src/spike_playgamesfx_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for CheckTilePass
+ff4-spike-reg__candidate_v1-checktilepass: src/spike_checktilepass_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktilepass_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v1): spike for ExecInterrupt
+ff4-spike-reg__candidate_v1-execinterrupt: src/spike_execinterrupt_reg__candidate_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execinterrupt_reg__candidate_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for CmdTbl
+ff4-spike-mut_v1-cmdtbl: src/spike_cmdtbl_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_cmdtbl_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for Special_06
+ff4-spike-mut_v1-special_06: src/spike_special_06_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2): spike for Special_06
+ff4-spike-mut__candidate_v2-special_06: src/spike_special_06_mut__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_mut__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for MapGfxBankTbl
+ff4-spike-mut_v1-mapgfxbanktbl: src/spike_mapgfxbanktbl_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for UpdateWhalePal
+ff4-spike-mut_v1-updatewhalepal: src/spike_updatewhalepal_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2): spike for UpdateWhalePal
+ff4-spike-mut__candidate_v2-updatewhalepal: src/spike_updatewhalepal_mut__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_mut__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for WaitSpecial
+ff4-spike-mut_v1-waitspecial: src/spike_waitspecial_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (iter1_WaitVblank_far): spike for WaitVblank_far
+ff4-spike-iter1_WaitVblank_far-waitvblank_far: src/spike_waitvblank_far_iter1_WaitVblank_far.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblank_far_iter1_WaitVblank_far.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (iter1_ScreenOff): spike for ScreenOff
+ff4-spike-iter1_ScreenOff-screenoff: src/spike_screenoff_iter1_ScreenOff.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_screenoff_iter1_ScreenOff.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (iter1_UpdateCtrlMenu): spike for UpdateCtrlMenu
+ff4-spike-iter1_UpdateCtrlMenu-updatectrlmenu: src/spike_updatectrlmenu_iter1_UpdateCtrlMenu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrlmenu_iter1_UpdateCtrlMenu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (iter1_OpenWindow): spike for OpenWindow
+ff4-spike-iter1_OpenWindow-openwindow: src/spike_openwindow_iter1_OpenWindow.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_openwindow_iter1_OpenWindow.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (iter1_CloseWindow): spike for CloseWindow
+ff4-spike-iter1_CloseWindow-closewindow: src/spike_closewindow_iter1_CloseWindow.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closewindow_iter1_CloseWindow.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (iter1_TfrVRAM): spike for TfrVRAM
+ff4-spike-iter1_TfrVRAM-tfrvram: src/spike_tfrvram_iter1_TfrVRAM.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrvram_iter1_TfrVRAM.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (iter1_WaitVblankLong): spike for WaitVblankLong
+ff4-spike-iter1_WaitVblankLong-waitvblanklong: src/spike_waitvblanklong_iter1_WaitVblankLong.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblanklong_iter1_WaitVblankLong.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2): spike for WaitSpecial
+ff4-spike-mut__candidate_v2-waitspecial: src/spike_waitspecial_mut__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_mut__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for GetDlgPtr1H
+ff4-spike-mut_v1-getdlgptr1h: src/spike_getdlgptr1h_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2): spike for GetDlgPtr1H
+ff4-spike-mut__candidate_v2-getdlgptr1h: src/spike_getdlgptr1h_mut__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_mut__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for UpdateCtrl
+ff4-spike-mut_v1-updatectrl: src/spike_updatectrl_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2): spike for UpdateCtrl
+ff4-spike-mut__candidate_v2-updatectrl: src/spike_updatectrl_mut__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_mut__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for EndCredits
+ff4-spike-mut_v1-endcredits: src/spike_endcredits_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2): spike for EndCredits
+ff4-spike-mut__candidate_v2-endcredits: src/spike_endcredits_mut__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_mut__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for AICond_05
+ff4-spike-reg__candidate_v2-aicond_05: src/spike_aicond_05_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for AICond_02
+ff4-spike-reg__candidate_v2-aicond_02: src/spike_aicond_02_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for AICondTarget_25
+ff4-spike-reg__candidate_v2-aicondtarget_25: src/spike_aicondtarget_25_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for GetOtherPlanetTile
+ff4-spike-reg__candidate_v2-getotherplanettile: src/spike_getotherplanettile_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for GetEarthSpritePos
+ff4-spike-reg__candidate_v2-getearthspritepos: src/spike_getearthspritepos_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for NewLine
+ff4-spike-reg__candidate_v2-newline: src/spike_newline_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for InitStars
+ff4-spike-reg__candidate_v2-initstars: src/spike_initstars_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for AfterBattle
+ff4-spike-reg__candidate_v2-afterbattle: src/spike_afterbattle_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for BoardChoco
+ff4-spike-reg__candidate_v2-boardchoco: src/spike_boardchoco_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for ExecInterrupt
+ff4-spike-reg__candidate_v2-execinterrupt: src/spike_execinterrupt_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execinterrupt_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for CloseYesNoWindow
+ff4-spike-reg__candidate_v2-closeyesnowindow: src/spike_closeyesnowindow_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for PlaySystemSfx
+ff4-spike-reg__candidate_v2-playsystemsfx: src/spike_playsystemsfx_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2): spike for PlayGameSfx
+ff4-spike-reg__candidate_v2-playgamesfx: src/spike_playgamesfx_reg__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_reg__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for AICond_05
+ff4-spike-reg_v1-aicond_05: src/spike_aicond_05_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for AICond_02
+ff4-spike-reg_v1-aicond_02: src/spike_aicond_02_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for AICondTarget_25
+ff4-spike-reg_v1-aicondtarget_25: src/spike_aicondtarget_25_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for GetOtherPlanetTile
+ff4-spike-reg_v1-getotherplanettile: src/spike_getotherplanettile_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for GetEarthSpritePos
+ff4-spike-reg_v1-getearthspritepos: src/spike_getearthspritepos_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for AfterBattle
+ff4-spike-reg_v1-afterbattle: src/spike_afterbattle_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for BoardChoco
+ff4-spike-reg_v1-boardchoco: src/spike_boardchoco_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for NewLine
+ff4-spike-reg_v1-newline: src/spike_newline_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for InitStars
+ff4-spike-reg_v1-initstars: src/spike_initstars_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for CloseYesNoWindow
+ff4-spike-reg_v1-closeyesnowindow: src/spike_closeyesnowindow_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for ExecInterrupt
+ff4-spike-reg_v1-execinterrupt: src/spike_execinterrupt_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execinterrupt_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for PlayGameSfx
+ff4-spike-reg_v1-playgamesfx: src/spike_playgamesfx_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for PlaySystemSfx
+ff4-spike-reg_v1-playsystemsfx: src/spike_playsystemsfx_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v1): spike for InitCtrl
+ff4-spike-mut_v1-initctrl: src/spike_initctrl_mut_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_mut_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2): spike for InitCtrl
+ff4-spike-mut__candidate_v2-initctrl: src/spike_initctrl_mut__candidate_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_mut__candidate_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2_a): spike for Special_06
+ff4-spike-mut__candidate_v2_a-special_06: src/spike_special_06_mut__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_mut__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2_b): spike for Special_06
+ff4-spike-mut__candidate_v2_b-special_06: src/spike_special_06_mut__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_mut__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2_c): spike for Special_06
+ff4-spike-mut__candidate_v2_c-special_06: src/spike_special_06_mut__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_mut__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg_v1): spike for CheckTilePass
+ff4-spike-reg_v1-checktilepass: src/spike_checktilepass_reg_v1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktilepass_reg_v1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2_a): spike for MapGfxBankTbl
+ff4-spike-mut__candidate_v2_a-mapgfxbanktbl: src/spike_mapgfxbanktbl_mut__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_mut__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for AICondTarget_25
+ff4-spike-reg__candidate_v2_a-aicondtarget_25: src/spike_aicondtarget_25_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for AICond_05
+ff4-spike-reg__candidate_v2_a-aicond_05: src/spike_aicond_05_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for AICond_02
+ff4-spike-reg__candidate_v2_a-aicond_02: src/spike_aicond_02_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for GetOtherPlanetTile
+ff4-spike-reg__candidate_v2_a-getotherplanettile: src/spike_getotherplanettile_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for GetEarthSpritePos
+ff4-spike-reg__candidate_v2_a-getearthspritepos: src/spike_getearthspritepos_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for NewLine
+ff4-spike-reg__candidate_v2_a-newline: src/spike_newline_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for AfterBattle
+ff4-spike-reg__candidate_v2_a-afterbattle: src/spike_afterbattle_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for BoardChoco
+ff4-spike-reg__candidate_v2_a-boardchoco: src/spike_boardchoco_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for InitStars
+ff4-spike-reg__candidate_v2_a-initstars: src/spike_initstars_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for CheckTilePass
+ff4-spike-reg__candidate_v2_a-checktilepass: src/spike_checktilepass_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktilepass_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for CloseYesNoWindow
+ff4-spike-reg__candidate_v2_a-closeyesnowindow: src/spike_closeyesnowindow_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for PlaySystemSfx
+ff4-spike-reg__candidate_v2_a-playsystemsfx: src/spike_playsystemsfx_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for ExecInterrupt
+ff4-spike-reg__candidate_v2_a-execinterrupt: src/spike_execinterrupt_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execinterrupt_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_a): spike for PlayGameSfx
+ff4-spike-reg__candidate_v2_a-playgamesfx: src/spike_playgamesfx_reg__candidate_v2_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_reg__candidate_v2_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2_b): spike for MapGfxBankTbl
+ff4-spike-mut__candidate_v2_b-mapgfxbanktbl: src/spike_mapgfxbanktbl_mut__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_mut__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for AICondTarget_25
+ff4-spike-reg__candidate_v2_b-aicondtarget_25: src/spike_aicondtarget_25_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for AICond_05
+ff4-spike-reg__candidate_v2_b-aicond_05: src/spike_aicond_05_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for AICond_02
+ff4-spike-reg__candidate_v2_b-aicond_02: src/spike_aicond_02_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for AITarget_19
+ff4-spike-reg__candidate_v2_b-aitarget_19: src/spike_aitarget_19_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aitarget_19_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for GetOtherPlanetTile
+ff4-spike-reg__candidate_v2_b-getotherplanettile: src/spike_getotherplanettile_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for GetEarthSpritePos
+ff4-spike-reg__candidate_v2_b-getearthspritepos: src/spike_getearthspritepos_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for NewLine
+ff4-spike-reg__candidate_v2_b-newline: src/spike_newline_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for BoardChoco
+ff4-spike-reg__candidate_v2_b-boardchoco: src/spike_boardchoco_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for InitStars
+ff4-spike-reg__candidate_v2_b-initstars: src/spike_initstars_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for AfterBattle
+ff4-spike-reg__candidate_v2_b-afterbattle: src/spike_afterbattle_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for CloseYesNoWindow
+ff4-spike-reg__candidate_v2_b-closeyesnowindow: src/spike_closeyesnowindow_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for PlayGameSfx
+ff4-spike-reg__candidate_v2_b-playgamesfx: src/spike_playgamesfx_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_b): spike for PlaySystemSfx
+ff4-spike-reg__candidate_v2_b-playsystemsfx: src/spike_playsystemsfx_reg__candidate_v2_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_reg__candidate_v2_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v2_c): spike for MapGfxBankTbl
+ff4-spike-mut__candidate_v2_c-mapgfxbanktbl: src/spike_mapgfxbanktbl_mut__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mapgfxbanktbl_mut__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for AICondTarget_25
+ff4-spike-reg__candidate_v2_c-aicondtarget_25: src/spike_aicondtarget_25_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for AICond_05
+ff4-spike-reg__candidate_v2_c-aicond_05: src/spike_aicond_05_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for AICond_02
+ff4-spike-reg__candidate_v2_c-aicond_02: src/spike_aicond_02_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for GetOtherPlanetTile
+ff4-spike-reg__candidate_v2_c-getotherplanettile: src/spike_getotherplanettile_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for GetEarthSpritePos
+ff4-spike-reg__candidate_v2_c-getearthspritepos: src/spike_getearthspritepos_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for AfterBattle
+ff4-spike-reg__candidate_v2_c-afterbattle: src/spike_afterbattle_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for BoardChoco
+ff4-spike-reg__candidate_v2_c-boardchoco: src/spike_boardchoco_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for NewLine
+ff4-spike-reg__candidate_v2_c-newline: src/spike_newline_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for InitStars
+ff4-spike-reg__candidate_v2_c-initstars: src/spike_initstars_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for CheckTilePass
+ff4-spike-reg__candidate_v2_c-checktilepass: src/spike_checktilepass_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktilepass_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for CloseYesNoWindow
+ff4-spike-reg__candidate_v2_c-closeyesnowindow: src/spike_closeyesnowindow_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for ExecInterrupt
+ff4-spike-reg__candidate_v2_c-execinterrupt: src/spike_execinterrupt_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execinterrupt_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for PlayGameSfx
+ff4-spike-reg__candidate_v2_c-playgamesfx: src/spike_playgamesfx_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v2_c): spike for PlaySystemSfx
+ff4-spike-reg__candidate_v2_c-playsystemsfx: src/spike_playsystemsfx_reg__candidate_v2_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_reg__candidate_v2_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v2): spike for UpdateWhalePal
+ff4-spike-mut_v2-updatewhalepal: src/spike_updatewhalepal_mut_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_mut_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_a): spike for UpdateWhalePal
+ff4-spike-mut__candidate_v3_a-updatewhalepal: src/spike_updatewhalepal_mut__candidate_v3_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_mut__candidate_v3_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_b): spike for UpdateWhalePal
+ff4-spike-mut__candidate_v3_b-updatewhalepal: src/spike_updatewhalepal_mut__candidate_v3_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_mut__candidate_v3_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_c): spike for UpdateWhalePal
+ff4-spike-mut__candidate_v3_c-updatewhalepal: src/spike_updatewhalepal_mut__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_mut__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for AICondTarget_25
+ff4-spike-reg__candidate_v3_c-aicondtarget_25: src/spike_aicondtarget_25_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicondtarget_25_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for AICond_05
+ff4-spike-reg__candidate_v3_c-aicond_05: src/spike_aicond_05_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_05_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for AICond_02
+ff4-spike-reg__candidate_v3_c-aicond_02: src/spike_aicond_02_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_aicond_02_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for GetOtherPlanetTile
+ff4-spike-reg__candidate_v3_c-getotherplanettile: src/spike_getotherplanettile_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getotherplanettile_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for NewLine
+ff4-spike-reg__candidate_v3_c-newline: src/spike_newline_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_newline_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for InitStars
+ff4-spike-reg__candidate_v3_c-initstars: src/spike_initstars_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initstars_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for AfterBattle
+ff4-spike-reg__candidate_v3_c-afterbattle: src/spike_afterbattle_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_afterbattle_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for BoardChoco
+ff4-spike-reg__candidate_v3_c-boardchoco: src/spike_boardchoco_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_boardchoco_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for GetEarthSpritePos
+ff4-spike-reg__candidate_v3_c-getearthspritepos: src/spike_getearthspritepos_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getearthspritepos_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for CloseYesNoWindow
+ff4-spike-reg__candidate_v3_c-closeyesnowindow: src/spike_closeyesnowindow_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closeyesnowindow_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for ExecInterrupt
+ff4-spike-reg__candidate_v3_c-execinterrupt: src/spike_execinterrupt_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_execinterrupt_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for PlayGameSfx
+ff4-spike-reg__candidate_v3_c-playgamesfx: src/spike_playgamesfx_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playgamesfx_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for PlaySystemSfx
+ff4-spike-reg__candidate_v3_c-playsystemsfx: src/spike_playsystemsfx_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsystemsfx_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v2): spike for WaitSpecial
+ff4-spike-mut_v2-waitspecial: src/spike_waitspecial_mut_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_mut_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_a): spike for WaitSpecial
+ff4-spike-mut__candidate_v3_a-waitspecial: src/spike_waitspecial_mut__candidate_v3_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_mut__candidate_v3_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_b): spike for WaitSpecial
+ff4-spike-mut__candidate_v3_b-waitspecial: src/spike_waitspecial_mut__candidate_v3_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_mut__candidate_v3_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_c): spike for WaitSpecial
+ff4-spike-mut__candidate_v3_c-waitspecial: src/spike_waitspecial_mut__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_mut__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v2): spike for GetDlgPtr1H
+ff4-spike-mut_v2-getdlgptr1h: src/spike_getdlgptr1h_mut_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_mut_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_a): spike for GetDlgPtr1H
+ff4-spike-mut__candidate_v3_a-getdlgptr1h: src/spike_getdlgptr1h_mut__candidate_v3_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_mut__candidate_v3_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_b): spike for GetDlgPtr1H
+ff4-spike-mut__candidate_v3_b-getdlgptr1h: src/spike_getdlgptr1h_mut__candidate_v3_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_mut__candidate_v3_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut_v2): spike for UpdateCtrl
+ff4-spike-mut_v2-updatectrl: src/spike_updatectrl_mut_v2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_mut_v2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_a): spike for UpdateCtrl
+ff4-spike-mut__candidate_v3_a-updatectrl: src/spike_updatectrl_mut__candidate_v3_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_mut__candidate_v3_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_b): spike for UpdateCtrl
+ff4-spike-mut__candidate_v3_b-updatectrl: src/spike_updatectrl_mut__candidate_v3_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_mut__candidate_v3_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_c): spike for UpdateCtrl
+ff4-spike-mut__candidate_v3_c-updatectrl: src/spike_updatectrl_mut__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_mut__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_a): spike for EndCredits
+ff4-spike-mut__candidate_v3_a-endcredits: src/spike_endcredits_mut__candidate_v3_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_mut__candidate_v3_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_b): spike for EndCredits
+ff4-spike-mut__candidate_v3_b-endcredits: src/spike_endcredits_mut__candidate_v3_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_mut__candidate_v3_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_c): spike for EndCredits
+ff4-spike-mut__candidate_v3_c-endcredits: src/spike_endcredits_mut__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_endcredits_mut__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (reg__candidate_v3_c): spike for CheckTilePass
+ff4-spike-reg__candidate_v3_c-checktilepass: src/spike_checktilepass_reg__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktilepass_reg__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_a): spike for InitCtrl
+ff4-spike-mut__candidate_v3_a-initctrl: src/spike_initctrl_mut__candidate_v3_a.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_mut__candidate_v3_a.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_b): spike for InitCtrl
+ff4-spike-mut__candidate_v3_b-initctrl: src/spike_initctrl_mut__candidate_v3_b.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_mut__candidate_v3_b.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (mut__candidate_v3_c): spike for InitCtrl
+ff4-spike-mut__candidate_v3_c-initctrl: src/spike_initctrl_mut__candidate_v3_c.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_mut__candidate_v3_c.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_special_06): spike for Special_06
+ff4-spike-hardcore_special_06-special_06: src/spike_special_06_hardcore_special_06.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_hardcore_special_06.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_updatectrl): spike for UpdateCtrl
+ff4-spike-hardcore_updatectrl-updatectrl: src/spike_updatectrl_hardcore_updatectrl.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_hardcore_updatectrl.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_openwindow): spike for OpenWindow
+ff4-spike-hardcore_openwindow-openwindow: src/spike_openwindow_hardcore_openwindow.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_openwindow_hardcore_openwindow.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_closewindow): spike for CloseWindow
+ff4-spike-hardcore_closewindow-closewindow: src/spike_closewindow_hardcore_closewindow.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_closewindow_hardcore_closewindow.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_initctrl): spike for InitCtrl
+ff4-spike-hardcore_initctrl-initctrl: src/spike_initctrl_hardcore_initctrl.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initctrl_hardcore_initctrl.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_waitspecial): spike for WaitSpecial
+ff4-spike-hardcore_waitspecial-waitspecial: src/spike_waitspecial_hardcore_waitspecial.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_hardcore_waitspecial.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_updatewhalepal): spike for UpdateWhalePal
+ff4-spike-hardcore_updatewhalepal-updatewhalepal: src/spike_updatewhalepal_hardcore_updatewhalepal.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewhalepal_hardcore_updatewhalepal.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_getdlgptr1h): spike for GetDlgPtr1H
+ff4-spike-hardcore_getdlgptr1h-getdlgptr1h: src/spike_getdlgptr1h_hardcore_getdlgptr1h.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_hardcore_getdlgptr1h.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_getnexteventbyte): spike for GetNextEventByte
+ff4-spike-hardcore_getnexteventbyte-getnexteventbyte: src/spike_getnexteventbyte_hardcore_getnexteventbyte.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnexteventbyte_hardcore_getnexteventbyte.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_initcharprop_ext): spike for InitCharProp_ext
+ff4-spike-hardcore_initcharprop_ext-initcharprop_ext: src/spike_initcharprop_ext_hardcore_initcharprop_ext.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initcharprop_ext_hardcore_initcharprop_ext.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_inithwregs): spike for InitHWRegs
+ff4-spike-hardcore_inithwregs-inithwregs: src/spike_inithwregs_hardcore_inithwregs.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_inithwregs_hardcore_inithwregs.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_checktreasurenpc): spike for CheckTreasureNPC
+ff4-spike-hardcore_checktreasurenpc-checktreasurenpc: src/spike_checktreasurenpc_hardcore_checktreasurenpc.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktreasurenpc_hardcore_checktreasurenpc.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_updatelocaltiles): spike for UpdateLocalTiles
+ff4-spike-hardcore_updatelocaltiles-updatelocaltiles: src/spike_updatelocaltiles_hardcore_updatelocaltiles.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatelocaltiles_hardcore_updatelocaltiles.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_updatectrlfield_ext): spike for UpdateCtrlField_ext
+ff4-spike-hardcore_updatectrlfield_ext-updatectrlfield_ext: src/spike_updatectrlfield_ext_hardcore_updatectrlfield_ext.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrlfield_ext_hardcore_updatectrlfield_ext.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hardcore_loadbattlespeedpostext): spike for LoadBattleSpeedPosText
+ff4-spike-hardcore_loadbattlespeedpostext-loadbattlespeedpostext: src/spike_loadbattlespeedpostext_hardcore_loadbattlespeedpostext.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadbattlespeedpostext_hardcore_loadbattlespeedpostext.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_special_06): spike for Special_06
+ff4-spike-hcm1_special_06-special_06: src/spike_special_06_hcm1_special_06.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_hcm1_special_06.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_waitspecial): spike for WaitSpecial
+ff4-spike-hcm1_waitspecial-waitspecial: src/spike_waitspecial_hcm1_waitspecial.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_hcm1_waitspecial.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_waitspecial): spike for WaitSpecial
+ff4-spike-hcm2_waitspecial-waitspecial: src/spike_waitspecial_hcm2_waitspecial.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitspecial_hcm2_waitspecial.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getdlgptr1h): spike for GetDlgPtr1H
+ff4-spike-hcm1_getdlgptr1h-getdlgptr1h: src/spike_getdlgptr1h_hcm1_getdlgptr1h.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_hcm1_getdlgptr1h.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getdlgptr1h): spike for GetDlgPtr1H
+ff4-spike-hcm2_getdlgptr1h-getdlgptr1h: src/spike_getdlgptr1h_hcm2_getdlgptr1h.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdlgptr1h_hcm2_getdlgptr1h.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_pow10hi): spike for Pow10Hi
+ff4-spike-hcm1_pow10hi-pow10hi: src/spike_pow10hi_hcm1_pow10hi.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_pow10hi_hcm1_pow10hi.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatectrl): spike for UpdateCtrl
+ff4-spike-hcm1_updatectrl-updatectrl: src/spike_updatectrl_hcm1_updatectrl.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_hcm1_updatectrl.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_updatectrl): spike for UpdateCtrl
+ff4-spike-hcm2_updatectrl-updatectrl: src/spike_updatectrl_hcm2_updatectrl.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatectrl_hcm2_updatectrl.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_special_06): spike for Special_06
+ff4-spike-hcm2_special_06-special_06: src/spike_special_06_hcm2_special_06.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_special_06_hcm2_special_06.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadbggfx): spike for LoadBGGfx
+ff4-spike-hcm1_loadbggfx-loadbggfx: src/spike_loadbggfx_hcm1_loadbggfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadbggfx_hcm1_loadbggfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_loadbggfx): spike for LoadBGGfx
+ff4-spike-hcm2_loadbggfx-loadbggfx: src/spike_loadbggfx_hcm2_loadbggfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadbggfx_hcm2_loadbggfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_clearbggfx): spike for ClearBGGfx
+ff4-spike-hcm1_clearbggfx-clearbggfx: src/spike_clearbggfx_hcm1_clearbggfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearbggfx_hcm1_clearbggfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_clearbggfx): spike for ClearBGGfx
+ff4-spike-hcm2_clearbggfx-clearbggfx: src/spike_clearbggfx_hcm2_clearbggfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearbggfx_hcm2_clearbggfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getnexteventbyte): spike for GetNextEventByte
+ff4-spike-hcm1_getnexteventbyte-getnexteventbyte: src/spike_getnexteventbyte_hcm1_getnexteventbyte.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnexteventbyte_hcm1_getnexteventbyte.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getnexteventbyte): spike for GetNextEventByte
+ff4-spike-hcm2_getnexteventbyte-getnexteventbyte: src/spike_getnexteventbyte_hcm2_getnexteventbyte.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnexteventbyte_hcm2_getnexteventbyte.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_findeventterminato): spike for FindEventTerminator
+ff4-spike-hcm1_findeventterminato-findeventterminator: src/spike_findeventterminator_hcm1_findeventterminato.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_findeventterminator_hcm1_findeventterminato.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_playsongevent): spike for PlaySongEvent
+ff4-spike-hcm1_playsongevent-playsongevent: src/spike_playsongevent_hcm1_playsongevent.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsongevent_hcm1_playsongevent.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_playsongevent): spike for PlaySongEvent
+ff4-spike-hcm2_playsongevent-playsongevent: src/spike_playsongevent_hcm2_playsongevent.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsongevent_hcm2_playsongevent.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getcurrgil): spike for GetCurrGil
+ff4-spike-hcm1_getcurrgil-getcurrgil: src/spike_getcurrgil_hcm1_getcurrgil.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getcurrgil_hcm1_getcurrgil.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getcurrgil): spike for GetCurrGil
+ff4-spike-hcm2_getcurrgil-getcurrgil: src/spike_getcurrgil_hcm2_getcurrgil.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getcurrgil_hcm2_getcurrgil.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_drawsecretdoor): spike for DrawSecretDoor
+ff4-spike-hcm1_drawsecretdoor-drawsecretdoor: src/spike_drawsecretdoor_hcm1_drawsecretdoor.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawsecretdoor_hcm1_drawsecretdoor.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_drawsecretdoor): spike for DrawSecretDoor
+ff4-spike-hcm2_drawsecretdoor-drawsecretdoor: src/spike_drawsecretdoor_hcm2_drawsecretdoor.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawsecretdoor_hcm2_drawsecretdoor.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getnpcscriptbyte): spike for GetNPCScriptByte
+ff4-spike-hcm1_getnpcscriptbyte-getnpcscriptbyte: src/spike_getnpcscriptbyte_hcm1_getnpcscriptbyte.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcscriptbyte_hcm1_getnpcscriptbyte.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getnpcscriptbyte): spike for GetNPCScriptByte
+ff4-spike-hcm2_getnpcscriptbyte-getnpcscriptbyte: src/spike_getnpcscriptbyte_hcm2_getnpcscriptbyte.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcscriptbyte_hcm2_getnpcscriptbyte.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_geteventswitchoffs): spike for GetEventSwitchOffset
+ff4-spike-hcm1_geteventswitchoffs-geteventswitchoffset: src/spike_geteventswitchoffset_hcm1_geteventswitchoffs.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_geteventswitchoffset_hcm1_geteventswitchoffs.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_geteventswitchoffs): spike for GetEventSwitchOffset
+ff4-spike-hcm2_geteventswitchoffs-geteventswitchoffset: src/spike_geteventswitchoffset_hcm2_geteventswitchoffs.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_geteventswitchoffset_hcm2_geteventswitchoffs.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getnpcswitchoffset): spike for GetNPCSwitchOffset
+ff4-spike-hcm1_getnpcswitchoffset-getnpcswitchoffset: src/spike_getnpcswitchoffset_hcm1_getnpcswitchoffset.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcswitchoffset_hcm1_getnpcswitchoffset.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getnpcswitchoffset): spike for GetNPCSwitchOffset
+ff4-spike-hcm2_getnpcswitchoffset-getnpcswitchoffset: src/spike_getnpcswitchoffset_hcm2_getnpcswitchoffset.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcswitchoffset_hcm2_getnpcswitchoffset.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checkmenu): spike for CheckMenu
+ff4-spike-hcm1_checkmenu-checkmenu: src/spike_checkmenu_hcm1_checkmenu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkmenu_hcm1_checkmenu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_checkmenu): spike for CheckMenu
+ff4-spike-hcm2_checkmenu-checkmenu: src/spike_checkmenu_hcm2_checkmenu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkmenu_hcm2_checkmenu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updateplayerspeed): spike for UpdatePlayerSpeed
+ff4-spike-hcm1_updateplayerspeed-updateplayerspeed: src/spike_updateplayerspeed_hcm1_updateplayerspeed.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updateplayerspeed_hcm1_updateplayerspeed.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_initworld): spike for InitWorld
+ff4-spike-hcm1_initworld-initworld: src/spike_initworld_hcm1_initworld.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initworld_hcm1_initworld.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_initinterrupts): spike for InitInterrupts
+ff4-spike-hcm1_initinterrupts-initinterrupts: src/spike_initinterrupts_hcm1_initinterrupts.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initinterrupts_hcm1_initinterrupts.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_fadeinmenu): spike for FadeInMenu
+ff4-spike-hcm1_fadeinmenu-fadeinmenu: src/spike_fadeinmenu_hcm1_fadeinmenu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeinmenu_hcm1_fadeinmenu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_fadeinmenu): spike for FadeInMenu
+ff4-spike-hcm2_fadeinmenu-fadeinmenu: src/spike_fadeinmenu_hcm2_fadeinmenu.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeinmenu_hcm2_fadeinmenu.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrcavewatergfx): spike for TfrCaveWaterGfx
+ff4-spike-hcm1_tfrcavewatergfx-tfrcavewatergfx: src/spike_tfrcavewatergfx_hcm1_tfrcavewatergfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrcavewatergfx_hcm1_tfrcavewatergfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_tfrcavewatergfx): spike for TfrCaveWaterGfx
+ff4-spike-hcm2_tfrcavewatergfx-tfrcavewatergfx: src/spike_tfrcavewatergfx_hcm2_tfrcavewatergfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrcavewatergfx_hcm2_tfrcavewatergfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_initdma): spike for InitDMA
+ff4-spike-hcm1_initdma-initdma: src/spike_initdma_hcm1_initdma.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initdma_hcm1_initdma.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_fadeoutsongfast): spike for FadeOutSongFast
+ff4-spike-hcm1_fadeoutsongfast-fadeoutsongfast: src/spike_fadeoutsongfast_hcm1_fadeoutsongfast.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeoutsongfast_hcm1_fadeoutsongfast.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_fadeoutsongfast): spike for FadeOutSongFast
+ff4-spike-hcm2_fadeoutsongfast-fadeoutsongfast: src/spike_fadeoutsongfast_hcm2_fadeoutsongfast.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeoutsongfast_hcm2_fadeoutsongfast.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_fadeoutsongslow): spike for FadeOutSongSlow
+ff4-spike-hcm1_fadeoutsongslow-fadeoutsongslow: src/spike_fadeoutsongslow_hcm1_fadeoutsongslow.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeoutsongslow_hcm1_fadeoutsongslow.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_fadeoutsongslow): spike for FadeOutSongSlow
+ff4-spike-hcm2_fadeoutsongslow-fadeoutsongslow: src/spike_fadeoutsongslow_hcm2_fadeoutsongslow.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeoutsongslow_hcm2_fadeoutsongslow.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_playmapsong): spike for PlayMapSong
+ff4-spike-hcm1_playmapsong-playmapsong: src/spike_playmapsong_hcm1_playmapsong.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playmapsong_hcm1_playmapsong.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_playmapsong): spike for PlayMapSong
+ff4-spike-hcm2_playmapsong-playmapsong: src/spike_playmapsong_hcm2_playmapsong.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playmapsong_hcm2_playmapsong.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_playsfx): spike for PlaySfx
+ff4-spike-hcm1_playsfx-playsfx: src/spike_playsfx_hcm1_playsfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsfx_hcm1_playsfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_playsfx): spike for PlaySfx
+ff4-spike-hcm2_playsfx-playsfx: src/spike_playsfx_hcm2_playsfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playsfx_hcm2_playsfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_fadein): spike for FadeIn
+ff4-spike-hcm1_fadein-fadein: src/spike_fadein_hcm1_fadein.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadein_hcm1_fadein.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_fadein): spike for FadeIn
+ff4-spike-hcm2_fadein-fadein: src/spike_fadein_hcm2_fadein.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadein_hcm2_fadein.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_fadeout): spike for FadeOut
+ff4-spike-hcm1_fadeout-fadeout: src/spike_fadeout_hcm1_fadeout.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeout_hcm1_fadeout.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_fadeout): spike for FadeOut
+ff4-spike-hcm2_fadeout-fadeout: src/spike_fadeout_hcm2_fadeout.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeout_hcm2_fadeout.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrwatertiles): spike for TfrWaterTiles
+ff4-spike-hcm1_tfrwatertiles-tfrwatertiles: src/spike_tfrwatertiles_hcm1_tfrwatertiles.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrwatertiles_hcm1_tfrwatertiles.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_tfrwatertiles): spike for TfrWaterTiles
+ff4-spike-hcm2_tfrwatertiles-tfrwatertiles: src/spike_tfrwatertiles_hcm2_tfrwatertiles.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrwatertiles_hcm2_tfrwatertiles.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatewaterlavaani): spike for UpdateWaterLavaAnim
+ff4-spike-hcm1_updatewaterlavaani-updatewaterlavaanim: src/spike_updatewaterlavaanim_hcm1_updatewaterlavaani.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewaterlavaanim_hcm1_updatewaterlavaani.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrwatergfx): spike for TfrWaterGfx
+ff4-spike-hcm1_tfrwatergfx-tfrwatergfx: src/spike_tfrwatergfx_hcm1_tfrwatergfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrwatergfx_hcm1_tfrwatergfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_tfrwatergfx): spike for TfrWaterGfx
+ff4-spike-hcm2_tfrwatergfx-tfrwatergfx: src/spike_tfrwatergfx_hcm2_tfrwatergfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrwatergfx_hcm2_tfrwatergfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_calcmode7rot): spike for CalcMode7Rot
+ff4-spike-hcm1_calcmode7rot-calcmode7rot: src/spike_calcmode7rot_hcm1_calcmode7rot.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calcmode7rot_hcm1_calcmode7rot.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_calcmode7rot): spike for CalcMode7Rot
+ff4-spike-hcm2_calcmode7rot-calcmode7rot: src/spike_calcmode7rot_hcm2_calcmode7rot.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calcmode7rot_hcm2_calcmode7rot.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_calcsine): spike for CalcSine
+ff4-spike-hcm1_calcsine-calcsine: src/spike_calcsine_hcm1_calcsine.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calcsine_hcm1_calcsine.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_calcsine): spike for CalcSine
+ff4-spike-hcm2_calcsine-calcsine: src/spike_calcsine_hcm2_calcsine.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calcsine_hcm2_calcsine.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatemode7regs): spike for UpdateMode7Regs
+ff4-spike-hcm1_updatemode7regs-updatemode7regs: src/spike_updatemode7regs_hcm1_updatemode7regs.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemode7regs_hcm1_updatemode7regs.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_waitvblanklong): spike for WaitVblankLong
+ff4-spike-hcm1_waitvblanklong-waitvblanklong: src/spike_waitvblanklong_hcm1_waitvblanklong.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblanklong_hcm1_waitvblanklong.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_waitvblankshort): spike for WaitVblankShort
+ff4-spike-hcm1_waitvblankshort-waitvblankshort: src/spike_waitvblankshort_hcm1_waitvblankshort.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitvblankshort_hcm1_waitvblankshort.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_waitframe): spike for WaitFrame
+ff4-spike-hcm1_waitframe-waitframe: src/spike_waitframe_hcm1_waitframe.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_waitframe_hcm1_waitframe.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatewipeirq): spike for UpdateWipeIRQ
+ff4-spike-hcm1_updatewipeirq-updatewipeirq: src/spike_updatewipeirq_hcm1_updatewipeirq.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewipeirq_hcm1_updatewipeirq.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_updatewipeirq): spike for UpdateWipeIRQ
+ff4-spike-hcm2_updatewipeirq-updatewipeirq: src/spike_updatewipeirq_hcm2_updatewipeirq.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewipeirq_hcm2_updatewipeirq.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatewipenmi): spike for UpdateWipeNMI
+ff4-spike-hcm1_updatewipenmi-updatewipenmi: src/spike_updatewipenmi_hcm1_updatewipenmi.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewipenmi_hcm1_updatewipenmi.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_updatewipenmi): spike for UpdateWipeNMI
+ff4-spike-hcm2_updatewipenmi-updatewipenmi: src/spike_updatewipenmi_hcm2_updatewipenmi.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatewipenmi_hcm2_updatewipenmi.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadplayergfxworld): spike for LoadPlayerGfxWorld
+ff4-spike-hcm1_loadplayergfxworld-loadplayergfxworld: src/spike_loadplayergfxworld_hcm1_loadplayergfxworld.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadplayergfxworld_hcm1_loadplayergfxworld.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadplayergfxsub): spike for LoadPlayerGfxSub
+ff4-spike-hcm1_loadplayergfxsub-loadplayergfxsub: src/spike_loadplayergfxsub_hcm1_loadplayergfxsub.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadplayergfxsub_hcm1_loadplayergfxsub.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_inczoommult): spike for IncZoomMult
+ff4-spike-hcm1_inczoommult-inczoommult: src/spike_inczoommult_hcm1_inczoommult.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_inczoommult_hcm1_inczoommult.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_inczoommult): spike for IncZoomMult
+ff4-spike-hcm2_inczoommult-inczoommult: src/spike_inczoommult_hcm2_inczoommult.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_inczoommult_hcm2_inczoommult.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatezoomhdma): spike for UpdateZoomHDMA
+ff4-spike-hcm1_updatezoomhdma-updatezoomhdma: src/spike_updatezoomhdma_hcm1_updatezoomhdma.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatezoomhdma_hcm1_updatezoomhdma.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_updatezoomhdma): spike for UpdateZoomHDMA
+ff4-spike-hcm2_updatezoomhdma-updatezoomhdma: src/spike_updatezoomhdma_hcm2_updatezoomhdma.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatezoomhdma_hcm2_updatezoomhdma.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_drawpos): spike for DrawPos
+ff4-spike-hcm1_drawpos-drawpos: src/spike_drawpos_hcm1_drawpos.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawpos_hcm1_drawpos.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_drawpos): spike for DrawPos
+ff4-spike-hcm2_drawpos-drawpos: src/spike_drawpos_hcm2_drawpos.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawpos_hcm2_drawpos.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrchestdoor): spike for TfrChestDoor
+ff4-spike-hcm1_tfrchestdoor-tfrchestdoor: src/spike_tfrchestdoor_hcm1_tfrchestdoor.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrchestdoor_hcm1_tfrchestdoor.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_tfrchestdoor): spike for TfrChestDoor
+ff4-spike-hcm2_tfrchestdoor-tfrchestdoor: src/spike_tfrchestdoor_hcm2_tfrchestdoor.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrchestdoor_hcm2_tfrchestdoor.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrpal): spike for TfrPal
+ff4-spike-hcm1_tfrpal-tfrpal: src/spike_tfrpal_hcm1_tfrpal.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrpal_hcm1_tfrpal.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrvram): spike for TfrVRAM
+ff4-spike-hcm1_tfrvram-tfrvram: src/spike_tfrvram_hcm1_tfrvram.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrvram_hcm1_tfrvram.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_clearvram): spike for ClearVRAM
+ff4-spike-hcm1_clearvram-clearvram: src/spike_clearvram_hcm1_clearvram.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearvram_hcm1_clearvram.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrsprites): spike for TfrSprites
+ff4-spike-hcm1_tfrsprites-tfrsprites: src/spike_tfrsprites_hcm1_tfrsprites.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrsprites_hcm1_tfrsprites.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checkplayermovesub): spike for CheckPlayerMoveSub
+ff4-spike-hcm1_checkplayermovesub-checkplayermovesub: src/spike_checkplayermovesub_hcm1_checkplayermovesub.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkplayermovesub_hcm1_checkplayermovesub.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_checkplayermovesub): spike for CheckPlayerMoveSub
+ff4-spike-hcm2_checkplayermovesub-checkplayermovesub: src/spike_checkplayermovesub_hcm2_checkplayermovesub.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkplayermovesub_hcm2_checkplayermovesub.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_opendoor): spike for OpenDoor
+ff4-spike-hcm1_opendoor-opendoor: src/spike_opendoor_hcm1_opendoor.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_opendoor_hcm1_opendoor.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_opendoor): spike for OpenDoor
+ff4-spike-hcm2_opendoor-opendoor: src/spike_opendoor_hcm2_opendoor.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_opendoor_hcm2_opendoor.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_setplayernpcmap): spike for SetPlayerNPCMap
+ff4-spike-hcm1_setplayernpcmap-setplayernpcmap: src/spike_setplayernpcmap_hcm1_setplayernpcmap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_setplayernpcmap_hcm1_setplayernpcmap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getbg1vramptr): spike for GetBG1VRAMPtr
+ff4-spike-hcm1_getbg1vramptr-getbg1vramptr: src/spike_getbg1vramptr_hcm1_getbg1vramptr.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbg1vramptr_hcm1_getbg1vramptr.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getbg1vramptr): spike for GetBG1VRAMPtr
+ff4-spike-hcm2_getbg1vramptr-getbg1vramptr: src/spike_getbg1vramptr_hcm2_getbg1vramptr.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbg1vramptr_hcm2_getbg1vramptr.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getdoortiles): spike for GetDoorTiles
+ff4-spike-hcm1_getdoortiles-getdoortiles: src/spike_getdoortiles_hcm1_getdoortiles.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdoortiles_hcm1_getdoortiles.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getdoortiles): spike for GetDoorTiles
+ff4-spike-hcm2_getdoortiles-getdoortiles: src/spike_getdoortiles_hcm2_getdoortiles.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getdoortiles_hcm2_getdoortiles.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checkplayermovewor): spike for CheckPlayerMoveWorld
+ff4-spike-hcm1_checkplayermovewor-checkplayermoveworld: src/spike_checkplayermoveworld_hcm1_checkplayermovewor.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkplayermoveworld_hcm1_checkplayermovewor.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_checkplayermovewor): spike for CheckPlayerMoveWorld
+ff4-spike-hcm2_checkplayermovewor-checkplayermoveworld: src/spike_checkplayermoveworld_hcm2_checkplayermovewor.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkplayermoveworld_hcm2_checkplayermovewor.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checkvehicleblock): spike for CheckVehicleBlock
+ff4-spike-hcm1_checkvehicleblock-checkvehicleblock: src/spike_checkvehicleblock_hcm1_checkvehicleblock.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkvehicleblock_hcm1_checkvehicleblock.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checknpcmap1): spike for CheckNPCMap1
+ff4-spike-hcm1_checknpcmap1-checknpcmap1: src/spike_checknpcmap1_hcm1_checknpcmap1.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcmap1_hcm1_checknpcmap1.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checknpcmap2): spike for CheckNPCMap2
+ff4-spike-hcm1_checknpcmap2-checknpcmap2: src/spike_checknpcmap2_hcm1_checknpcmap2.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcmap2_hcm1_checknpcmap2.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getnpcmapptr): spike for GetNPCMapPtr
+ff4-spike-hcm1_getnpcmapptr-getnpcmapptr: src/spike_getnpcmapptr_hcm1_getnpcmapptr.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcmapptr_hcm1_getnpcmapptr.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getnpcmapptr): spike for GetNPCMapPtr
+ff4-spike-hcm2_getnpcmapptr-getnpcmapptr: src/spike_getnpcmapptr_hcm2_getnpcmapptr.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getnpcmapptr_hcm2_getnpcmapptr.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadnpcgfx): spike for LoadNPCGfx
+ff4-spike-hcm1_loadnpcgfx-loadnpcgfx: src/spike_loadnpcgfx_hcm1_loadnpcgfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadnpcgfx_hcm1_loadnpcgfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_loadnpcgfx): spike for LoadNPCGfx
+ff4-spike-hcm2_loadnpcgfx-loadnpcgfx: src/spike_loadnpcgfx_hcm2_loadnpcgfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadnpcgfx_hcm2_loadnpcgfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadspritegfx): spike for LoadSpriteGfx
+ff4-spike-hcm1_loadspritegfx-loadspritegfx: src/spike_loadspritegfx_hcm1_loadspritegfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadspritegfx_hcm1_loadspritegfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_loadspritegfx): spike for LoadSpriteGfx
+ff4-spike-hcm2_loadspritegfx-loadspritegfx: src/spike_loadspritegfx_hcm2_loadspritegfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadspritegfx_hcm2_loadspritegfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checknpcswitch): spike for CheckNPCSwitch
+ff4-spike-hcm1_checknpcswitch-checknpcswitch: src/spike_checknpcswitch_hcm1_checknpcswitch.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcswitch_hcm1_checknpcswitch.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_checknpcswitch): spike for CheckNPCSwitch
+ff4-spike-hcm2_checknpcswitch-checknpcswitch: src/spike_checknpcswitch_hcm2_checknpcswitch.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checknpcswitch_hcm2_checknpcswitch.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatezoompal): spike for UpdateZoomPal
+ff4-spike-hcm1_updatezoompal-updatezoompal: src/spike_updatezoompal_hcm1_updatezoompal.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatezoompal_hcm1_updatezoompal.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_updatezoompal): spike for UpdateZoomPal
+ff4-spike-hcm2_updatezoompal-updatezoompal: src/spike_updatezoompal_hcm2_updatezoompal.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatezoompal_hcm2_updatezoompal.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatetopchar): spike for UpdateTopChar
+ff4-spike-hcm1_updatetopchar-updatetopchar: src/spike_updatetopchar_hcm1_updatetopchar.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatetopchar_hcm1_updatetopchar.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_updatetopchar): spike for UpdateTopChar
+ff4-spike-hcm2_updatetopchar-updatetopchar: src/spike_updatetopchar_hcm2_updatetopchar.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatetopchar_hcm2_updatetopchar.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_gettopcharptr): spike for GetTopCharPtr
+ff4-spike-hcm1_gettopcharptr-gettopcharptr: src/spike_gettopcharptr_hcm1_gettopcharptr.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettopcharptr_hcm1_gettopcharptr.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_gettopcharptr): spike for GetTopCharPtr
+ff4-spike-hcm2_gettopcharptr-gettopcharptr: src/spike_gettopcharptr_hcm2_gettopcharptr.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettopcharptr_hcm2_gettopcharptr.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadplayergfx): spike for LoadPlayerGfx
+ff4-spike-hcm1_loadplayergfx-loadplayergfx: src/spike_loadplayergfx_hcm1_loadplayergfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadplayergfx_hcm1_loadplayergfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_loadplayergfx): spike for LoadPlayerGfx
+ff4-spike-hcm2_loadplayergfx-loadplayergfx: src/spike_loadplayergfx_hcm2_loadplayergfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadplayergfx_hcm2_loadplayergfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checkbattle): spike for CheckBattle
+ff4-spike-hcm1_checkbattle-checkbattle: src/spike_checkbattle_hcm1_checkbattle.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkbattle_hcm1_checkbattle.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_checkbattle): spike for CheckBattle
+ff4-spike-hcm2_checkbattle-checkbattle: src/spike_checkbattle_hcm2_checkbattle.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkbattle_hcm2_checkbattle.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatebattleparams): spike for UpdateBattleParams
+ff4-spike-hcm1_updatebattleparams-updatebattleparams: src/spike_updatebattleparams_hcm1_updatebattleparams.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatebattleparams_hcm1_updatebattleparams.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_updatebattleparams): spike for UpdateBattleParams
+ff4-spike-hcm2_updatebattleparams-updatebattleparams: src/spike_updatebattleparams_hcm2_updatebattleparams.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatebattleparams_hcm2_updatebattleparams.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_getbattlebg): spike for GetBattleBG
+ff4-spike-hcm1_getbattlebg-getbattlebg: src/spike_getbattlebg_hcm1_getbattlebg.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbattlebg_hcm1_getbattlebg.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_getbattlebg): spike for GetBattleBG
+ff4-spike-hcm2_getbattlebg-getbattlebg: src/spike_getbattlebg_hcm2_getbattlebg.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_getbattlebg_hcm2_getbattlebg.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_chooserandbattle): spike for ChooseRandBattle
+ff4-spike-hcm1_chooserandbattle-chooserandbattle: src/spike_chooserandbattle_hcm1_chooserandbattle.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_chooserandbattle_hcm1_chooserandbattle.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_chooserandbattle): spike for ChooseRandBattle
+ff4-spike-hcm2_chooserandbattle-chooserandbattle: src/spike_chooserandbattle_hcm2_chooserandbattle.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_chooserandbattle_hcm2_chooserandbattle.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_fadeinsong): spike for FadeInSong
+ff4-spike-hcm1_fadeinsong-fadeinsong: src/spike_fadeinsong_hcm1_fadeinsong.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeinsong_hcm1_fadeinsong.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_fadeinsong): spike for FadeInSong
+ff4-spike-hcm2_fadeinsong-fadeinsong: src/spike_fadeinsong_hcm2_fadeinsong.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_fadeinsong_hcm2_fadeinsong.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadoverworldlevia): spike for LoadOverworldLeviathan
+ff4-spike-hcm1_loadoverworldlevia-loadoverworldleviathan: src/spike_loadoverworldleviathan_hcm1_loadoverworldlevia.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadoverworldleviathan_hcm1_loadoverworldlevia.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_loadoverworldlevia): spike for LoadOverworldLeviathan
+ff4-spike-hcm2_loadoverworldlevia-loadoverworldleviathan: src/spike_loadoverworldleviathan_hcm2_loadoverworldlevia.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadoverworldleviathan_hcm2_loadoverworldlevia.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadmapstack): spike for LoadMapStack
+ff4-spike-hcm1_loadmapstack-loadmapstack: src/spike_loadmapstack_hcm1_loadmapstack.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadmapstack_hcm1_loadmapstack.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_loadmapstack): spike for LoadMapStack
+ff4-spike-hcm2_loadmapstack-loadmapstack: src/spike_loadmapstack_hcm2_loadmapstack.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadmapstack_hcm2_loadmapstack.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_drawdestroyeddamcy): spike for DrawDestroyedDamcyan
+ff4-spike-hcm1_drawdestroyeddamcy-drawdestroyeddamcyan: src/spike_drawdestroyeddamcyan_hcm1_drawdestroyeddamcy.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawdestroyeddamcyan_hcm1_drawdestroyeddamcy.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_drawredwings): spike for DrawRedWings
+ff4-spike-hcm1_drawredwings-drawredwings: src/spike_drawredwings_hcm1_drawredwings.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawredwings_hcm1_drawredwings.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_decbrightness): spike for DecBrightness
+ff4-spike-hcm1_decbrightness-decbrightness: src/spike_decbrightness_hcm1_decbrightness.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_decbrightness_hcm1_decbrightness.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_decbrightness): spike for DecBrightness
+ff4-spike-hcm2_decbrightness-decbrightness: src/spike_decbrightness_hcm2_decbrightness.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_decbrightness_hcm2_decbrightness.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_calcvehiclespritep): spike for CalcVehicleSpritePos
+ff4-spike-hcm1_calcvehiclespritep-calcvehiclespritepos: src/spike_calcvehiclespritepos_hcm1_calcvehiclespritep.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calcvehiclespritepos_hcm1_calcvehiclespritep.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_playerspritetiles): spike for PlayerSpriteTiles
+ff4-spike-hcm1_playerspritetiles-playerspritetiles: src/spike_playerspritetiles_hcm1_playerspritetiles.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_playerspritetiles_hcm1_playerspritetiles.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_updatebg2scroll): spike for UpdateBG2Scroll
+ff4-spike-hcm1_updatebg2scroll-updatebg2scroll: src/spike_updatebg2scroll_hcm1_updatebg2scroll.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatebg2scroll_hcm1_updatebg2scroll.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_updatebg2scroll): spike for UpdateBG2Scroll
+ff4-spike-hcm2_updatebg2scroll-updatebg2scroll: src/spike_updatebg2scroll_hcm2_updatebg2scroll.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatebg2scroll_hcm2_updatebg2scroll.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_initbg2tilemap): spike for InitBG2Tilemap
+ff4-spike-hcm1_initbg2tilemap-initbg2tilemap: src/spike_initbg2tilemap_hcm1_initbg2tilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initbg2tilemap_hcm1_initbg2tilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_initbg2tilemap): spike for InitBG2Tilemap
+ff4-spike-hcm2_initbg2tilemap-initbg2tilemap: src/spike_initbg2tilemap_hcm2_initbg2tilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initbg2tilemap_hcm2_initbg2tilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrbg1tilemap): spike for TfrBG1Tilemap
+ff4-spike-hcm1_tfrbg1tilemap-tfrbg1tilemap: src/spike_tfrbg1tilemap_hcm1_tfrbg1tilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrbg1tilemap_hcm1_tfrbg1tilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_tfrbg1tilemap): spike for TfrBG1Tilemap
+ff4-spike-hcm2_tfrbg1tilemap-tfrbg1tilemap: src/spike_tfrbg1tilemap_hcm2_tfrbg1tilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrbg1tilemap_hcm2_tfrbg1tilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrworldtilemap): spike for TfrWorldTilemap
+ff4-spike-hcm1_tfrworldtilemap-tfrworldtilemap: src/spike_tfrworldtilemap_hcm1_tfrworldtilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrworldtilemap_hcm1_tfrworldtilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_tfrworldtilemap): spike for TfrWorldTilemap
+ff4-spike-hcm2_tfrworldtilemap-tfrworldtilemap: src/spike_tfrworldtilemap_hcm2_tfrworldtilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrworldtilemap_hcm2_tfrworldtilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_decodeworldtilemap): spike for DecodeWorldTilemap
+ff4-spike-hcm1_decodeworldtilemap-decodeworldtilemap: src/spike_decodeworldtilemap_hcm1_decodeworldtilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_decodeworldtilemap_hcm1_decodeworldtilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_decodeworldtilemap): spike for DecodeWorldTilemap
+ff4-spike-hcm2_decodeworldtilemap-decodeworldtilemap: src/spike_decodeworldtilemap_hcm2_decodeworldtilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_decodeworldtilemap_hcm2_decodeworldtilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_decodebg1tilemap): spike for DecodeBG1Tilemap
+ff4-spike-hcm1_decodebg1tilemap-decodebg1tilemap: src/spike_decodebg1tilemap_hcm1_decodebg1tilemap.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_decodebg1tilemap_hcm1_decodebg1tilemap.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_clearprologuevram): spike for ClearPrologueVRAM
+ff4-spike-hcm1_clearprologuevram-clearprologuevram: src/spike_clearprologuevram_hcm1_clearprologuevram.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearprologuevram_hcm1_clearprologuevram.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_clearprologuevram): spike for ClearPrologueVRAM
+ff4-spike-hcm2_clearprologuevram-clearprologuevram: src/spike_clearprologuevram_hcm2_clearprologuevram.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearprologuevram_hcm2_clearprologuevram.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_tfrtitlecrystaltil): spike for TfrTitleCrystalTiles
+ff4-spike-hcm1_tfrtitlecrystaltil-tfrtitlecrystaltiles: src/spike_tfrtitlecrystaltiles_hcm1_tfrtitlecrystaltil.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrtitlecrystaltiles_hcm1_tfrtitlecrystaltil.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_tfrtitlecrystaltil): spike for TfrTitleCrystalTiles
+ff4-spike-hcm2_tfrtitlecrystaltil-tfrtitlecrystaltiles: src/spike_tfrtitlecrystaltiles_hcm2_tfrtitlecrystaltil.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_tfrtitlecrystaltiles_hcm2_tfrtitlecrystaltil.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checktreasurenpc): spike for CheckTreasureNPC
+ff4-spike-hcm1_checktreasurenpc-checktreasurenpc: src/spike_checktreasurenpc_hcm1_checktreasurenpc.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktreasurenpc_hcm1_checktreasurenpc.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_checktreasurenpc): spike for CheckTreasureNPC
+ff4-spike-hcm2_checktreasurenpc-checktreasurenpc: src/spike_checktreasurenpc_hcm2_checktreasurenpc.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktreasurenpc_hcm2_checktreasurenpc.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checktreasureswitc): spike for CheckTreasureSwitch
+ff4-spike-hcm1_checktreasureswitc-checktreasureswitch: src/spike_checktreasureswitch_hcm1_checktreasureswitc.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktreasureswitch_hcm1_checktreasureswitc.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_checktreasureswitc): spike for CheckTreasureSwitch
+ff4-spike-hcm2_checktreasureswitc-checktreasureswitch: src/spike_checktreasureswitch_hcm2_checktreasureswitc.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktreasureswitch_hcm2_checktreasureswitc.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_gettreasureid): spike for GetTreasureID
+ff4-spike-hcm1_gettreasureid-gettreasureid: src/spike_gettreasureid_hcm1_gettreasureid.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettreasureid_hcm1_gettreasureid.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_checktriggersub): spike for CheckTriggerSub
+ff4-spike-hcm1_checktriggersub-checktriggersub: src/spike_checktriggersub_hcm1_checktriggersub.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checktriggersub_hcm1_checktriggersub.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_loadtitlegfx): spike for LoadTitleGfx
+ff4-spike-hcm1_loadtitlegfx-loadtitlegfx: src/spike_loadtitlegfx_hcm1_loadtitlegfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadtitlegfx_hcm1_loadtitlegfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm2_loadtitlegfx): spike for LoadTitleGfx
+ff4-spike-hcm2_loadtitlegfx-loadtitlegfx: src/spike_loadtitlegfx_hcm2_loadtitlegfx.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_loadtitlegfx_hcm2_loadtitlegfx.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_maptitletilestop): spike for MapTitleTilesTop
+ff4-spike-hcm1_maptitletilestop-maptitletilestop: src/spike_maptitletilestop_hcm1_maptitletilestop.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_maptitletilestop_hcm1_maptitletilestop.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (hcm1_maptitletilesbtm): spike for MapTitleTilesBtm
+ff4-spike-hcm1_maptitletilesbtm-maptitletilesbtm: src/spike_maptitletilesbtm_hcm1_maptitletilesbtm.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_maptitletilesbtm_hcm1_maptitletilesbtm.c $(CORE_SRC) $(LDFLAGS)

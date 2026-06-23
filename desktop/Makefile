@@ -68,6 +68,9 @@ input_probe: input_probe.c $(GNW_SRC)
 wram_diff: wram_diff.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ wram_diff.c $(GNW_SRC) $(LDFLAGS)
 
+wram_diff_dbg: wram_diff.c $(GNW_SRC)
+	$(CC) $(CFLAGS) -DDEBUG_DCED -o $@ wram_diff.c $(GNW_SRC) $(LDFLAGS)
+
 run: $(BIN)
 	./$(BIN) $(ROM) $(FRAMES)
 
@@ -93,3 +96,6 @@ clean:
 
 proof_cyc: proof_cyc.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ proof_cyc.c $(GNW_SRC) $(LDFLAGS)
+
+miss_profiler: miss_profiler.c $(GNW_SRC)
+	$(CC) $(CFLAGS) -o $@ miss_profiler.c $(GNW_SRC) $(LDFLAGS)
