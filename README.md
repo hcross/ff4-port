@@ -1,130 +1,151 @@
-# ff4-port
+# ff4-port — FF4 translation workshop
 
-Native C reimplementation of **Final Fantasy IV** (Super Famicom),
-following the `snesrev/zelda3` shadow-execution pattern. Target platform:
-`game-and-watch-retro-go-sd` (STM32H7B0 Game & Watch Mario mod).
+The **production workshop** for the native-C port of Final Fantasy IV (Super
+Famicom). Translates 65816 assembly to C, validates every function against the
+original ROM, and delivers validated translations to
+[hcross/ff4-gnw](https://github.com/hcross/ff4-gnw) for integration into the
+Game & Watch firmware.
+
+## Role in the ecosystem
+
+```
+ff4-port (this repo)                    ff4-gnw (delivery)
+  upstream/      65816 disassembly
+  translator/    LLM pipeline        →→  battle/, field/, …  (validated C)
+  desktop/       wram_diff A/B oracle →→  dispatch_all.c      (updated)
+  port/          candidates in flight
+  parity/        spike harness
+```
+
+**This repo** is the atelier: it holds the source material, the tooling that
+generates translation candidates, and the oracle that validates them before
+they ship.
+
+**[ff4-gnw](https://github.com/hcross/ff4-gnw)** is the delivery end: only
+validated, reviewed functions land there. The `port/` directory in this repo
+holds **candidates in flight** — generated drafts awaiting oracle sign-off.
+Nothing in `port/` compiles into the firmware.
 
 ## Status
 
-**Phase 5 — Boots to the title screen on real G&W hardware.**
-Final Fantasy IV boots all the way to the Square Enix splash + title
-on a real Game & Watch Mario (STM32H7B0VBT6, 64 MB extflash mod), via
-the [`hcross/ff4-gnw`](https://github.com/hcross/ff4-gnw) overlay
-inside [`hcross/game-and-watch-retro-go-sd`](https://github.com/hcross/game-and-watch-retro-go-sd)
-(branch `feat/ff4-port-scaffold`).
+**213 routines validated and dispatched** in ff4-gnw
+(battle 92, field 114, menu 8, cutscene 20, sound 6).
 
-  - **168 routines** native-C in the dispatch table (battle 77 ✓,
-    field 65, menu 9, cutscene 12, sound 2)
-  - **26 % dispatch hit rate** on the boot-to-title sequence
-    (`dispatch=142/546` at host frame 175 — the absolute hit count
-    matches the title-screen execution; the miss denominator
-    drops as each native-C body eliminates its sub-routine JSRs)
-  - Translation pipeline runs **autonomously** end-to-end (see
-    "Translation pipeline" below), with hardware verification via a
-    diagnostic harness baked into the firmware behind
-    `-DFF4_AUTOBOOT=1`.
+FF4 boots through the Square Enix splash to the title screen on real
+Game & Watch hardware (Mario, STM32H7B0VBT6, 64 MB extflash mod). See
+[ff4-gnw](https://github.com/hcross/ff4-gnw) for device-side status and build
+instructions.
 
-## What this project is
-
-- A **batch translator pipeline** that converts 65816 assembly from the
-  [everything8215/ff4](https://github.com/everything8215/ff4) disassembly
-  to native C, validated function-by-function against the original ROM
-  running under [LakeSnes](https://github.com/elzo-d/LakeSnes) emulation.
-- A **classifier** (ADR-003) that decides per-function whether to
-  translate to C or delegate to emulated execution.
-- A **parity harness** that runs both implementations side-by-side and
-  diffs WRAM / VRAM / SRAM / OAM / CGRAM frame-by-frame.
-
-## What this project is NOT
-
-- Not a ROM. The original ROM is copyright Square Enix; users provide
-  their own legally obtained copy. See [`vanilla/README.md`](vanilla/README.md).
-- Not yet playable. The translator pipeline is the focus. Phase 5
-  (G&W integration) is documented but not implemented.
+37 additional candidates are staged in `port/` (25 battle, 12 field) pending
+oracle validation.
 
 ## Repository layout
 
 ```
 ff4-port/
+├── upstream/            — submodule: everything8215/ff4 disassembly (65816 CA65)
+├── LakeSnes/            — submodule: elzo-d/LakeSnes (reference emulator)
 ├── vanilla/             — your ROM lives here (gitignored)
-├── upstream/            — submodule: everything8215/ff4 disassembly
-├── LakeSnes/            — submodule: elzo-d/LakeSnes emulator
-├── parity/              — parity harness (C, links LakeSnes core)
-│   ├── src/
-│   │   ├── parity_compare.c       — generic double-instance comparator
-│   │   ├── spike_calchits_m2.c    — M2: CalcHits translation (1000/1000 ✓)
-│   │   ├── spike_apply_dmg_mult_m3.c — M3: ApplyDmgMult (1008/1008 ✓)
-│   │   ├── spike_get_dmg_ptr_m4.c — M4: GetDmgPtr (256/256 ✓)
-│   │   ├── spike_calc_dmg_m5.c    — M5: CalcDmg (delegate proof)
-│   │   └── spike_apply_dmg_m6.c   — M6: ApplyDmg (delegate validation)
+│
+├── desktop/             — A/B validation oracle (the gate before ff4-gnw)
+│   ├── wram_diff.c          two-pass harness: dispatch-ON vs pure-interpreter,
+│   │                        compare final WRAM; prints divergences
+│   ├── oracle_ab.c          frame-level A/B runner
+│   ├── miss_profiler.c      dispatch miss profiler
 │   └── Makefile
-├── ca65-bridge/         — Python: parses ca65 sources + ADR-003 classifier
-│   ├── ca65_bridge/
-│   │   ├── parsers/asm.py
-│   │   ├── backend.py    — REBackend-compatible interface
-│   │   └── cli.py        — `ca65-bridge get-asm <name>`, `classify-module`
-│   └── tests/
-├── prompts/             — LLM templates for the translator
-│   ├── reverser_system.md     — 10 documented pitfalls
-│   ├── reverser_task.md
-│   └── reverser_examples.md   — CalcHits + ApplyDmgMult few-shots
-├── translator/          — batch translator with pluggable LLM provider
-│   ├── batch_translate.py
-│   ├── llm_providers.py — claude CLI / Anthropic SDK / OpenAI-compat
-│   └── README.md
-└── port/                — generated native C output (per module)
+│
+├── translator/          — LLM translation pipeline
+│   ├── cascade_translate.py     3-stage adaptive cascade: gemma4 → gpt-oss critic → deepseek-v4-pro
+│   ├── hardcore_translate.py    single-model multi-turn translator
+│   ├── volume_iterate.py        autonomous batch runner over a candidates list
+│   ├── port_validated.py        end-to-end: pick PASSes → copy to ff4-gnw → regen dispatch → flash → report
+│   ├── prompt_mutation_loop.py  P3 prompt-mutation outer loop (adopts only under no-regression)
+│   ├── regression_suite.py      16-routine regression suite used by the mutation loop
+│   └── runs/                    JSONL audit trail — every run appended here
+│
+├── prompts/             — LLM system prompts (versioned)
+│   ├── reverser_system.md       v2 — 12 documented pitfalls
+│   ├── reverser_hardcore.md     extends v2 with H1-H5 hardcore sections
+│   └── history/v0/, v1/, v2/    adopted versions with regression scores at adoption
+│
+├── parity/              — spike harness (function-level parity tests)
+│   └── src/spike_*.c            one file per validated spike scenario
+│
+├── port/                — translation candidates in flight (not yet in ff4-gnw)
+│   ├── battle/              25 pending candidates
+│   └── field/               12 pending candidates
+│
+├── ca65-bridge/         — Python: CA65 parser + ADR-003 translate/delegate classifier
+└── docs/adr/            — Architecture Decision Records
 ```
+
+## Validation flow
+
+Every function follows this gate before landing in ff4-gnw:
+
+```
+1. ca65-bridge classify    — translate or delegate? (ADR-003)
+2. translator/             — LLM generates C candidate → port/<mod>/<fn>.c
+3. desktop/wram_diff       — A/B oracle: dispatch-ON vs interpreter, compare WRAM
+4. manual review           — cycle budget, flag side-effects, CONTRACT block
+5. port_validated.py       — copy to ff4-gnw, regen dispatch_all, commit both repos
+```
+
+The `wram_diff` oracle is the hard gate: a function that diverges WRAM does not
+ship. Divergences are diagnosed by adjusting cycle injection (`inject_cycles`
+for long routines that cross HDMA windows) or by flagging the function as
+delegate.
 
 ## Quick start
 
 ### Prerequisites
 
-- macOS or Linux (developed on macOS arm64)
-- `cc65` (for upstream ROM build) — `brew install cc65`
-- `node` + `npm` (for upstream's asset extractor)
-- `clang` (for parity harness)
-- `sdl2` (for LakeSnes desktop, optional) — `brew install sdl2`
+- macOS or Linux
+- `cc65` — `brew install cc65`
+- `node` + `npm` (upstream asset extractor)
+- `clang`
 - `python` ≥ 3.10
-- A legal FF4 ROM in `vanilla/` (see [`vanilla/README.md`](vanilla/README.md))
+- A legal FF4 JP ROM (`CRC32 CAA15E97`) in `vanilla/`
 
-### Clone with submodules
+### Clone
 
 ```bash
 git clone --recursive https://github.com/hcross/ff4-port.git
 cd ff4-port
 ```
 
-### Build everything
+### Build the desktop oracle
 
 ```bash
-# 1. Place your ROM
-cp <your-rom>.bin vanilla/
-cp vanilla/<your-rom>.bin upstream/vanilla/ff4-jp.sfc
-
-# 2. Build the upstream ROM (validates ROM + builds reference binary)
-cd upstream && npm install && make rip && make ff4-jp1 && cd ..
-
-# 3. Build LakeSnes (optional, for parity desktop)
-cd LakeSnes && make && cd ..
-
-# 4. Build parity harness
-cd parity && make && cd ..
-
-# 5. Set up the ca65-bridge Python package
-cd ca65-bridge && uv venv .venv && uv pip install -e ".[dev]" --python .venv/bin/python && cd ..
+cd desktop && make wram_diff && cd ..
 ```
 
-### Run the spikes (parity validation)
+### Run the A/B oracle on a savestate
 
 ```bash
-cd parity
-./ff4-parity-compare ../upstream/rom/ff4-jp1.sfc ../upstream/rom/ff4-jp1.sfc 6000  # self-consistency
-./ff4-spike-calchits-m2 ../upstream/rom/ff4-jp1.sfc 1000                          # M2: CalcHits
-./ff4-spike-apply-dmg-mult ../upstream/rom/ff4-jp1.sfc 1000                       # M3
-./ff4-spike-get-dmg-ptr ../upstream/rom/ff4-jp1.sfc                               # M4 (exhaustive)
-./ff4-spike-calc-dmg ../upstream/rom/ff4-jp1.sfc 200                              # M5 delegate
-./ff4-spike-apply-dmg ../upstream/rom/ff4-jp1.sfc                                 # M6 delegate
+# Two-pass: dispatch-ON pass A vs pure-interpreter pass B, compare WRAM
+desktop/wram_diff <rom.sfc> <savestate.lss>
+# Expected: "IDENTICAL" for all validated routines; any divergence is a bug.
 ```
+
+### Run the batch translator
+
+```bash
+# Dry-run (no API call)
+python translator/batch_translate.py --module battle --max-functions 5 --dry-run
+
+# Real run via Claude Code subscription
+python translator/batch_translate.py --module battle --max-functions 3
+
+# Autonomous volume sweep
+python3 translator/volume_iterate.py \
+    --names-file /tmp/candidates.txt \
+    --chunk-size 5 --max-chunks 50 \
+    --max-turns 2 --enable-critic
+```
+
+See [`translator/README.md`](translator/README.md) for Anthropic SDK and
+OpenAI-compatible (Ollama, OpenRouter) usage.
 
 ### Classify a routine
 
@@ -134,49 +155,26 @@ cd ca65-bridge
 .venv/bin/ca65-bridge --root ../upstream classify-module battle
 ```
 
-### Run the batch translator (dry-run, no API call)
-
-```bash
-python translator/batch_translate.py --module battle --max-functions 5 --dry-run
-```
-
-### Run the batch translator (real, claude CLI — uses Claude Code subscription)
-
-```bash
-python translator/batch_translate.py --module battle --max-functions 3
-```
-
-See [`translator/README.md`](translator/README.md) for Anthropic SDK and
-OpenAI-compatible (Ollama, OpenRouter) usage.
-
 ## Architecture decisions
 
-- [ADR-001](docs/adr-001-native-c-port.md) — Voie B: native C port over
-  full emulator port
-- [ADR-002](docs/adr-002-lakesnes-upstream.md) — Use LakeSnes upstream
-  unmodified (no fork)
-- [ADR-003](docs/adr-003-classification.md) — Binary classification:
-  translate vs delegate
+- [ADR-001](docs/adr/adr-001-native-c-port.md) — Native C port over full emulator port
+- [ADR-002](docs/adr/adr-002-lakesnes-upstream.md) — Use LakeSnes upstream unmodified
+- [ADR-003](docs/adr/adr-003-classification.md) — Binary classification: translate vs delegate
 
-## Methodology — the 10 pitfalls
+## The 10+ pitfalls
 
-The `prompts/reverser_system.md` template documents 10 pitfalls
-discovered during the spike journey. Each was caught and resolved by the
-parity harness. Highlights:
+Documented in `prompts/reverser_system.md`. Highlights:
 
-1. CMP/BCS inversion (`bcs` branches when ≥, C uses `<`)
-2. Z/N flags must be simulated on routine entry when jumping past the
-   caller's `LDA`
+1. `CMP/BCS` inversion (`bcs` branches when ≥, C uses `<`)
+2. Z/N flags must be simulated on entry when jumping past the caller's `LDA`
 3. 8-bit arithmetic truncation (`asl` truncates; C `<<` doesn't)
 4. Implicit `mf=true` heritage for routines without `shorta`/`longa`
-5. Hidden register B preserved across mode A 8-bit `lda` (contaminates
-   `tax → stx`)
-6. ADR-003 — when 4–5 above combine, function is non-translatable in
-   isolation → delegate
+5. Hidden register B preserved across 8-bit `lda` (contaminates `tax → stx`)
+6. Long routines crossing HDMA windows need `inject_cycles` not `snes_runCycles`
+7. `LDA abs,X` with `xf=0` costs 38 MC (idle unconditionally), not 32 MC
+8. When pitfalls 4–5 combine, the function is non-translatable in isolation → delegate
 
-Full list and remediation patterns in `prompts/reverser_system.md`.
-
-## Project ratio (ADR-003 estimate)
+## Translation scope estimate (ADR-003)
 
 | Module    | Routines | Translate (%) | Delegate (%) |
 |-----------|---------:|--------------:|-------------:|
@@ -188,70 +186,32 @@ Full list and remediation patterns in `prompts/reverser_system.md`.
 | cutscene  |       73 |           82% |          18% |
 | **total** | **2821** |       **77%** |      **23%** |
 
-Note: "routines" includes internal sub-labels; the practical count of
-"business functions" requiring real translation is ~200–400. Estimated
-LLM budget for a full pass (Sonnet + cache): **$3–15**.
-
-## Translation pipeline
-
-The `translator/` directory now contains an autonomous reverse-
-engineering pipeline. Three stages, each cheap-first, with verbatim-
-error multi-turn refinement at every stage.
-
-| Tool                          | Role                                                              |
-|-------------------------------|-------------------------------------------------------------------|
-| `cascade_translate.py`        | 3-stage adaptive cascade: gemma4:31b ↦ gpt-oss:120b critic ↦ deepseek-v4-pro. Per-routine early-exit on `pass` / `delegate_pass` / `custom_spike`. |
-| `hardcore_translate.py`       | Single-model multi-turn translator. The conversation history is preserved across turns so the model sees its own failed attempt and the verbatim build / spike error tail. |
-| `gpt_oss_critic.py`           | gpt-oss-120b prompt-mutation critic. Reads the failed turns + spike output, proposes an additive full-replacement system prompt. |
-| `prompt_mutation_loop.py`     | P3 prompt-mutation outer loop. Adopts a candidate prompt only under STRICT no-regression against a 16-routine regression suite. |
-| `regression_suite.py`         | The 16-routine suite (4 battle + 4 cutscene + 4 field + 4 menu + 3 sound) used by the prompt-mutation loop. |
-| `port_validated.py`           | One-command end-to-end port: pick PASSes from the cascade log, copy into `ff4-gnw/<mod>/`, regen dispatch, commit + push both repos, bump submodule, build, flash, monitor 35 s, parse dispatch hit rate, diff vs baseline, write JSON report. |
-| `volume_iterate.py`           | Autonomous batch runner: walks an entire candidates list, runs the cascade chunk-by-chunk, quick-build-checks each chunk, retries minus offenders on a build break, hard-fails the chunk if even that doesn't link. |
-
-**Prompt versions:**
-- `prompts/reverser_system.md` — v2 (398 lines, 12 Pitfalls). Used by
-  cascade stage 1 (gemma4) and `prompt_mutation_loop.py`.
-- `prompts/reverser_hardcore.md` — 624 lines extending v2 with 5
-  hardcore sections H1-H5 (extended Snes/Cpu/Ppu/Apu/Dma API,
-  anti-hallucination table, 3 extra few-shots, "delegate not
-  invent" gate, 4-step self-check). Used by cascade stage 3
-  (deepseek-v4-pro).
-- `prompts/history/v0/`, `v1/`, `v2/` — adopted prompt versions
-  with manifests recording the routine that drove each mutation
-  and the regression score at adoption.
-
-**Audit trail:** every cascade / hardcore / mutation / volume run
-appends a JSONL record under `translator/runs/`. The schema is
-shared so any of the orchestrators can be re-run from another's log.
-
-Single-command run (autonomous):
-
-```bash
-# Build a candidates list of "translate-eligible, not yet dispatched"
-# routines from upstream/<mod>/*.asm (see translator/runs/ for examples).
-python3 translator/volume_iterate.py \
-    --names-file /tmp/candidates.txt \
-    --chunk-size 5 --max-chunks 50 \
-    --max-turns 2 --enable-critic
-```
+Estimated LLM budget for a full pass (Sonnet + cache): **$3–15**.
 
 ## Roadmap
 
 - ✅ Phase 1 — Toolchain bring-up + byte-identical ROM rebuild
 - ✅ Phase 2 — Parity harness (double-instance LakeSnes comparator)
 - ✅ Phase 3 — ca65-bridge + prompt templates
-- ✅ Phase 3.5 — Spike journey (M1–M6) + 10 documented pitfalls
+- ✅ Phase 3.5 — Spike journey (M1–M6) + documented pitfalls
 - ✅ Phase 4.0–4.2 — Classifier + multi-provider batch translator
 - ✅ Phase 4.3 — Auto-spike generator for parity validation
-- ✅ Phase 4.4 — First real `battle/` batch run with auto-spike validation
-- ✅ Phase 4.5 — P3 prompt-mutation loop (v0 → v1 → v2, +Pitfall 11, 12)
+- ✅ Phase 4.4 — First `battle/` batch run with auto-spike validation
+- ✅ Phase 4.5 — P3 prompt-mutation loop (v0 → v1 → v2)
 - ✅ Phase 4.6 — Hardcore deepseek-v4-pro tier for the hard tail
-- ✅ Phase 4.7 — Multi-turn iterative refinement (the "human-pushing-LLM" pattern)
+- ✅ Phase 4.7 — Multi-turn iterative refinement
 - ✅ Phase 4.8 — 3-stage adaptive cascade (gemma4 → critic → deepseek)
-- ✅ Phase 5 — Initial integration into [`hcross/ff4-gnw`](https://github.com/hcross/ff4-gnw) + `game-and-watch-retro-go-sd`. Boots to title screen on real hardware.
+- ✅ Phase 5 — Integration into ff4-gnw + game-and-watch-retro-go-sd; boots to title on real hardware
 - ⏳ Phase 5.1 — Lift dispatch hit rate beyond 26 % via `volume_iterate.py` sweeps
-- ⏳ Phase 5.2 — Implement `RunEmulatedFunc` on G&W so `*_emu` delegates execute the original asm at runtime instead of being weak no-ops
-- ⏳ Phase 5.3 — Savestate loading harness to measure dispatch hit rate inside battle / gameplay (currently only the boot-to-title path is exercised)
+- ⏳ Phase 5.2 — `RunEmulatedFunc` on G&W so `*_emu` delegates run the original asm at runtime
+- ⏳ Phase 5.3 — Savestate loading harness for in-battle dispatch hit-rate measurement
+
+## Upstream
+
+- 65816 disassembly: [everything8215/ff4](https://github.com/everything8215/ff4)
+- SNES emulator: [elzo-d/LakeSnes](https://github.com/elzo-d/LakeSnes)
+- Delivery overlay: [hcross/ff4-gnw](https://github.com/hcross/ff4-gnw)
+- Firmware: [sylverb/game-and-watch-retro-go-sd](https://github.com/sylverb/game-and-watch-retro-go-sd)
 
 ## License
 
