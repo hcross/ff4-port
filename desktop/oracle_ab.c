@@ -68,6 +68,15 @@ extern uint32_t ff4_dispatch_misses;
 extern int ff4_dispatch_enabled;
 extern void (*ff4_dispatch_trace)(uint32_t pc);
 extern int  (*ff4_dispatch_filter)(uint32_t pc);
+/* Cycle-cost accounting (oracle hardening): charge each dispatched routine its
+ * measured interpreter cost so the native pass keeps PPU phase with the
+ * interpreter pass instead of racing ahead (eliminates the structural
+ * execution-speed false positives). */
+extern int ff4_dispatch_charge_cycles;
+extern int ff4_dispatch_measure;
+extern int32_t ff4_dispatch_cycle_cost[];
+extern const int ff4_dispatch_count;
+extern void ff4_dispatch_measure_reset(void);
 
 /* --exclude set: hooks forced to pure interpretation in BOTH passes, so an
  * intentionally-divergent routine stops contaminating the comparison. */
@@ -275,6 +284,7 @@ int main(int argc, char **argv) {
     uint64_t budget = 4000000;   /* CPU-opcode budget per frame; a hang trips it */
     const char *load_path = NULL, *report_path = NULL;
     bool selftest = false, cmp_wram = true, cmp_fb = true;
+    bool charge = true;   /* cycle-cost accounting on by default; --no-charge for the old behaviour */
 
     for (int i = 2; i < argc; i++) {
         if      (!strcmp(argv[i], "--frames") && i + 1 < argc) frames = atoi(argv[++i]);
@@ -284,6 +294,7 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--selftest")) selftest = true;
         else if (!strcmp(argv[i], "--fb-only"))   cmp_wram = false;
         else if (!strcmp(argv[i], "--wram-only")) cmp_fb = false;
+        else if (!strcmp(argv[i], "--no-charge")) charge = false;
         else if (!strcmp(argv[i], "--exclude") && i + 1 < argc) {
             if (g_excl_n < EXCL_CAP) g_excl[g_excl_n++] = (uint32_t)strtoul(argv[++i], NULL, 16);
         }
@@ -343,11 +354,43 @@ int main(int argc, char **argv) {
     g_snapA = malloc((size_t)g_snap_cap * WRAM_SZ);
     if (!g_snapA) g_snap_cap = 0;     /* OOM → CRC-only, still works */
 
+    /* Calibration pass (oracle hardening): run the pure interpreter with
+     * measurement on to record each dispatched routine's real cycle cost, then
+     * restore S0. Pass A will charge those costs so it keeps PPU phase with the
+     * interpreter instead of racing ahead. Skipped under --no-charge / selftest
+     * (ON-vs-ON needs no charging — both sides already match). */
+    if (charge && !selftest) {
+        FrameHash *cal = calloc((size_t)frames, sizeof(FrameHash));
+        if (cal) {
+            ff4_dispatch_measure = 1;
+            ff4_dispatch_measure_reset();
+            printf("\ncalibration: pure interpreter, %d frames, measuring routine cycle costs...\n", frames);
+            run_pass(/*dispatch=*/0, frames, cal, /*trace=*/0, budget, NULL, /*store=*/0);
+            ff4_dispatch_measure = 0;
+            /* Report the few costliest measured routines for visibility. */
+            int top = 0, measured = 0; int32_t maxc = 0;
+            for (int s = 0; s < ff4_dispatch_count; s++) {
+                if (ff4_dispatch_cycle_cost[s] > maxc) { maxc = ff4_dispatch_cycle_cost[s]; top = s; }
+                if (ff4_dispatch_cycle_cost[s] > 0) measured++;
+            }
+            printf("  measured %d/%d routines; costliest = slot %d @ %d cycles\n",
+                   measured, ff4_dispatch_count, top, maxc);
+            free(cal);
+            if (!snes_loadState(ff4_snes, s0, s0_size)) {
+                fprintf(stderr, "error: snes_loadState(S0) after calibration failed\n"); return 1;
+            }
+            ff4_dispatch_hits = ff4_dispatch_misses = 0;
+        }
+    }
+
     ff4_dispatch_trace = trace_cb;
+    ff4_dispatch_charge_cycles = (charge && !selftest) ? 1 : 0;
     g_ev_n = 0;
-    printf("\npass A: dispatch=%s, %d frames (budget %llu ops/frame)...\n",
-           sideA ? "ON" : "OFF", frames, (unsigned long long)budget);
+    printf("\npass A: dispatch=%s, charge=%s, %d frames (budget %llu ops/frame)...\n",
+           sideA ? "ON" : "OFF", ff4_dispatch_charge_cycles ? "ON" : "OFF",
+           frames, (unsigned long long)budget);
     int stallA = run_pass(sideA, frames, A, /*trace=*/1, budget, g_snapA, /*store=*/1);
+    ff4_dispatch_charge_cycles = 0;   /* pass B is pure interpreter; never charge */
     uint32_t hitsA = ff4_dispatch_hits, missA = ff4_dispatch_misses;
     ff4_dispatch_trace = 0;           /* pass B must not append events */
     if (stallA >= 0) printf("  ⚠ pass A STALLED at frame %d (budget exhausted)\n", stallA);

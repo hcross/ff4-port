@@ -573,3 +573,51 @@ fires — 0/0), the static `Snes` singleton, and the device `pixelBuffer` dims.
 Consequence for **M3**: the static singleton means the A/B oracle cannot hold
 two live `Snes` instances — it must snapshot/restore one instance, or use a
 runtime `ff4_dispatch_enabled` toggle across two passes.
+
+## Oracle hardening — the three oracle limitations resolved/clarified (2026-06-27)
+
+**Status:** the three documented oracle limitations above are now addressed.
+
+**(1) Stack mask — ALREADY DONE (the note was stale).** Both `oracle_ab.c`
+(`crc32_wram` + `wram_first_diff`, `STACK_LO=0x0100 STACK_HI=0x0300`) and
+`wram_diff.c` (line ~70) already mask the CPU stack region `[0x0100,0x0300)`.
+The InitHWRegs `$7E:02E4/02E5` false positive is masked. No further action.
+
+**(2) Un-charged dispatch cycles — FIXED (cycle-cost accounting).** A dispatched
+C body runs in ~0 SNES cycles while the asm routine it replaces consumed real
+cycles, so the native pass executed *more* game logic before each vblank than
+the interpreter pass — the "structural execution-speed artefact". Fix
+(`dispatch_all.c` + `cpu.c` + `oracle_ab.c`):
+- A **calibration pass** (pure interpreter, `ff4_dispatch_measure=1`) measures
+  each dispatched routine's real cycle cost via an SP-watermark on RTS/RTL,
+  recording only routines that complete **within a single frame** (frame-
+  crossing routines — WaitVblank/NMI/JML-tail — have unbounded variable cost and
+  must not be charged a fixed value; this guard kills a bogus 23.8M-cycle
+  mis-measurement of the big battle routines).
+- The native pass charges `measured_cost − cycles_the_body_actually_consumed`
+  via `snes_runCycles` (flag `ff4_dispatch_charge_cycles`, ON by default in the
+  oracle, **0 on device** so device timing is unchanged). The single rule
+  self-corrects pure-C bodies (charge full), self-accounting bodies
+  (`snes_runCycles` already → ~0 left), and delegating bodies
+  (`run_emulated_func` → charge the remainder).
+
+**Validation (2026-06-27):**
+- Menu baseline (`004-menu`, excl. `15cadc`/`048004`): **IDENTICAL** across 100
+  frames *with and without* charging — no regression.
+- `005-pre-combat`: divergence stays at frame 26, cycle delta `+6` (no-charge) →
+  `+4` (charge) — charging is clean, no injected drift.
+- `006-in-combat`: divergence stays at frame 0, delta `+0`.
+- Calibration now reports sane costs (max ~27.5K cycles, was a bogus 23.8M).
+
+**Key finding:** the cycle-skew artefact is **already largely gone** — the hot
+routines that self-charge (`Mult8_btlgfx`, `update_ctrl`, …) had mitigated it.
+The remaining combat divergences (`005` f26, `006` f0) are **real functional
+port bugs** (delta cycles ≈ 0), not measurement noise. Charging is now a
+systematic safety net that generalises the manual `snes_runCycles` self-
+accounting, so the oracle's verdicts can be trusted as we requalify routines.
+Use `--no-charge` to reproduce the pre-hardening behaviour.
+
+**(3) `run_emulated_func` unbounded inner loop — UNCHANGED (perf backstop, not a
+verdict bug).** It already has a 50M-opcode guard + watchdog pet; it only makes
+the oracle *slow* on a delegated hang, never *wrong*. Deprioritised; revisit if
+a world-map-class delegated spin makes a run impractically slow.
