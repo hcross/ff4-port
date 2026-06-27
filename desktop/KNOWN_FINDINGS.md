@@ -386,9 +386,26 @@ and the whole graphics state machine work correctly under the interpreter.
 - SP stable in $02D0–$02DE throughout (was crashing at frame 29)
 - brightness=15, forcedBlank=0 from frame 121 onward — combat renders
 
-**Future work:** port `ExecBtlGfx_ext` (the BtlGfxTbl dispatcher +
-all 22 handlers) natively in C; re-add `$038085` to dispatch_all.c. Until
-then the combat graphics run in interpreter — correct but slower.
+**Update (2026-06-25) — F10 resolved; `ExecBtlGfx_c` re-added to dispatch:**
+
+`ExecBtlGfx_ext_emu` now delegates via `run_emulated_func(snes, 0x028003u)`
+(the entry point of `ExecBtlGfx_ext`), and `{ 0x038085, ExecBtlGfx_c }` is
+back in `dispatch_all.c` (count 201→202).
+
+**Second bug discovered during restoration:** `ExecBtlGfx_c` was forcing
+`cpu->mf = false` (A 16-bit) before calling `ExecBtlGfx_ext_emu`. This is
+wrong — the ASM at `$03:8085` does NOT change mf. `WaitVblank` (`$02:851E`)
+uses `INC $1811` and `LDA $1811` in 8-bit mode; with mf=0, `INC $1811`
+writes a 16-bit word (corrupting `$1812`, the NMI re-entry guard), and
+`LDA $1811` reads 2 bytes so the BNE condition never sees 0 → infinite spin,
+50M-opcode guard triggers. Fix: removed `cpu->mf = false; cpu->xf = false;`
+from `ExecBtlGfx_c`; `mf/xf` are inherited from BattleMain (mf=1, correct).
+
+**Validation (2026-06-25):** from `f111_d.lss` savestate, 600 dispatch frames:
+- WaitVblank exits in ~4 internal SNES frames (was 5909 before fix)
+- BattleMain loop visible at `$03:85ED`; `DoAction` reaches `$03:B33B`
+  (Cmd_21 area) at frame 300 — combat is progressing
+- dispatch rate 56.6 % (112081/198184), frames_run=7940 — healthy
 
 ## Oracle artifact — per-frame CRC is skewed by un-charged dispatch cycles
 
@@ -473,6 +490,80 @@ write the channel-0 DMA registers (`$4300..$4307`) to match what the emulator
 would have written, then call `snes_syncCycles` with the correct DMA byte count.
 Must not call `snes_runCycles` (bypasses the DMA engine) nor trigger
 `snes_doOpenBus` side effects outside the DMA window.
+
+## F12 — `InitAction_c` forgets `cpu->a = a9` before `get_timer_ptr_emu` → Cecil never attacks
+
+**Severity:** critical (ATB broken; Cecil never acts) · **Found:** 2026-06-26 ·
+**Status:** FIXED (`ff4-gnw/battle/InitAction.c`)
+
+### Symptom
+
+Cecil (entity 0) never takes any combat action — his ATB timer expires
+immediately (`$2A09` bit0=1) but the battle engine keeps looping on
+`$03:85ED` (BattleMain) without ever selecting an action.
+
+### ATB chain summary
+
+```
+DecTimers ($03:9677)      — timer=0 → ORA #$81 → $2A09 = 0x89 (bit0+bit7)
+GetPendingAction_c ($9741) — $29EB=0x40 (timer1 active) → CheckTimer_c → D1=1
+InitAction_c ($97B3)      — must compute $352E (action type) from the timer
+```
+
+### Bug in `InitAction_c`
+
+The ASM at `$03:97D0`:
+
+```asm
+LDA $D3         ; a9 = d3 * 3
+ASL
+CLC
+ADC $D3
+STA $A9
+LDA $A9         ; ← loads a9 into A
+JSR $8569       ; GetTimerPtr reads cpu->a directly
+```
+
+The C version (`battle/InitAction.c`) wrote `ram[0xA9] = a9` but
+**omitted syncing `cpu->a`** before calling `get_timer_ptr_emu`.
+`GetTimerPtr` computes `$3598 = cpu->a + $3530`; with a stale `cpu->a`,
+`$3598` is wrong → `timer_flags` ($2A06+x) is read at the wrong address →
+`$352E` ends up as 0 (character attack) or 3 (timer effect), never 2
+(trigger the attack) → combat loops forever.
+
+### Fix applied
+
+```c
+uint8_t a9 = (uint8_t)((d3 << 1) + d3);
+ram[0xA9] = a9;
+/* ASM does LDA $A9 before JSR GetTimerPtr — must set cpu->a so GetTimerPtr
+ * computes $3598 = a9 + $3530 correctly. */
+snes->cpu->a = (snes->cpu->a & 0xFF00u) | (uint16_t)a9;
+get_timer_ptr_emu(snes);
+```
+
+Same pattern as the earlier fix applied in the same function for
+`select_obj_emu` (`cpu->a = d2` before the JSR SelectObj).
+
+### Verification
+
+| State | PC at frame 120 | Interpretation |
+|------|--------------------|----------------|
+| Before fix | `03:85ED` | BattleMain — combat still ongoing |
+| After fix | `00:9135` | Bank $00 (field) — combat ended |
+
+Savestate used: `f111_d.lss` (start of combat, Cecil alone).
+
+### Related items
+
+- `SetTimer` ($03:85C8) initialises Cecil's action timer to 0x0000 (D4:D5=0)
+  every ~28 frames — `DecTimers` therefore marks it expired immediately, which
+  is the expected behaviour for this savestate.
+- `GetPendingAction_c` and `CheckTimer_c` were correct; the only bug was
+  in `InitAction_c`.
+- Adding `TimerDur_00/02/08/0a` to the dispatch table (earlier session) and
+  implementing `set_timer_dur_emu` / `apply_speed_mod_emu` in
+  `ff4_helpers.c` are part of the same F11/F12 arc.
 
 ## Infra note — config parity with the device
 

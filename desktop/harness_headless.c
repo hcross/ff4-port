@@ -29,6 +29,26 @@ extern Snes *ff4_snes;
 extern uint32_t ff4_dispatch_hits;
 extern uint32_t ff4_dispatch_misses;
 extern int ff4_dispatch_enabled;
+extern void (*ff4_dispatch_trace)(uint32_t pc);
+
+static int trace_frame = -1;
+static void dispatch_trace_cb(uint32_t pc) {
+    printf("  hit: %06X\n", pc);
+}
+
+/* WRAM watchpoint — logs every write to a given WRAM offset with SNES PC. */
+static uint32_t watch_wram_addr = (uint32_t)-1;
+static int       watch_cur_frame = 0;
+
+static uint32_t watch_wram_hi = 0;  /* inclusive upper bound for range watch; 0 = exact */
+
+static void wram_watch_cb(uint32_t wram_off, uint8_t val, void *ctx) {
+    uint32_t hi = watch_wram_hi ? watch_wram_hi : watch_wram_addr;
+    if (wram_off < watch_wram_addr || wram_off > hi) return;
+    Snes *s = (Snes *)ctx;
+    printf("  [watch $%05X] frame=%-4d val=0x%02X  PC=%02X:%04X\n",
+           wram_off, watch_cur_frame, val, s->cpu->k, s->cpu->pc);
+}
 
 #define LCD_W 320
 #define LCD_H 240
@@ -97,6 +117,9 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--save")   && i + 1 < argc) save_path = argv[++i];
         else if (!strcmp(argv[i], "--out")    && i + 1 < argc) out_ppm = argv[++i];
         else if (!strcmp(argv[i], "--no-dispatch")) ff4_dispatch_enabled = 0;
+        else if (!strcmp(argv[i], "--trace-frame") && i + 1 < argc) trace_frame = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--watch-wram") && i + 1 < argc) watch_wram_addr = (uint32_t)strtoul(argv[++i], NULL, 16);
+        else if (!strcmp(argv[i], "--watch-wram-hi") && i + 1 < argc) watch_wram_hi = (uint32_t)strtoul(argv[++i], NULL, 16);
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
 
@@ -120,8 +143,19 @@ int main(int argc, char **argv) {
                load_path, st_len, ff4_snes->cpu->k, ff4_snes->cpu->pc);
     }
 
+    if (watch_wram_addr != (uint32_t)-1) {
+        snes_wram_write_hook     = wram_watch_cb;
+        snes_wram_write_hook_ctx = ff4_snes;
+        printf("watching WRAM $%05X for writes\n", watch_wram_addr);
+    }
+
     printf("running %d frames...\n", frames);
     for (int i = 0; i < frames; i++) {
+        watch_cur_frame = i + 1;
+        if (trace_frame >= 0 && i == trace_frame - 1)
+            ff4_dispatch_trace = dispatch_trace_cb;
+        else if (trace_frame >= 0 && i == trace_frame)
+            ff4_dispatch_trace = NULL;
         ff4_step();
         if ((i + 1) % 60 == 0)
             printf("  frame %4d | pc=%02X:%04X | hits=%u misses=%u\n",
