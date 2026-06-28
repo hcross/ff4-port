@@ -54,6 +54,24 @@ static int host_keep_native(uint32_t pc) {
     return pc == 0x018010 || pc == 0x14fd03 || pc == 0x14fd00 || pc == 0x048004;
 }
 
+/* Combat-graphics dispatch cluster (btlgfx bank $02 + DrawMP/ExecBtlGfx/
+ * TfrSprites) — isolated by oracle bisection as the cause of the combat &
+ * menu rendering glitches (all no_source / never spike-validated, ported as a
+ * batch). Run them in the interpreter (correct ground truth on desktop) while
+ * keeping the 162 proven routines native. DESKTOP-ONLY: on device TfrSprites
+ * must stay native (F3 DMA hardfault). Returns 1 = run native, 0 = interpret. */
+static int host_exclude_combatgfx(uint32_t pc) {
+    switch (pc) {
+        case 0x03fe03: case 0x028560: case 0x0285d2: case 0x0290a0:
+        case 0x02a491: case 0x02bb0b: case 0x02bb1a: case 0x02da73:
+        case 0x02dafe: case 0x02dced: case 0x02dda5: case 0x02dddc:
+        case 0x03805f: case 0x038085:
+            return 0;   /* proven-divergent → interpret */
+        default:
+            return 1;   /* everything else stays native */
+    }
+}
+
 #define LCD_W 320
 #define LCD_H 240
 
@@ -164,6 +182,11 @@ int main(int argc, char **argv) {
 
     static uint16_t fb[LCD_W * LCD_H];
     bool running = true, paused = false, interp_mode = false;
+    /* Default ON: interpret the proven-divergent combat-graphics cluster so the
+     * desktop renders combat/menu correctly while keeping the 162 proven
+     * routines native. Toggle with 'b' to see the bug (all-native). */
+    bool exclude_gfx = true;
+    ff4_dispatch_filter = host_exclude_combatgfx;
     uint64_t frame = 0;
 
     /* Incremental savestate slots: F5 writes the next free <prefix>-NNN.lss,
@@ -193,6 +216,13 @@ int main(int argc, char **argv) {
                                  ff4_dispatch_filter = interp_mode ? host_keep_native : NULL;
                                  printf("[dispatch] %s\n", interp_mode
                                         ? "interpreter (input+sound kept native)" : "NATIVE"); break;
+                    case SDLK_b: exclude_gfx = !exclude_gfx; interp_mode = false;
+                                 /* A/B the combat-graphics fix: ON = cluster interpreted
+                                  * (correct), OFF = all-native (shows the rendering bug). */
+                                 ff4_dispatch_filter = exclude_gfx ? host_exclude_combatgfx : NULL;
+                                 printf("[combat-gfx] %s\n", exclude_gfx
+                                        ? "EXCLUDED (interpreted — correct render)"
+                                        : "native (bug visible)"); break;
                     /* F5/F9/F12 are hijacked by macOS unless Fn-locked, so the
                      * digit aliases 5/9/0 are the reliable bindings. */
                     case SDLK_F5: case SDLK_5:  /* save to the next free incremental slot */
