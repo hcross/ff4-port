@@ -206,8 +206,17 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
             if "=" not in part:
                 continue
             k, v = [s.strip() for s in part.split("=", 1)]
+            # Strip a trailing semantic annotation, e.g. "1(upper_bound)" → "1".
+            v = re.sub(r"\(.*$", "", v).strip()
             if k in out:
-                out[k] = None if v.lower() == "none" else int(v)
+                if v.lower() == "none" or not v:
+                    out[k] = None
+                else:
+                    try:
+                        out[k] = int(v)
+                    except ValueError:
+                        sys.stderr.write(f"[gen] skipping malformed reg spec part: {part!r}\n")
+                        out[k] = None
         return out
 
     def parse_ram(spec: str) -> list[tuple[int, int]]:
@@ -223,8 +232,12 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
                 continue
             addr_s, width_s = [s.strip() for s in part.split("=", 1)]
             # Also strip any inline `#` per-value comment, in case the LLM
-            # put one mid-spec rather than at the end.
+            # put one mid-spec rather than at the end, plus a trailing
+            # semantic annotation, e.g. "1(incremented)" → "1".
             width_s = re.sub(r"#.*$", "", width_s).strip()
+            width_s = re.sub(r"\(.*$", "", width_s).strip()
+            # A range address ("0x1900..19FF") has no single width to fuzz here.
+            addr_s = addr_s.split("..", 1)[0].strip()
             try:
                 out.append((int(addr_s, 16), int(width_s)))
             except ValueError:

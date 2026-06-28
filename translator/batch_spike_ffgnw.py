@@ -54,7 +54,8 @@ def find_source(name_c: str, domain: str) -> Path | None:
     return None
 
 
-def classify(name_c: str, domain: str, trials: int, timeout: int) -> dict:
+def classify(name_c: str, domain: str, trials: int, timeout: int,
+             run_timeout: int) -> dict:
     src = find_source(name_c, domain)
     if src is None:
         return {"status": "no_source"}
@@ -63,7 +64,8 @@ def classify(name_c: str, domain: str, trials: int, timeout: int) -> dict:
         return {"status": "no_contract", "file": str(src)}
     try:
         r = subprocess.run(
-            [sys.executable, str(GEN), str(src), "--build", "--run", str(trials)],
+            [sys.executable, str(GEN), str(src), "--build", "--run", str(trials),
+             "--run-timeout", str(run_timeout)],
             capture_output=True, text=True, timeout=timeout, cwd=str(ROOT))
     except subprocess.TimeoutExpired:
         return {"status": "timeout", "file": str(src)}
@@ -98,6 +100,7 @@ def main() -> int:
     ap.add_argument("--out", type=Path, required=True, help="JSONL results (resumable)")
     ap.add_argument("--trials", type=int, default=200)
     ap.add_argument("--timeout", type=int, default=90, help="per-routine wall clock (s)")
+    ap.add_argument("--run-timeout", type=int, default=20, help="spike-binary run budget passed to generate_spike (s)")
     args = ap.parse_args()
 
     lines = (args.routines.read_text() if args.routines else sys.stdin.read()).splitlines()
@@ -121,7 +124,7 @@ def main() -> int:
         for i, (rid, name_c, domain) in enumerate(todo, 1):
             if rid in done:
                 continue
-            res = classify(name_c, domain, args.trials, args.timeout)
+            res = classify(name_c, domain, args.trials, args.timeout, args.run_timeout)
             res = {"id": rid, "name": name_c, "domain": domain, **res}
             f.write(json.dumps(res) + "\n")
             f.flush()
