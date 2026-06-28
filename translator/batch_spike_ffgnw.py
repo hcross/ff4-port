@@ -70,14 +70,26 @@ def classify(name_c: str, domain: str, trials: int, timeout: int) -> dict:
     out = (r.stdout or "") + "\n" + (r.stderr or "")
     if "CUSTOM_SPIKE" in out:
         return {"status": "custom_spike", "file": str(src)}
+    if "delegate wrapper" in out:
+        # Thin shim that calls run_emulated_func to its own asm → equivalent by
+        # construction (it IS the interpreter path). No spike needed.
+        return {"status": "delegate", "file": str(src)}
     m = SUMMARY_RE.search(out)
     if m:
         fails = int(m.group(2))
         return {"status": "pass" if fails == 0 else "fail",
                 "trials": int(m.group(1)), "fails": fails, "file": str(src)}
-    # No summary line → build or generation failed.
+    # No summary line → distinguish the failure mode.
     tail = "\n".join(out.strip().splitlines()[-4:])
-    return {"status": "build_error", "file": str(src), "tail": tail}
+    if "infinite loop" in out or "exceeded" in out:
+        st = "run_hang"          # C body loops under fuzzed input (no per-trial guard)
+    elif "Traceback" in out or "ValueError" in out or "invalid literal" in out:
+        st = "parser_error"      # generate_spike couldn't parse the CONTRACT
+    elif "error:" in out.lower() or "Error 1" in out:
+        st = "compile_error"     # spike TU failed to compile
+    else:
+        st = "build_error"       # catch-all
+    return {"status": st, "file": str(src), "tail": tail}
 
 
 def main() -> int:
