@@ -72,6 +72,36 @@ static int host_exclude_combatgfx(uint32_t pc) {
     }
 }
 
+/* Broader triage filter: combat-graphics cluster PLUS the field-rendering
+ * suspects for the mode-7 / tile glitches (motion-dependent, so A/B'd live
+ * rather than via the no-input oracle). Toggle with 'm' while the field glitch
+ * is on screen; if it clears, the culprit is in this set → narrow next. */
+static int host_exclude_render(uint32_t pc) {
+    if (host_exclude_combatgfx(pc) == 0) return 0;
+    switch (pc) {
+        /* mode-7 / scroll / HDMA */
+        case 0x159104: case 0x1591ca: case 0x159204: case 0x15c144:
+        case 0x15c163: case 0x15c23d: case 0x15ca5e: case 0x14fd0c:
+        case 0x00f533: case 0x16f533:
+        /* BG tile transfer / tilemap decode */
+        case 0x15b143: case 0x16ffab: case 0x16fb93: case 0x00cb5f:
+        case 0x1e9f6c:
+            return 0;   /* field-render suspect → interpret */
+        default:
+            return 1;
+    }
+}
+
+/* Default desktop filter: every PROVEN-divergent dispatched routine — the
+ * combat-graphics cluster (bugs 1+2) plus TfrBGGfx ($15:B143, the tile-
+ * corruption culprit isolated by bisection on 008-overworld-mode7, a DMA-from-C
+ * routine that won't flush on the isolated desktop harness). Mode-7 (InitMapRAM)
+ * was a REAL fix and stays native. */
+static int host_exclude_divergent(uint32_t pc) {
+    if (host_exclude_combatgfx(pc) == 0) return 0;
+    return pc == 0x15b143 ? 0 : 1;   /* TfrBGGfx — interpret on desktop */
+}
+
 #define LCD_W 320
 #define LCD_H 240
 
@@ -186,7 +216,8 @@ int main(int argc, char **argv) {
      * desktop renders combat/menu correctly while keeping the 162 proven
      * routines native. Toggle with 'b' to see the bug (all-native). */
     bool exclude_gfx = true;
-    ff4_dispatch_filter = host_exclude_combatgfx;
+    bool render_mode = false;   /* 'm' = broader field-render exclusion (mode-7/tiles) */
+    ff4_dispatch_filter = host_exclude_divergent;
     uint64_t frame = 0;
 
     /* Incremental savestate slots: F5 writes the next free <prefix>-NNN.lss,
@@ -216,13 +247,21 @@ int main(int argc, char **argv) {
                                  ff4_dispatch_filter = interp_mode ? host_keep_native : NULL;
                                  printf("[dispatch] %s\n", interp_mode
                                         ? "interpreter (input+sound kept native)" : "NATIVE"); break;
-                    case SDLK_b: exclude_gfx = !exclude_gfx; interp_mode = false;
+                    case SDLK_b: exclude_gfx = !exclude_gfx; interp_mode = false; render_mode = false;
                                  /* A/B the combat-graphics fix: ON = cluster interpreted
                                   * (correct), OFF = all-native (shows the rendering bug). */
-                                 ff4_dispatch_filter = exclude_gfx ? host_exclude_combatgfx : NULL;
+                                 ff4_dispatch_filter = exclude_gfx ? host_exclude_divergent : NULL;
                                  printf("[combat-gfx] %s\n", exclude_gfx
                                         ? "EXCLUDED (interpreted — correct render)"
                                         : "native (bug visible)"); break;
+                    case SDLK_m: render_mode = !render_mode; interp_mode = false;
+                                 /* Broader field-render exclusion (mode-7/scroll/HDMA/tiles)
+                                  * for live A/B of the mode-7 & tile glitches. */
+                                 ff4_dispatch_filter = render_mode ? host_exclude_render
+                                                                   : (exclude_gfx ? host_exclude_combatgfx : NULL);
+                                 printf("[field-render] %s\n", render_mode
+                                        ? "EXCLUDED (combat-gfx + mode7/scroll/tiles interpreted)"
+                                        : "combat-gfx only"); break;
                     /* F5/F9/F12 are hijacked by macOS unless Fn-locked, so the
                      * digit aliases 5/9/0 are the reliable bindings. */
                     case SDLK_F5: case SDLK_5:  /* save to the next free incremental slot */

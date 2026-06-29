@@ -30,10 +30,22 @@ extern uint32_t ff4_dispatch_hits;
 extern uint32_t ff4_dispatch_misses;
 extern int ff4_dispatch_enabled;
 extern void (*ff4_dispatch_trace)(uint32_t pc);
+extern int  (*ff4_dispatch_filter)(uint32_t pc);
 
 static int trace_frame = -1;
 static void dispatch_trace_cb(uint32_t pc) {
     printf("  hit: %06X\n", pc);
+}
+
+/* --exclude PC (repeatable): force the listed routines to pure interpretation
+ * (filter returns 0) while everything else stays native. Lets a headless FB
+ * dump A/B a suspect cluster against ground truth without the oracle's
+ * first-divergence cutoff. */
+#define EXCL_MAX 32
+static uint32_t g_excl[EXCL_MAX]; static int g_excl_n = 0;
+static int excl_filter(uint32_t pc) {
+    for (int i = 0; i < g_excl_n; i++) if (g_excl[i] == pc) return 0;
+    return 1;
 }
 
 /* WRAM watchpoint — logs every write to a given WRAM offset with SNES PC. */
@@ -120,8 +132,10 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--trace-frame") && i + 1 < argc) trace_frame = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--watch-wram") && i + 1 < argc) watch_wram_addr = (uint32_t)strtoul(argv[++i], NULL, 16);
         else if (!strcmp(argv[i], "--watch-wram-hi") && i + 1 < argc) watch_wram_hi = (uint32_t)strtoul(argv[++i], NULL, 16);
+        else if (!strcmp(argv[i], "--exclude") && i + 1 < argc && g_excl_n < EXCL_MAX) g_excl[g_excl_n++] = (uint32_t)strtoul(argv[++i], NULL, 16);
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
+    if (g_excl_n > 0) ff4_dispatch_filter = excl_filter;
 
     long rom_len = 0;
     uint8_t *rom = read_file(rom_path, &rom_len);
