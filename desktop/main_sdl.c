@@ -98,8 +98,9 @@ static int host_exclude_render(uint32_t pc) {
  * routine that won't flush on the isolated desktop harness). Mode-7 (InitMapRAM)
  * was a REAL fix and stays native. */
 static int host_exclude_divergent(uint32_t pc) {
-    if (host_exclude_combatgfx(pc) == 0) return 0;
-    return pc == 0x15b143 ? 0 : 1;   /* TfrBGGfx — interpret on desktop */
+    /* TfrBGGfx ($15:B143) is now a manual VRAM loop (no DMA-from-C) → runs
+     * correctly native; no longer excluded. Mode-7 (InitMapRAM) also a real fix. */
+    return host_exclude_combatgfx(pc);
 }
 
 #define LCD_W 320
