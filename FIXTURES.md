@@ -23,6 +23,7 @@ the spikes, and SDL inspection.
 | `006-in-combat.lss` | Mid-combat | `02:A353` | Combat bug repro (sprites/menu), btlgfx cluster bisection | F12, combat bug |
 | `007-title-screen.lss` | Title screen | `00:9144` | Title / logo / input repro | F4, F5 |
 | `008-overworld-mode7.lss` | Overworld ship → mode-7 transition | `00:9144` | **Mode-7** bug repro (corruption from ~frame 90) ; validation of the `InitMapRAM` fix (`ff4-gnw 1a86d23`) | mode-7 bug |
+| `009-first-free-roam.lss` | Player's first **free-roam** instant (first control) | `00:9133` | Field control/movement baseline (captured in SDL 2026-06-30) | — |
 
 ## Conventions
 
