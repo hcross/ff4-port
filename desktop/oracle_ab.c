@@ -160,11 +160,19 @@ static uint32_t crc32(const uint8_t *data, size_t len) {
 #define STACK_LO 0x0100u
 #define STACK_HI 0x0300u
 
-/* crc32 over WRAM with [STACK_LO,STACK_HI) treated as zero (stack masked). */
+/* Optional WRAM compare window (--wram-range LO HI, hex). Default = whole WRAM.
+ * Lets a divergence hunt focus on one structure (e.g. char-anim state $EFC0-$EFDF
+ * or the OAM shadow $0300-$051F) without the timing-noise of other regions. */
+static uint32_t g_wram_lo = 0;
+static uint32_t g_wram_hi = 0x20000;
+
+/* crc32 over WRAM with [STACK_LO,STACK_HI) and bytes outside [g_wram_lo,g_wram_hi)
+ * treated as zero (stack masked + windowed). */
 static uint32_t crc32_wram(const uint8_t *data, size_t len) {
     uint32_t crc = 0xFFFFFFFFu;
     for (size_t i = 0; i < len; i++) {
-        uint8_t b = (i >= STACK_LO && i < STACK_HI) ? 0 : data[i];
+        bool masked = (i >= STACK_LO && i < STACK_HI) || (i < g_wram_lo || i >= g_wram_hi);
+        uint8_t b = masked ? 0 : data[i];
         crc ^= b;
         for (int k = 0; k < 8; k++)
             crc = (crc >> 1) ^ (0xEDB88320u & (uint32_t)(-(int32_t)(crc & 1)));
@@ -216,9 +224,9 @@ static uint32_t g_byte_off[16];
 static int      g_byte_noff  = 0;
 
 static int wram_first_diff(const uint8_t *a, const uint8_t *b) {
-    for (int i = 0; i < WRAM_SZ; i++) {
+    for (uint32_t i = g_wram_lo; i < g_wram_hi; i++) {
         if (i >= STACK_LO && i < STACK_HI) continue;  /* mask CPU stack scratch */
-        if (a[i] != b[i]) return i;
+        if (a[i] != b[i]) return (int)i;
     }
     return -1;
 }
@@ -295,6 +303,10 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--fb-only"))   cmp_wram = false;
         else if (!strcmp(argv[i], "--wram-only")) cmp_fb = false;
         else if (!strcmp(argv[i], "--no-charge")) charge = false;
+        else if (!strcmp(argv[i], "--wram-range") && i + 2 < argc) {
+            g_wram_lo = (uint32_t)strtoul(argv[++i], NULL, 16);
+            g_wram_hi = (uint32_t)strtoul(argv[++i], NULL, 16);
+        }
         else if (!strcmp(argv[i], "--exclude") && i + 1 < argc) {
             if (g_excl_n < EXCL_CAP) g_excl[g_excl_n++] = (uint32_t)strtoul(argv[++i], NULL, 16);
         }
