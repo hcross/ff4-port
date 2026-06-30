@@ -116,11 +116,38 @@ class Contract:
                                    # (stack-masked) instead of a fixed output slot.
                                    # Validates routines with indexed stores (dynamic
                                    # output address), e.g. the OAM/sprite builders.
+    mask_ranges: list = dataclasses.field(default_factory=list)
+                                   # // SPIKE_MASK: lo-hi[, lo-hi...] — WRAM byte ranges
+                                   # excluded from the region compare (dead DP scratch the
+                                   # asm writes but the C port legitimately doesn't mirror).
 
 
 _CONTRACT_RE = re.compile(r"//\s*CONTRACT:\s*\n((?:\s*//\s*[^\n]*\n)+)", re.MULTILINE)
 _CUSTOM_RE = re.compile(r"//\s*CUSTOM_SPIKE:\s*yes", re.IGNORECASE)
 _REGION_RE = re.compile(r"//\s*SPIKE_COMPARE:\s*region", re.IGNORECASE)
+_MASK_RE = re.compile(r"//\s*SPIKE_MASK:\s*([0-9A-Fa-fx,\s\-]+)", re.IGNORECASE)
+
+
+def parse_mask_ranges(text: str) -> list:
+    """Parse `// SPIKE_MASK: lo-hi[, lo-hi...]` into [(lo, hi), ...] (inclusive).
+
+    Ranges name WRAM byte addresses excluded from the region compare — dead DP
+    scratch the asm writes (e.g. `stx $1c`) but the C port doesn't mirror.
+    """
+    m = _MASK_RE.search(text)
+    if not m:
+        return []
+    ranges = []
+    for part in m.group(1).split(","):
+        part = part.strip()
+        if not part or "-" not in part:
+            continue
+        lo_s, hi_s = part.split("-", 1)
+        try:
+            ranges.append((int(lo_s, 16), int(hi_s, 16)))
+        except ValueError:
+            continue
+    return ranges
 _REVERSED_RE = re.compile(
     r"REVERSED_FUNCTION:\s*(\w+)::(\w+)\s*\(\$([0-9A-Fa-f]+):([0-9A-Fa-f]+)\)"
 )
@@ -177,17 +204,27 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
 
     true_addr = bridge_get_address(module, name)
     if true_addr is None:
-        sys.stderr.write(f"[gen] ca65-bridge could not resolve {module}::{name}\n")
-        return None
-
-    if rev_addr is not None and rev_addr != true_addr:
+        # The port name may differ from the asm label (e.g. DrawMonsterSprite_c
+        # ports UpdateCharPalette @da73). Fall back to the REVERSED_FUNCTION
+        # address when the name doesn't resolve.
+        if rev_addr is None:
+            sys.stderr.write(f"[gen] ca65-bridge could not resolve {module}::{name}\n")
+            return None
         sys.stderr.write(
-            f"[gen] WARNING: REVERSED_FUNCTION says ${rev_addr >> 16:02X}:"
-            f"{rev_addr & 0xFFFF:04X} but ca65-bridge says "
-            f"${true_addr >> 16:02X}:{true_addr & 0xFFFF:04X}. "
-            f"Trusting the bridge.\n"
+            f"[gen] ca65-bridge could not resolve {module}::{name}; using "
+            f"REVERSED_FUNCTION ${rev_addr >> 16:02X}:{rev_addr & 0xFFFF:04X} "
+            "(port name differs from asm label).\n"
         )
-    addr24 = true_addr
+        addr24 = rev_addr
+    else:
+        if rev_addr is not None and rev_addr != true_addr:
+            sys.stderr.write(
+                f"[gen] WARNING: REVERSED_FUNCTION says ${rev_addr >> 16:02X}:"
+                f"{rev_addr & 0xFFFF:04X} but ca65-bridge says "
+                f"${true_addr >> 16:02X}:{true_addr & 0xFFFF:04X}. "
+                f"Trusting the bridge.\n"
+            )
+        addr24 = true_addr
 
     m_block = _CONTRACT_RE.search(text)
     if not m_block:
@@ -291,6 +328,7 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
         entry_n=entry_n,
         custom_spike=custom_spike,
         compare_region=bool(_REGION_RE.search(text)),
+        mask_ranges=parse_mask_ranges(text),
     )
 
 
@@ -670,6 +708,10 @@ def render_spike(c_translation: str, contract: Contract) -> str:
         # landed instead of reading a fixed (and necessarily wrong) slot.
         capture_asm_output = "        Snap asm_post; snap_take(&asm_post, snes);"
         capture_c_output = "        Snap c_post; snap_take(&c_post, snes);"
+        _mask_lines = "".join(
+            f"            if (a >= 0x{lo:05X} && a <= 0x{hi:05X}) continue;  /* SPIKE_MASK scratch */\n"
+            for (lo, hi) in contract.mask_ranges
+        )
         compare_block = (
             "        /* Mask the stack page relative to SP: the asm's push/pull and\n"
             "         * run_emulated_func's return frame mutate it, the inlined C never\n"
@@ -679,6 +721,7 @@ def render_spike(c_translation: str, contract: Contract) -> str:
             "        int diff = -1;\n"
             "        for (int a = 0; a < 0x20000; a++) {\n"
             "            if (a >= sp_page && a < sp_page + 0x100) continue;  /* mask stack page */\n"
+            + _mask_lines +
             "            if (asm_post.ram[a] != c_post.ram[a]) { diff = a; break; }\n"
             "        }\n"
             "        bool ok = (diff < 0);\n"
