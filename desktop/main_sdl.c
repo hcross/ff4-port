@@ -103,6 +103,20 @@ static int host_exclude_divergent(uint32_t pc) {
     return host_exclude_combatgfx(pc);
 }
 
+/* Bisection filter (--native HEX, repeatable): keep ONLY the listed subset of
+ * the combat-graphics cluster native, interpret the rest of the cluster. Lets a
+ * human narrow which cluster routine causes which visible bug, one at a time, by
+ * relaunching with a different --native set. Everything outside the cluster
+ * stays native, exactly as in normal play. */
+static uint32_t g_native_subset[16];
+static int g_native_count = 0;
+static int host_bisect(uint32_t pc) {
+    if (host_exclude_combatgfx(pc) != 0) return 1;   /* not in cluster → native */
+    for (int i = 0; i < g_native_count; i++)
+        if (g_native_subset[i] == pc) return 1;      /* explicitly kept native */
+    return 0;                                        /* cluster, not in subset → interpret */
+}
+
 #define LCD_W 320
 #define LCD_H 240
 
@@ -184,7 +198,7 @@ static void screenshot_ppm(const char *path, const uint16_t *fb) {
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        fprintf(stderr, "usage: %s <rom.sfc> [--load f.lss] [--save-prefix P] [--scale N]\n", argv[0]);
+        fprintf(stderr, "usage: %s <rom.sfc> [--load f.lss] [--save-prefix P] [--scale N] [--native HEX]...\n", argv[0]);
         return 2;
     }
     const char *rom_path = argv[1];
@@ -195,6 +209,9 @@ int main(int argc, char **argv) {
         if      (!strcmp(argv[i], "--load")        && i+1 < argc) load_path   = argv[++i];
         else if (!strcmp(argv[i], "--save-prefix") && i+1 < argc) save_prefix = argv[++i];
         else if (!strcmp(argv[i], "--scale")       && i+1 < argc) scale = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--native")      && i+1 < argc) {
+            if (g_native_count < 16) g_native_subset[g_native_count++] = (uint32_t)strtoul(argv[++i], NULL, 16);
+        }
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
 
@@ -219,6 +236,15 @@ int main(int argc, char **argv) {
     bool exclude_gfx = true;
     bool render_mode = false;   /* 'm' = broader field-render exclusion (mode-7/tiles) */
     ff4_dispatch_filter = host_exclude_divergent;
+    if (g_native_count > 0) {
+        /* Bisection session: interpret the whole cluster except the --native subset.
+         * Relaunch with different --native sets to narrow the culprit. 'b' still
+         * toggles to the all-native cluster (host_exclude_divergent inverse). */
+        ff4_dispatch_filter = host_bisect;
+        printf("[bisect] cluster interpreted EXCEPT native:");
+        for (int i = 0; i < g_native_count; i++) printf(" %06x", g_native_subset[i]);
+        printf("  (the rest of the cluster runs in the interpreter)\n");
+    }
     uint64_t frame = 0;
 
     /* Incremental savestate slots: F5 writes the next free <prefix>-NNN.lss,
