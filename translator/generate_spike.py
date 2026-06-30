@@ -112,10 +112,15 @@ class Contract:
     entry_z: Optional[str]     # 'auto' or a C expression string
     entry_n: Optional[str]
     custom_spike: bool         # if True, skip generation
+    compare_region: bool = False   # // SPIKE_COMPARE: region — memcmp the whole WRAM
+                                   # (stack-masked) instead of a fixed output slot.
+                                   # Validates routines with indexed stores (dynamic
+                                   # output address), e.g. the OAM/sprite builders.
 
 
 _CONTRACT_RE = re.compile(r"//\s*CONTRACT:\s*\n((?:\s*//\s*[^\n]*\n)+)", re.MULTILINE)
 _CUSTOM_RE = re.compile(r"//\s*CUSTOM_SPIKE:\s*yes", re.IGNORECASE)
+_REGION_RE = re.compile(r"//\s*SPIKE_COMPARE:\s*region", re.IGNORECASE)
 _REVERSED_RE = re.compile(
     r"REVERSED_FUNCTION:\s*(\w+)::(\w+)\s*\(\$([0-9A-Fa-f]+):([0-9A-Fa-f]+)\)"
 )
@@ -285,6 +290,7 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
         entry_z=entry_z,
         entry_n=entry_n,
         custom_spike=custom_spike,
+        compare_region=bool(_REGION_RE.search(text)),
     )
 
 
@@ -540,11 +546,7 @@ int main(int argc, char **argv) {{
 {c_call}
 {capture_c_output}
 
-        bool ok = (out_asm == out_c);
-        if (!ok) {{
-            printf("trial %4d : asm=%u c=%u  FAIL\n", trial, out_asm, out_c);
-            fails++;
-        }}
+{compare_block}
     }}
 
     printf("\n=== summary === trials: %d, fails: %d\n", n_trials, fails);
@@ -650,12 +652,48 @@ def render_spike(c_translation: str, contract: Contract) -> str:
                 f"        write16(snes->ram, 0x{addr:04X}, (uint16_t)host_rng());"
             )
 
-    # Output capture
-    if contract.output_ram is None:
+    # Slot-comparison fragment (default): compare a single contract output slot.
+    _slot_compare = (
+        "        bool ok = (out_asm == out_c);\n"
+        "        if (!ok) {\n"
+        "            printf(\"trial %4d : asm=%u c=%u  FAIL\\n\", trial, out_asm, out_c);\n"
+        "            fails++;\n"
+        "        }"
+    )
+
+    # Output capture + comparison
+    if contract.compare_region:
+        # Region mode: snapshot the full WRAM after each run, then memcmp,
+        # masking the stack page ($0100-$01FF) where the asm's push/pull frames
+        # and run_emulated_func's return frame live (the inlined C never touches
+        # the stack). Handles indexed stores: we observe wherever the write
+        # landed instead of reading a fixed (and necessarily wrong) slot.
+        capture_asm_output = "        Snap asm_post; snap_take(&asm_post, snes);"
+        capture_c_output = "        Snap c_post; snap_take(&c_post, snes);"
+        compare_block = (
+            "        /* Mask the stack page relative to SP: the asm's push/pull and\n"
+            "         * run_emulated_func's return frame mutate it, the inlined C never\n"
+            "         * touches the stack. FF4's combat stack lives in $02xx (SP~$02E5),\n"
+            "         * the field stack in $01xx — so derive the page from pre.sp. */\n"
+            "        int sp_page = pre.sp & 0xFF00;\n"
+            "        int diff = -1;\n"
+            "        for (int a = 0; a < 0x20000; a++) {\n"
+            "            if (a >= sp_page && a < sp_page + 0x100) continue;  /* mask stack page */\n"
+            "            if (asm_post.ram[a] != c_post.ram[a]) { diff = a; break; }\n"
+            "        }\n"
+            "        bool ok = (diff < 0);\n"
+            "        if (!ok) {\n"
+            "            printf(\"trial %4d : first WRAM diff at $%05X  asm=%02X c=%02X  FAIL\\n\",\n"
+            "                   trial, diff, asm_post.ram[diff], c_post.ram[diff]);\n"
+            "            fails++;\n"
+            "        }"
+        )
+    elif contract.output_ram is None:
         # No single-output contract; fall back to "no comparison" — caller must
         # add a CUSTOM_SPIKE marker. We still generate the wrapper for runs.
         capture_asm_output = "        uint16_t out_asm = 0; (void)snes;"
         capture_c_output = "        uint16_t out_c = 0;"
+        compare_block = _slot_compare
     else:
         addr, width = contract.output_ram
         if width == 1:
@@ -664,6 +702,7 @@ def render_spike(c_translation: str, contract: Contract) -> str:
         else:
             capture_asm_output = f"        uint16_t out_asm = read16(snes->ram, 0x{addr:04X});"
             capture_c_output = f"        uint16_t out_c = read16(snes->ram, 0x{addr:04X});"
+        compare_block = _slot_compare
 
     # C call line
     c_call = f"        {contract.func_name}_c(snes" + \
@@ -688,6 +727,7 @@ def render_spike(c_translation: str, contract: Contract) -> str:
         c_call=c_call,
         capture_asm_output=capture_asm_output,
         capture_c_output=capture_c_output,
+        compare_block=compare_block,
     )
 
 
@@ -759,7 +799,10 @@ def main(argv: list[str] | None = None) -> int:
 
     # Safety net: the asm has an indexed store → the output address is
     # dynamic, the contract is necessarily wrong, force a manual spike.
-    if bridge_asm_has_indexed_store(contract.func_name):
+    # EXCEPTION: a `// SPIKE_COMPARE: region` contract compares the whole WRAM
+    # (stack-masked) rather than a fixed slot, so a dynamic output address is
+    # fine — the region comparison observes wherever the store landed.
+    if bridge_asm_has_indexed_store(contract.func_name) and not contract.compare_region:
         sys.stderr.write(
             f"[gen] {args.source}: asm contains an indexed store "
             "(sta/stx/sty/stz $XXXX,x|y) so the output address is dynamic. "
