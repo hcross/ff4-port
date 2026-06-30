@@ -117,6 +117,19 @@ static int host_bisect(uint32_t pc) {
     return 0;                                        /* cluster, not in subset → interpret */
 }
 
+/* Inverse bisection filter (--exclude HEX, repeatable): run EVERYTHING native
+ * EXCEPT the listed routines, which are interpreted. Narrows a culprit from the
+ * coherent all-native reference (ExecBtlGfx already removed from the table), one
+ * routine/group at a time — avoids the native/interp mixing artefacts of the
+ * partial --native bisection. */
+static uint32_t g_excl_subset[16];
+static int g_excl_count = 0;
+static int host_exclude_list(uint32_t pc) {
+    for (int i = 0; i < g_excl_count; i++)
+        if (g_excl_subset[i] == pc) return 0;   /* listed → interpret */
+    return 1;                                    /* else → native */
+}
+
 #define LCD_W 320
 #define LCD_H 240
 
@@ -198,7 +211,7 @@ static void screenshot_ppm(const char *path, const uint16_t *fb) {
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        fprintf(stderr, "usage: %s <rom.sfc> [--load f.lss] [--save-prefix P] [--scale N] [--native HEX]...\n", argv[0]);
+        fprintf(stderr, "usage: %s <rom.sfc> [--load f.lss] [--save-prefix P] [--scale N] [--native HEX]... [--exclude HEX]...\n", argv[0]);
         return 2;
     }
     const char *rom_path = argv[1];
@@ -211,6 +224,9 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--scale")       && i+1 < argc) scale = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--native")      && i+1 < argc) {
             if (g_native_count < 16) g_native_subset[g_native_count++] = (uint32_t)strtoul(argv[++i], NULL, 16);
+        }
+        else if (!strcmp(argv[i], "--exclude")     && i+1 < argc) {
+            if (g_excl_count < 16) g_excl_subset[g_excl_count++] = (uint32_t)strtoul(argv[++i], NULL, 16);
         }
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
@@ -244,6 +260,14 @@ int main(int argc, char **argv) {
         printf("[bisect] cluster interpreted EXCEPT native:");
         for (int i = 0; i < g_native_count; i++) printf(" %06x", g_native_subset[i]);
         printf("  (the rest of the cluster runs in the interpreter)\n");
+    }
+    if (g_excl_count > 0) {
+        /* Inverse bisection: all native EXCEPT the --exclude set. Relaunch with
+         * different --exclude sets to narrow the culprit from the all-native ref. */
+        ff4_dispatch_filter = host_exclude_list;
+        printf("[bisect] all native EXCEPT interpreted:");
+        for (int i = 0; i < g_excl_count; i++) printf(" %06x", g_excl_subset[i]);
+        printf("\n");
     }
     uint64_t frame = 0;
 
