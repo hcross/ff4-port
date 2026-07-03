@@ -45,12 +45,21 @@ BIN     := ff4-desktop-headless
 BIN_SDL := ff4-desktop-sdl
 BIN_ORC := ff4-desktop-oracle
 
-SDL_CFLAGS := $(shell sdl2-config --cflags)
-SDL_LIBS   := $(shell sdl2-config --libs)
+# Recursive assignment (=), not immediate (:=): with :=, `sdl2-config` would
+# shell out at Makefile-parse time even for a `headless-all`-only build,
+# breaking on a machine without SDL2 installed (CI, a fresh headless clone).
+# With =, the $(shell ...) call is deferred until $(SDL_CFLAGS)/$(SDL_LIBS)
+# are actually expanded — i.e. only when the $(BIN_SDL) recipe itself runs.
+SDL_CFLAGS = $(shell sdl2-config --cflags)
+SDL_LIBS   = $(shell sdl2-config --libs)
 
-.PHONY: all run sdl oracle clean
+.PHONY: all headless-all run sdl oracle clean
 
 all: $(BIN) $(BIN_SDL) $(BIN_ORC) ppmdiff
+
+# CI/headless-friendly: every validation tool EXCEPT the interactive SDL
+# viewer, which is the only one that needs SDL2 installed.
+headless-all: $(BIN) $(BIN_ORC) wram_diff ppmdiff proof_cyc
 
 $(BIN): harness_headless.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ harness_headless.c $(GNW_SRC) $(LDFLAGS)
