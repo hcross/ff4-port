@@ -15,13 +15,16 @@ Output : JSONL results to --out (resumable: already-logged routines skipped),
          plus a running summary on stderr.
 
 Outcomes per routine:
-  pass         fails==0 over N trials                  → L2 candidate
-  fail         fails>0 (real divergence)               → stays L1, investigate
-  custom_spike generate_spike refused (indexed store)  → stays L1
-  no_source    no standalone ff4-gnw/<dir>/<Name>.c    → stays L1 (bundled/odd)
-  no_contract  file lacks a parseable CONTRACT block   → stays L1
-  build_error  spike failed to compile                 → stays L1
-  timeout      exceeded per-routine wall clock         → stays L1
+  pass                  fails==0 over N trials                  → L2 candidate
+  fail                  fails>0 (real divergence)               → stays L1, investigate
+  contract_mmio_mismatch asm writes an undeclared MMIO register → stays L1, fix
+                         (Pitfall 13/16 — a spike here would be a FALSE L2;
+                          CONTRACT: declare mmio_effects and re-run)
+  custom_spike          generate_spike refused (indexed store)  → stays L1
+  no_source             no standalone ff4-gnw/<dir>/<Name>.c    → stays L1 (bundled/odd)
+  no_contract           file lacks a parseable CONTRACT block   → stays L1
+  build_error           spike failed to compile                 → stays L1
+  timeout               exceeded per-routine wall clock         → stays L1
 """
 from __future__ import annotations
 import argparse, json, re, subprocess, sys
@@ -70,6 +73,13 @@ def classify(name_c: str, domain: str, trials: int, timeout: int,
     except subprocess.TimeoutExpired:
         return {"status": "timeout", "file": str(src)}
     out = (r.stdout or "") + "\n" + (r.stderr or "")
+    if "CONTRACT_MMIO_MISMATCH" in out:
+        # asm writes a hardware register the CONTRACT's mmio_effects doesn't
+        # declare — a spike would be a FALSE L2 (Pitfall 13/16). Distinct from
+        # custom_spike: this is a CONTRACT correctness bug to fix (declare the
+        # address), not a structural harness limitation to accept permanently.
+        tail = "\n".join(out.strip().splitlines()[-4:])
+        return {"status": "contract_mmio_mismatch", "file": str(src), "tail": tail}
     if "CUSTOM_SPIKE" in out:
         return {"status": "custom_spike", "file": str(src)}
     if "delegate wrapper" in out:

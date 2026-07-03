@@ -57,6 +57,64 @@ _INDEXED_STORE_RE = re.compile(
     re.IGNORECASE | re.MULTILINE,
 )
 
+# Hardware-register symbol table (Pitfall 13/14): the disassembly names MMIO
+# registers symbolically (`hINIDISP`, `hMDMAEN`, ...), not by raw hex address
+# — `upstream/include/hardware.inc` is the canonical `hSYMBOL := $addr` list.
+_HW_INC = UPSTREAM / "include" / "hardware.inc"
+_HW_SYMBOL_DEF_RE = re.compile(r"^\s*(h[A-Za-z0-9_]+)\s*:=\s*\$([0-9A-Fa-f]+)", re.MULTILINE)
+_hw_symbols_cache: Optional[dict[str, int]] = None
+
+
+def hw_symbols() -> dict[str, int]:
+    """symbol name -> address, parsed once from hardware.inc."""
+    global _hw_symbols_cache
+    if _hw_symbols_cache is None:
+        _hw_symbols_cache = {}
+        if _HW_INC.is_file():
+            for name, addr in _HW_SYMBOL_DEF_RE.findall(_HW_INC.read_text()):
+                _hw_symbols_cache[name] = int(addr, 16)
+    return _hw_symbols_cache
+
+
+# Store-class opcodes: sta/stx/sty/stz plus the read-modify-write family
+# (inc/dec/asl/lsr/rol/ror/trb/tsb), which also writes back to its operand.
+_STORE_OPCODE_RE = re.compile(
+    r"^\s*(?:@[A-Za-z0-9_]+:\s*)?"
+    r"(?:sta|stx|sty|stz|inc|dec|asl|lsr|rol|ror|trb|tsb)(?:\.[bwl])?\s+"
+    r"([\w$]+)",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def bridge_asm_mmio_stores(func_name: str) -> set[int]:
+    """MMIO addresses ($2100-$21FF, $4200-$43FF) that the asm body of
+    `func_name` stores to — resolved via the hardware.inc symbol table
+    (Pitfall 13/14) plus any literal hex operand already in that range.
+    Read-only: used only to cross-check the CONTRACT's declared
+    `mmio_effects`, never to decide translate-vs-delegate.
+    """
+    res = subprocess.run(
+        [str(BRIDGE_BIN), "--root", str(UPSTREAM), "get-asm", func_name],
+        capture_output=True, text=True,
+    )
+    if res.returncode != 0:
+        return set()
+    syms = hw_symbols()
+    hits: set[int] = set()
+    for m in _STORE_OPCODE_RE.finditer(res.stdout):
+        operand = m.group(1)
+        addr: Optional[int] = None
+        if operand in syms:
+            addr = syms[operand]
+        elif operand.startswith("$"):
+            try:
+                addr = int(operand[1:], 16)
+            except ValueError:
+                addr = None
+        if addr is not None and (0x2100 <= addr <= 0x21FF or 0x4200 <= addr <= 0x43FF):
+            hits.add(addr)
+    return hits
+
 
 def bridge_get_address(module: str, func_name: str) -> Optional[int]:
     """Ground-truth address for `module::func_name` via ca65-bridge.
@@ -120,6 +178,15 @@ class Contract:
                                    # // SPIKE_MASK: lo-hi[, lo-hi...] — WRAM byte ranges
                                    # excluded from the region compare (dead DP scratch the
                                    # asm writes but the C port legitimately doesn't mirror).
+    mmio_effects: list = dataclasses.field(default_factory=list)
+                                   # // CONTRACT: mmio_effects: — declared hardware
+                                   # register addresses the routine writes (Pitfall 13/16).
+                                   # Empty list = "none" declared, or field absent (legacy
+                                   # contract predating this schema — see the mismatch
+                                   # check in main(), which only fires when the asm
+                                   # actually stores to an address missing from this list).
+    dma: Optional[str] = None     # // CONTRACT: dma: — 'none' | 'manual-loop' | 'delegate',
+                                   # or None if the field is absent (legacy contract).
 
 
 _CONTRACT_RE = re.compile(r"//\s*CONTRACT:\s*\n((?:\s*//\s*[^\n]*\n)+)", re.MULTILINE)
@@ -290,6 +357,22 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
         ram = parse_ram(spec)
         return ram[0] if ram else None
 
+    def parse_mmio(spec: str) -> list[int]:
+        # "none" | "$2100, $420B, ..."
+        spec = re.sub(r"#.*$", "", spec).strip()
+        out: list[int] = []
+        if not spec or spec.lower() == "none":
+            return out
+        for part in spec.split(","):
+            part = part.strip().lstrip("$")
+            if not part:
+                continue
+            try:
+                out.append(int(part, 16))
+            except ValueError:
+                sys.stderr.write(f"[gen] skipping malformed mmio_effects part: {part!r}\n")
+        return out
+
     def parse_mode(spec: str, key: str) -> bool:
         # "mf=true, xf=false, dp=0x0, db=0x7E"
         for part in spec.split(","):
@@ -314,6 +397,9 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
     entry_flags = find("entry_flags") or ""
     entry_z = parse_flag(entry_flags, "z")
     entry_n = parse_flag(entry_flags, "n")
+    mmio_effects = parse_mmio(find("mmio_effects") or "")
+    dma_raw = find("dma")
+    dma = dma_raw.strip().lower() if dma_raw else None
 
     return Contract(
         func_name=name,
@@ -329,6 +415,8 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
         custom_spike=custom_spike,
         compare_region=bool(_REGION_RE.search(text)),
         mask_ranges=parse_mask_ranges(text),
+        mmio_effects=mmio_effects,
+        dma=dma,
     )
 
 
@@ -747,9 +835,24 @@ def render_spike(c_translation: str, contract: Contract) -> str:
             capture_c_output = f"        uint16_t out_c = read16(snes->ram, 0x{addr:04X});"
         compare_block = _slot_compare
 
-    # C call line
-    c_call = f"        {contract.func_name}_c(snes" + \
-             ("" if not c_args else ", " + ", ".join(c_args)) + ");"
+    # C call: FF4 ported bodies are `void Name_c(Snes*)` — they read cpu->{a,x,y}
+    # and cpu->{mf,xf,db,dp} directly, they do NOT take the reg inputs as C args.
+    # So mirror run_asm's entry setup ON `snes` (snap_restore(&pre) reset the regs
+    # to baseline) and call with just (snes), instead of passing arg_* positionally.
+    c_entry_lines = [
+        "        snes->cpu->dp = 0;",
+        "        snes->cpu->db = 0x7E;",
+        f"        snes->cpu->mf = {'true' if contract.entry_mf else 'false'};",
+        f"        snes->cpu->xf = {'true' if contract.entry_xf else 'false'};",
+        "        snes->cpu->a = 0; snes->cpu->x = 0; snes->cpu->y = 0;",
+    ]
+    if contract.inputs_reg.get("a") is not None:
+        c_entry_lines.append("        snes->cpu->a = arg_a;")
+    if contract.inputs_reg.get("x") is not None:
+        c_entry_lines.append("        snes->cpu->x = arg_x;")
+    if contract.inputs_reg.get("y") is not None:
+        c_entry_lines.append("        snes->cpu->y = arg_y;")
+    c_call = "\n".join(c_entry_lines) + "\n" + f"        {contract.func_name}_c(snes);"
 
     return SPIKE_SKELETON.format(
         module=contract.module,
@@ -839,6 +942,30 @@ def main(argv: list[str] | None = None) -> int:
     if contract.custom_spike:
         sys.stderr.write(f"[gen] {args.source} marked CUSTOM_SPIKE: yes — skipping auto-gen.\n")
         return 0
+
+    # Safety net (Pitfall 13/16): the asm stores to a hardware register the
+    # CONTRACT does not declare in mmio_effects. The spike only ever compares
+    # output_ram (plain WRAM) — it is structurally blind to bus/VRAM/OAM/CGRAM
+    # side effects, so an undeclared MMIO store yields a FALSE L2 (the exact
+    # historical bug: InitMapRAM declared only output_ram 0x06FB and silently
+    # also hit $2100/$420C/$4200; TfrBGGfx listed the $43xx DMA registers as
+    # WRAM). This is a CONTRACT correctness bug, not a harness limitation —
+    # unlike CUSTOM_SPIKE below, it is not silently skipped (exit 0): it hard
+    # fails (exit 3) so it surfaces distinctly instead of being fixed by
+    # re-declaring `mmio_effects` and re-running. A legacy contract with no
+    # mmio_effects field at all is treated the same as an empty declaration:
+    # this only fires when the asm demonstrably writes an undeclared address.
+    undeclared_mmio = bridge_asm_mmio_stores(contract.func_name) - set(contract.mmio_effects)
+    if undeclared_mmio:
+        addrs = ", ".join(f"${a:04X}" for a in sorted(undeclared_mmio))
+        sys.stderr.write(
+            f"[gen] CONTRACT_MMIO_MISMATCH: {args.source}: asm stores to {addrs} "
+            f"but mmio_effects declares {contract.mmio_effects or '(none)'}. "
+            "Add every hardware-register address to `// CONTRACT: mmio_effects:` "
+            "(Pitfall 13/16, prompts/reverser_system.md) and re-run — a spike "
+            "cannot prove correctness for an undeclared bus/VRAM/OAM/CGRAM effect.\n"
+        )
+        return 3
 
     # Safety net: the asm has an indexed store → the output address is
     # dynamic, the contract is necessarily wrong, force a manual spike.

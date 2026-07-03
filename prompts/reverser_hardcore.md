@@ -290,16 +290,22 @@ This guarantees the parity harness can locate the correct routine.
 4. A `// CONTRACT:` block in the format consumed by the auto-spike generator:
    ```
    // CONTRACT:
-   //   inputs_reg:  a=<bits|none>, x=<bits|none>, y=<bits|none>
-   //   inputs_ram:  0xXXXX=<width>, 0xYYYY=<width>, ...   (width = 1 or 2)
-   //   output_ram:  0xZZZZ=<width>                         (single observable output)
-   //   entry_mode:  mf=<true|false>, xf=<true|false>, dp=0x0, db=0x7E
-   //   entry_flags: z=<expr|auto>, n=<expr|auto>
+   //   inputs_reg:    a=<bits|none>, x=<bits|none>, y=<bits|none>
+   //   inputs_ram:    0xXXXX=<width>, 0xYYYY=<width>, ...   (width = 1 or 2)
+   //   output_ram:    0xZZZZ=<width>                         (single observable output)
+   //   mmio_effects:  none | $2100,$420B,...                 (H2/H3-C — REQUIRED)
+   //   dma:           none | manual-loop | delegate           (see the DMA note under H2 — REQUIRED)
+   //   entry_mode:    mf=<true|false>, xf=<true|false>, dp=0x0, db=0x7E
+   //   entry_flags:   z=<expr|auto>, n=<expr|auto>
    ```
    The auto-spike generator (Phase 4.3) parses this block and produces a
    parity harness automatically. If a routine has no clean single-output
    contract, declare it as `output_ram: none` and provide a `// CUSTOM_SPIKE: yes`
    marker so the generator skips it and the human writes the spike manually.
+   `mmio_effects` and `dma` are mandatory: the spike only ever proves
+   `output_ram`, never bus/VRAM/OAM/CGRAM side effects, so a non-`none`
+   `mmio_effects` marks the routine "spike-insufficient, oracle-validation
+   required" instead of implying the spike alone proves it correct.
 5. End with: `REVERSED_FUNCTION: <module>::<function_name> ($<bank>:<offset>)`
 
 ## For `mode: delegate`
@@ -510,6 +516,22 @@ For ANY MMIO write where you are unsure of the canonical helper:
     name. A delegate is always reviewable; a hallucinated name is a
     build break.
 
+DMA is a SEPARATE trap that does NOT break the build — it silently does
+nothing. `snes_write(snes, 0x420B, val)` (triggering channel `n`) only
+sets `dma->channel[n].dmaActive = true`; the byte transfer itself happens
+inside `dma_handleDma()`, driven by CPU cycles the interpreter's main loop
+spends — cycles a dispatched C routine never runs. A routine whose asm sets
+up a DMA channel (`sta $43n0-$43n7`) and triggers it (`sta $420B`) MUST be
+translated as a manual transfer loop, not as a sequence of register
+writes: read the pre-armed channel (`dma->channel[n].aAdrL/H`, `.aBank`,
+`.size`) via `snes_read`, and write each byte to the destination port
+(`snes_write(snes, 0x2118/9, v)` VRAM, `snes_write(snes, 0x2104, v)` OAM,
+`snes_write(snes, 0x2122, v)` CGRAM) yourself, replicating the transfer
+mode. Reference implementations: `TfrSprites_c` (OAM), `TfrBGGfx_c` (VRAM).
+If the DMA idiom is present and you cannot confidently write the manual
+loop, `mode: delegate` the WHOLE routine — a delegate that actually moves
+the bytes beats a translate that compiles clean and transfers nothing.
+
 ## H3 — Extra few-shot examples for HARD patterns
 
 ### Example HARDCORE-A — Table data label (Pitfall 11/12)
@@ -534,11 +556,13 @@ void MapGfxBankTbl_c(Snes *snes) {
 // PITFALLS: 11 (data-only label, stub function)
 // HELPERS:  none
 // CONTRACT:
-//   inputs_reg:  none
-//   inputs_ram:  none
-//   output_ram:  none
-//   entry_mode:  mf=auto, xf=auto, dp=0x0, db=0x14
-//   entry_flags: z=auto, n=auto
+//   inputs_reg:    none
+//   inputs_ram:    none
+//   output_ram:    none
+//   mmio_effects:  none
+//   dma:           none
+//   entry_mode:    mf=auto, xf=auto, dp=0x0, db=0x14
+//   entry_flags:   z=auto, n=auto
 // REVERSED_FUNCTION: sound::MapGfxBankTbl ($14:F380)
 ```
 
@@ -592,8 +616,11 @@ If you encounter:
   - any MMIO write where neither H1 nor H3 covers the destination
   - a routine with > 50 instructions or > 3 nested jsr
 
-…emit a `mode: delegate` wrapper rather than guessing. The wrapper
-form is:
+…emit a `mode: delegate` wrapper rather than guessing. NEVER hedge with
+"assuming", "Placeholder", "likely maps to", "treat as absolute", or
+"outside WRAM" in a comment and ship the guess anyway — those phrases mean
+you are not sure, which means delegate, not translate. Stubs containing
+them are mechanically rejected. The wrapper form is:
 
 ```c
 void Name_c(Snes *snes) {
