@@ -39,8 +39,13 @@ from pathlib import Path
 
 THIS = Path(__file__).resolve().parent
 FF4_PORT = THIS.parent
-FF4_GNW = Path.home() / "devel/perso/retrogaming/ff4-gnw"
-RETRO_SD = Path.home() / "devel/perso/retrogaming/game-and-watch/game-and-watch-retro-go-sd"
+# ff4-gnw is a sibling of ff4-port under the umbrella repo since the
+# submodule move (BACKLOG.md §1). Env vars override for a non-standard layout.
+FF4_GNW = Path(os.environ.get("FF4_GNW_DIR", str(FF4_PORT.parent / "ff4-gnw")))
+RETRO_SD = Path(os.environ.get(
+    "RETRO_SD_DIR",
+    str(Path.home() / "devel/perso/retrogaming/game-and-watch/game-and-watch-retro-go-sd"),
+))
 
 CASCADE = THIS / "cascade_translate.py"
 HARDCORE_LOG = THIS / "runs" / "cascade_log.jsonl"
