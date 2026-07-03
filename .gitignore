@@ -47,6 +47,7 @@ desktop/input_probe
 desktop/wram_diff
 desktop/wram_diff_dbg
 desktop/miss_profiler
+desktop/ppmdiff
 desktop/trace_interp.txt
 desktop/trace_native.txt
 

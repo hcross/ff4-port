@@ -50,7 +50,7 @@ SDL_LIBS   := $(shell sdl2-config --libs)
 
 .PHONY: all run sdl oracle clean
 
-all: $(BIN) $(BIN_SDL) $(BIN_ORC)
+all: $(BIN) $(BIN_SDL) $(BIN_ORC) ppmdiff
 
 $(BIN): harness_headless.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ harness_headless.c $(GNW_SRC) $(LDFLAGS)
@@ -60,6 +60,11 @@ $(BIN_SDL): main_sdl.c $(GNW_SRC)
 
 $(BIN_ORC): oracle_ab.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ oracle_ab.c $(GNW_SRC) $(LDFLAGS)
+
+# Standalone PPM pixel-diff — no SNES/ff4-gnw dependency, closes WF-VALID §5
+# (mandatory screenshot validation, previously untooled).
+ppmdiff: ppmdiff.c
+	$(CC) -O2 -Wall -std=c11 -o $@ ppmdiff.c
 
 # Throwaway diagnostics (not part of `all`).
 input_probe: input_probe.c $(GNW_SRC)

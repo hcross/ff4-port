@@ -76,5 +76,6 @@ int main(int argc,char**argv){
         }
     }
     printf("total differing WRAM bytes: %d%s\n", ndiff, ndiff>256?" (first 256 shown)":"");
-    free(s0); free(rb); free(sb); ff4_shutdown(); return 0;
+    free(s0); free(rb); free(sb); ff4_shutdown();
+    return ndiff > 0 ? 1 : 0;   /* scriptable verdict: 0=faithful, 1=diverges */
 }

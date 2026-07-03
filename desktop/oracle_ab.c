@@ -51,9 +51,13 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <dlfcn.h>       /* dladdr — pc->routine-name resolution (macOS/glibc>=2.34;
+                          * add -ldl to LDFLAGS if ever built against an older glibc) */
 
 #include "snes/snes.h"   /* Snes, snes_loadState/saveState */
 #include "snes/ppu.h"    /* Ppu, oam/highOam (for the OAM channel) */
+#include "dispatch_all.h" /* ff4_dispatch_table[], FF4_DISPATCH_COUNT — already linked in;
+                           * used read-only for pc->name lookup, never regenerated from here */
 
 /* ff4-gnw glue (ff4-gnw/main.c) */
 extern bool ff4_init(const uint8_t *rom_bytes, int rom_length);
@@ -89,6 +93,38 @@ static int dispatch_filter(uint32_t pc) {
     return 1;
 }
 
+/* --only set: the WF-VALID "isolate one dispatch" mechanism. Exactly the
+ * listed PC(s) stay native; everything else is forced to pure interpretation
+ * in BOTH passes. Deliberately NOT implemented as a --exclude complement:
+ * isolating one of ~205 dispatches would need ~204 --exclude flags, silently
+ * truncated past EXCL_CAP (see the fatal check below) — a wrong, undetected
+ * A/B verdict. --only inverts the same ff4_dispatch_filter hook instead. */
+#define ONLY_CAP 16
+static uint32_t g_only[ONLY_CAP];
+static int      g_only_n = 0;
+
+static int only_filter(uint32_t pc) {
+    for (int i = 0; i < g_only_n; i++) if (g_only[i] == pc) return 1;
+    return 0;
+}
+
+/* pc -> C symbol name, resolved from the already-linked dispatch table via
+ * dladdr — replaces "grep the pc in ff4-gnw/dispatch_all.c" with a live
+ * lookup. No generated-file changes needed (dispatch_all.c is off-limits to
+ * hand tooling — see gen_dispatch.py's own reconciliation TODO). Returns
+ * NULL if pc is not a dispatched routine (e.g. an --exclude/--only PC that
+ * only exists as an interpreter address). */
+static const char *routine_name_for_pc(uint32_t pc) {
+    for (int i = 0; i < FF4_DISPATCH_COUNT; i++) {
+        if (ff4_dispatch_table[i].pc != pc) continue;
+        Dl_info info;
+        if (dladdr((void *)ff4_dispatch_table[i].fn, &info) && info.dli_sname)
+            return info.dli_sname;
+        return "?";
+    }
+    return NULL;
+}
+
 /* Per-hit dispatch trace: flat event log of (frame, original-pc) appended by
  * trace_cb during pass A, used to attribute the first diverging frame to the
  * concrete hook(s) that fired in it. */
@@ -106,38 +142,47 @@ static void trace_cb(uint32_t pc) {
     g_ev_n++;
 }
 
-/* Print the distinct hooks that fired in frame `f` (dedup, in first-seen
- * order). pc → routine name is a grep away in ff4-gnw/dispatch_all.c. */
-static void print_hooks_for_frame(FILE *o, int f) {
-    uint32_t seen[256]; int sn = 0;
-    int any = 0;
+/* Collect up to `cap` distinct PCs matching `pred(frame, f_or_upto)`, in
+ * first-seen order. Shared by the two print helpers and the JSON emitter so
+ * the dedup logic lives in exactly one place. */
+static int collect_hooks(int f_or_upto, bool upto, uint32_t *out, int cap) {
+    int n = 0;
     for (int i = 0; i < g_ev_n; i++) {
-        if (g_ev_frame[i] != f) continue;
+        if (upto ? (g_ev_frame[i] > f_or_upto) : (g_ev_frame[i] != f_or_upto)) continue;
         int dup = 0;
-        for (int j = 0; j < sn; j++) if (seen[j] == g_ev_pc[i]) { dup = 1; break; }
+        for (int j = 0; j < n; j++) if (out[j] == g_ev_pc[i]) { dup = 1; break; }
         if (dup) continue;
-        if (sn < 256) seen[sn++] = g_ev_pc[i];
-        fprintf(o, "%s%06X", any ? ", " : "", g_ev_pc[i]);
-        any = 1;
+        if (n < cap) out[n++] = g_ev_pc[i];
     }
-    if (!any) fprintf(o, "(none — divergence is downstream of an earlier frame's hook)");
+    return n;
+}
+
+static void print_pc_list(FILE *o, const uint32_t *pcs, int n, const char *empty_msg) {
+    if (!n) { fprintf(o, "%s\n", empty_msg); return; }
+    for (int i = 0; i < n; i++) {
+        const char *name = routine_name_for_pc(pcs[i]);
+        fprintf(o, "%s%06X%s%s%s", i ? ", " : "", pcs[i],
+                name ? " (" : "", name ? name : "", name ? ")" : "");
+    }
     fprintf(o, "\n");
+}
+
+/* Print the distinct hooks that fired in frame `f` (dedup, in first-seen
+ * order), with the routine name resolved via dladdr when available. */
+static void print_hooks_for_frame(FILE *o, int f) {
+    uint32_t seen[256];
+    int sn = collect_hooks(f, false, seen, 256);
+    print_pc_list(o, seen, sn, "(none — divergence is downstream of an earlier frame's hook)");
 }
 
 /* Every distinct hook fired in frames [0, upto], first-seen order — the suspect
  * set when a divergence/hang has no hook in its own frame. */
 static void print_suspects_upto(FILE *o, int upto) {
-    uint32_t seen[256]; int sn = 0, any = 0;
-    for (int i = 0; i < g_ev_n; i++) {
-        if (g_ev_frame[i] > upto) continue;
-        int dup = 0;
-        for (int j = 0; j < sn; j++) if (seen[j] == g_ev_pc[i]) { dup = 1; break; }
-        if (dup) continue;
-        if (sn < 256) seen[sn++] = g_ev_pc[i];
-        fprintf(o, "%s%06X", any ? ", " : "", g_ev_pc[i]); any = 1;
-    }
-    fprintf(o, any ? "\n" : "(none)\n");
+    uint32_t seen[256];
+    int sn = collect_hooks(upto, true, seen, 256);
+    print_pc_list(o, seen, sn, "(none)");
 }
+
 
 #define LCD_W 320
 #define LCD_H 240
@@ -223,6 +268,38 @@ static int      g_byte_first = -1;    /* first byte-divergent frame (B vs A), or
 static uint32_t g_byte_off[16];
 static int      g_byte_noff  = 0;
 
+/* Structured verdict for scripted consumption (WF-VALID steps 3-5), alongside
+ * the prose --report. Reuses collect_hooks/routine_name_for_pc so the hook
+ * list matches the text output exactly. */
+static void write_json_verdict(const char *path, const char *verdict, int first_div,
+                                bool fb_match, int frames_run_a, int frames_run_b,
+                                int att_frame) {
+    FILE *o = fopen(path, "w");
+    if (!o) { fprintf(stderr, "warning: cannot write json '%s'\n", path); return; }
+    fprintf(o, "{\n");
+    fprintf(o, "  \"verdict\": \"%s\",\n", verdict);
+    fprintf(o, "  \"first_divergence_frame\": %d,\n", first_div);
+    fprintf(o, "  \"wram_first_offsets\": [");
+    for (int i = 0; i < g_byte_noff; i++) fprintf(o, "%s\"$%05X\"", i ? ", " : "", g_byte_off[i]);
+    fprintf(o, "],\n");
+    fprintf(o, "  \"fb_crc_match\": %s,\n", fb_match ? "true" : "false");
+    fprintf(o, "  \"frames_run_a\": %d,\n", frames_run_a);
+    fprintf(o, "  \"frames_run_b\": %d,\n", frames_run_b);
+    fprintf(o, "  \"hook_attribution\": [");
+    if (att_frame >= 0) {
+        uint32_t seen[256];
+        int sn = collect_hooks(att_frame, false, seen, 256);
+        for (int i = 0; i < sn; i++) {
+            const char *name = routine_name_for_pc(seen[i]);
+            fprintf(o, "%s{\"pc\": \"%06X\", \"name\": %s%s%s}", i ? ", " : "",
+                    seen[i], name ? "\"" : "", name ? name : "null", name ? "\"" : "");
+        }
+    }
+    fprintf(o, "]\n");
+    fprintf(o, "}\n");
+    fclose(o);
+}
+
 static int wram_first_diff(const uint8_t *a, const uint8_t *b) {
     for (uint32_t i = g_wram_lo; i < g_wram_hi; i++) {
         if (i >= STACK_LO && i < STACK_HI) continue;  /* mask CPU stack scratch */
@@ -284,13 +361,14 @@ int main(int argc, char **argv) {
     if (argc < 2) {
         fprintf(stderr,
             "usage: %s <rom.sfc> [--frames N] [--budget OPS] [--load f.lss]"
-            " [--selftest] [--report f.txt] [--fb-only|--wram-only] [--exclude PC]\n", argv[0]);
+            " [--selftest] [--report f.txt] [--json f.json] [--fb-only|--wram-only]"
+            " [--exclude PC | --only PC]\n", argv[0]);
         return 2;
     }
     const char *rom_path = argv[1];
     int frames = 600;
     uint64_t budget = 4000000;   /* CPU-opcode budget per frame; a hang trips it */
-    const char *load_path = NULL, *report_path = NULL;
+    const char *load_path = NULL, *report_path = NULL, *json_path = NULL;
     bool selftest = false, cmp_wram = true, cmp_fb = true;
     bool charge = true;   /* cycle-cost accounting on by default; --no-charge for the old behaviour */
 
@@ -299,6 +377,7 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--budget") && i + 1 < argc) budget = strtoull(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "--load")   && i + 1 < argc) load_path = argv[++i];
         else if (!strcmp(argv[i], "--report") && i + 1 < argc) report_path = argv[++i];
+        else if (!strcmp(argv[i], "--json")   && i + 1 < argc) json_path = argv[++i];
         else if (!strcmp(argv[i], "--selftest")) selftest = true;
         else if (!strcmp(argv[i], "--fb-only"))   cmp_wram = false;
         else if (!strcmp(argv[i], "--wram-only")) cmp_fb = false;
@@ -308,11 +387,29 @@ int main(int argc, char **argv) {
             g_wram_hi = (uint32_t)strtoul(argv[++i], NULL, 16);
         }
         else if (!strcmp(argv[i], "--exclude") && i + 1 < argc) {
-            if (g_excl_n < EXCL_CAP) g_excl[g_excl_n++] = (uint32_t)strtoul(argv[++i], NULL, 16);
+            if (g_excl_n >= EXCL_CAP) {
+                fprintf(stderr, "error: --exclude count exceeds EXCL_CAP=%d — isolating one dispatch\n"
+                                "  among ~205 needs --only PC instead of an --exclude complement\n"
+                                "  (silently truncating past this cap would produce a WRONG verdict)\n", EXCL_CAP);
+                return 2;
+            }
+            g_excl[g_excl_n++] = (uint32_t)strtoul(argv[++i], NULL, 16);
+        }
+        else if (!strcmp(argv[i], "--only") && i + 1 < argc) {
+            if (g_only_n >= ONLY_CAP) {
+                fprintf(stderr, "error: --only count exceeds ONLY_CAP=%d\n", ONLY_CAP);
+                return 2;
+            }
+            g_only[g_only_n++] = (uint32_t)strtoul(argv[++i], NULL, 16);
         }
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
     if (frames <= 0) { fprintf(stderr, "error: --frames must be > 0\n"); return 2; }
+    if (g_excl_n > 0 && g_only_n > 0) {
+        fprintf(stderr, "error: --exclude and --only are mutually exclusive\n"
+                        "  (--only already forces everything else to interpretation)\n");
+        return 2;
+    }
 
     long rom_len = 0;
     uint8_t *rom = read_file(rom_path, &rom_len);
@@ -334,10 +431,15 @@ int main(int argc, char **argv) {
                load_path, st_len, ff4_snes->cpu->k, ff4_snes->cpu->pc);
     }
 
-    /* Install the per-hook exclusion filter (applies to BOTH passes, so an
-     * excluded routine is interpreted identically on each side → contributes
-     * zero divergence). */
-    if (g_excl_n > 0) {
+    /* Install the per-hook filter (applies to BOTH passes, so a filtered-out
+     * routine is interpreted identically on each side → contributes zero
+     * divergence). --only wins the mutual-exclusion check above already. */
+    if (g_only_n > 0) {
+        ff4_dispatch_filter = only_filter;
+        printf("isolated hook(s): ");
+        for (int i = 0; i < g_only_n; i++) printf("%s%06X", i ? ", " : "", g_only[i]);
+        printf("  (ONLY these dispatch natively; everything else forced to interpretation)\n");
+    } else if (g_excl_n > 0) {
         ff4_dispatch_filter = dispatch_filter;
         printf("excluded hooks: ");
         for (int i = 0; i < g_excl_n; i++) printf("%s%06X", i ? ", " : "", g_excl[i]);
@@ -550,13 +652,11 @@ int main(int argc, char **argv) {
          * [0, att] so the suspect set is explicit. */
         printf("  hooks in [0,%d] (suspects)  : ", att);
         print_suspects_upto(stdout, att);
-        printf("  (pc → routine: grep the pc in ff4-gnw/dispatch_all.c)\n");
     } else if (!selftest && native_hang) {
         printf("  hooks @frame %-4d (hang)    : ", stallA);
         print_hooks_for_frame(stdout, stallA);
         printf("  hooks in [0,%d] (suspects)  : ", stallA);
         print_suspects_upto(stdout, stallA);
-        printf("  (pc → routine: grep the pc in ff4-gnw/dispatch_all.c)\n");
     }
 
     if (report_path) {
@@ -577,9 +677,26 @@ int main(int argc, char **argv) {
         else fprintf(stderr, "warning: cannot write report '%s'\n", report_path);
     }
 
+    if (json_path) {
+        const char *verdict = selftest ? (first < 0 ? "selftest_pass" : "selftest_fail")
+                            : native_hang && first < 0 ? "native_hang"
+                            : first < 0 ? "identical" : "divergence";
+        int frames_run_a = stallA >= 0 ? stallA : frames;
+        int frames_run_b = stallB >= 0 ? stallB : frames;
+        int json_att = (att >= 0) ? att : (native_hang ? stallA : -1);
+        write_json_verdict(json_path, verdict, first, first_fb < 0, frames_run_a, frames_run_b, json_att);
+        printf("json written   : %s\n", json_path);
+    }
+
+    /* Exit codes: 0=identical, 1=functional divergence, 2=usage, 3=selftest
+     * fail, 4=native hang with no functional divergence found before it. A
+     * hang is NOT success — checking (first < 0) alone here would report rc=0
+     * on a stalled native pass, exactly the false-positive a scripted caller
+     * must not see. */
     int rc;
-    if (selftest) rc = (first < 0) ? 0 : 3;   /* self-test: divergence is failure */
-    else          rc = (first < 0) ? 0 : 1;   /* A/B: divergence found → 1 (signal) */
+    if (selftest)                      rc = (first < 0) ? 0 : 3;
+    else if (native_hang && first < 0) rc = 4;
+    else                                rc = (first < 0) ? 0 : 1;
 
     free(A); free(B); free(s0); free(g_snapA);
     ff4_shutdown();

@@ -6,9 +6,14 @@
  * Usage:
  *   ff4-desktop-headless <rom.sfc> [flags]
  *     --frames N        run N frames (default 600)
+ *     --budget OPS      CPU-opcode budget per frame (default 4000000); exits 3
+ *                       instead of hanging forever if a frame never reaches vblank
  *     --load  <f.lss>   load a LakeSnes savestate after init (jump to a scene)
  *     --save  <f.lss>   save a savestate after the run (reusable seed)
  *     --out   <f.ppm>   dump the final frame as binary PPM
+ *
+ * Exit codes: 0=completed all frames, 1=I/O or init error, 2=usage,
+ * 3=stalled (opcode budget exhausted inside one frame — a hang).
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -115,16 +120,19 @@ static int dump_ppm(const char *path) {
 int main(int argc, char **argv) {
     if (argc < 2) {
         fprintf(stderr,
-            "usage: %s <rom.sfc> [--frames N] [--load f.lss] [--save f.lss] [--out f.ppm]\n",
+            "usage: %s <rom.sfc> [--frames N] [--budget OPS] [--load f.lss] [--save f.lss] [--out f.ppm]\n",
             argv[0]);
         return 2;
     }
     const char *rom_path = argv[1];
     int frames = 600;
+    uint64_t budget = 4000000;   /* CPU-opcode budget per frame; matches oracle_ab.c's
+                                  * default so a hang trips the same signal here */
     const char *load_path = NULL, *save_path = NULL, *out_ppm = NULL;
 
     for (int i = 2; i < argc; i++) {
         if      (!strcmp(argv[i], "--frames") && i + 1 < argc) frames = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--budget") && i + 1 < argc) budget = strtoull(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "--load")   && i + 1 < argc) load_path = argv[++i];
         else if (!strcmp(argv[i], "--save")   && i + 1 < argc) save_path = argv[++i];
         else if (!strcmp(argv[i], "--out")    && i + 1 < argc) out_ppm = argv[++i];
@@ -163,14 +171,20 @@ int main(int argc, char **argv) {
         printf("watching WRAM $%05X for writes\n", watch_wram_addr);
     }
 
-    printf("running %d frames...\n", frames);
+    printf("running %d frames (budget %llu ops/frame)...\n", frames, (unsigned long long)budget);
+    bool stalled = false;
     for (int i = 0; i < frames; i++) {
         watch_cur_frame = i + 1;
         if (trace_frame >= 0 && i == trace_frame - 1)
             ff4_dispatch_trace = dispatch_trace_cb;
         else if (trace_frame >= 0 && i == trace_frame)
             ff4_dispatch_trace = NULL;
-        ff4_step();
+        if (!snes_runFrameBounded(ff4_snes, budget)) {
+            fprintf(stderr, "error: stalled at frame %d (opcode budget %llu exhausted — hang)\n",
+                    i + 1, (unsigned long long)budget);
+            stalled = true;
+            break;
+        }
         if ((i + 1) % 60 == 0)
             printf("  frame %4d | pc=%02X:%04X | hits=%u misses=%u\n",
                    i + 1, ff4_snes->cpu->k, ff4_snes->cpu->pc,
@@ -186,6 +200,7 @@ int main(int argc, char **argv) {
     printf("cpu cycles     : %llu\n", (unsigned long long)ff4_snes->cycles);
     printf("dispatch       : %.1f%% (%u/%u)\n", hit_rate, ff4_dispatch_hits, total);
     printf("WRAM crc32     : %08X\n", wram_crc);
+    printf("stalled        : %s\n", stalled ? "yes (opcode budget exhausted — hang)" : "no");
 
     if (out_ppm && dump_ppm(out_ppm))
         printf("frame dumped   : %s (%dx%d)\n", out_ppm, LCD_W, LCD_H);
@@ -204,5 +219,5 @@ int main(int argc, char **argv) {
 
     ff4_shutdown();
     free(rom);
-    return 0;
+    return stalled ? 3 : 0;   /* scriptable verdict: 0=clean run, 3=stalled/hang */
 }
