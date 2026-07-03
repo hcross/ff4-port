@@ -24,6 +24,16 @@ the spikes, and SDL inspection.
 | `007-title-screen.lss` | Title screen | `00:9144` | Title / logo / input repro | F4, F5 |
 | `008-overworld-mode7.lss` | Overworld ship → mode-7 transition | `00:9144` | **Mode-7** bug repro (corruption from ~frame 90) ; validation of the `InitMapRAM` fix (`ff4-gnw 1a86d23`) | mode-7 bug |
 | `009-first-free-roam.lss` | Player's first **free-roam** instant (first control) | `00:9133` | Field control/movement baseline (captured in SDL 2026-06-30) | — |
+| `010-castle-exit-anim.lss` | Castle exit animation (per filename; capture context not recorded) | `00:9135` | Undocumented — added to this catalog 2026-07-03, no recorded primary use or findings link | — |
+| `011-worldmap-entry.lss` | Worldmap entry (per filename; capture context not recorded) | `00:9133` | Undocumented — added to this catalog 2026-07-03, no recorded primary use or findings link | — |
+
+> ℹ **Several fixtures share the same "PC at load" (`00:9144` / `00:9133` /
+> `00:9135`).** Verified 2026-07-03 by loading each `.lss` and reading back
+> `cpu->pc` — this is not a documentation error: LakeSnes's savestate
+> captures whatever PC the main loop happens to be parked at (a common
+> resynchronization point most scenes pass through), which is unrelated to
+> which scene is actually rendered (that lives in WRAM/VRAM/CGRAM). Do not
+> use this column to distinguish fixtures — use the scene description.
 
 ## Conventions
 

@@ -260,7 +260,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--budget-usd", type=float, default=DEFAULT_BUDGET,
                     help="Hard budget cap. 0 = no cap (useful for claude CLI / Ollama).")
     ap.add_argument("--llm", choices=["claude-cli", "anthropic-sdk", "openai-compat"],
-                    default="claude-cli", help="LLM backend (default: claude-cli)")
+                    default="claude-cli", help="LLM backend (default: claude-cli). "
+                         "See BENCH_RESULTS.md for the --llm openai-compat "
+                         "--api-base https://ollama.com/v1 --model qwen3-coder:480b "
+                         "recommendation for scaled batches — not made the default "
+                         "here since it silently routes disassembly content to a "
+                         "third-party cloud endpoint; opt in explicitly per invocation.")
     ap.add_argument("--model", default=None,
                     help="Model name (per-provider default if unset)")
     ap.add_argument("--max-output-tokens", type=int, default=2000)
