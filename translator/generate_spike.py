@@ -178,6 +178,13 @@ class Contract:
                                    # // SPIKE_MASK: lo-hi[, lo-hi...] — WRAM byte ranges
                                    # excluded from the region compare (dead DP scratch the
                                    # asm writes but the C port legitimately doesn't mirror).
+    entry_dp: int = 0      # // CONTRACT: entry_mode: dp= — direct page at entry.
+                            # Defaults to 0 (the historical hardcoded spike
+                            # behavior) when the field is absent, for legacy
+                            # contracts written before this was parsed.
+    entry_db: int = 0x7E   # // CONTRACT: entry_mode: db= — data bank at entry.
+                            # Defaults to 0x7E (the historical hardcoded spike
+                            # behavior) when the field is absent.
     mmio_effects: list = dataclasses.field(default_factory=list)
                                    # // CONTRACT: mmio_effects: — declared hardware
                                    # register addresses the routine writes (Pitfall 13/16).
@@ -381,6 +388,23 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
                 return part.split("=", 1)[1].strip().lower() == "true"
         return True  # default A 8-bit
 
+    def parse_hex_mode(spec: str, key: str, default: int) -> int:
+        # "mf=true, xf=false, dp=0x0600, db=0x00" -> dp=0x0600. Falls back to
+        # `default` (the historical hardcoded spike value) if the key is
+        # absent, so legacy contracts predating dp/db parsing keep working.
+        for part in spec.split(","):
+            part = part.strip()
+            if part.lower().startswith(key + "="):
+                val = part.split("=", 1)[1].strip()
+                val = re.sub(r"\(.*$", "", val).strip()
+                try:
+                    return int(val, 16) if val.lower().startswith("0x") else int(val)
+                except ValueError:
+                    sys.stderr.write(f"[gen] malformed entry_mode {key}={val!r}, "
+                                      f"using default 0x{default:X}\n")
+                    return default
+        return default
+
     def parse_flag(spec: str, key: str) -> Optional[str]:
         for part in spec.split(","):
             part = part.strip()
@@ -394,6 +418,8 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
     entry_mode = find("entry_mode") or ""
     entry_mf = parse_mode(entry_mode, "mf")
     entry_xf = parse_mode(entry_mode, "xf")
+    entry_dp = parse_hex_mode(entry_mode, "dp", 0)
+    entry_db = parse_hex_mode(entry_mode, "db", 0x7E)
     entry_flags = find("entry_flags") or ""
     entry_z = parse_flag(entry_flags, "z")
     entry_n = parse_flag(entry_flags, "n")
@@ -410,6 +436,8 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
         output_ram=output_ram,
         entry_mf=entry_mf,
         entry_xf=entry_xf,
+        entry_dp=entry_dp,
+        entry_db=entry_db,
         entry_z=entry_z,
         entry_n=entry_n,
         custom_spike=custom_spike,
@@ -604,8 +632,8 @@ static inline void write16(uint8_t *ram, int addr, uint16_t v) {{
 
 static void run_asm(Snes *snes{asm_args_decl}) {{
     Cpu *c = snes->cpu;
-    c->dp = 0;
-    c->db = 0x7E;
+    c->dp = {entry_dp};
+    c->db = {entry_db};
     c->mf = {entry_mf};
     c->xf = {entry_xf};
     c->a = 0; c->x = 0; c->y = 0;
@@ -840,8 +868,8 @@ def render_spike(c_translation: str, contract: Contract) -> str:
     # So mirror run_asm's entry setup ON `snes` (snap_restore(&pre) reset the regs
     # to baseline) and call with just (snes), instead of passing arg_* positionally.
     c_entry_lines = [
-        "        snes->cpu->dp = 0;",
-        "        snes->cpu->db = 0x7E;",
+        f"        snes->cpu->dp = 0x{contract.entry_dp:04X};",
+        f"        snes->cpu->db = 0x{contract.entry_db:02X};",
         f"        snes->cpu->mf = {'true' if contract.entry_mf else 'false'};",
         f"        snes->cpu->xf = {'true' if contract.entry_xf else 'false'};",
         "        snes->cpu->a = 0; snes->cpu->x = 0; snes->cpu->y = 0;",
@@ -868,6 +896,8 @@ def render_spike(c_translation: str, contract: Contract) -> str:
         asm_flags_setup="\n".join(asm_flags_lines) or "    // no entry flags",
         entry_mf="true" if contract.entry_mf else "false",
         entry_xf="true" if contract.entry_xf else "false",
+        entry_dp=f"0x{contract.entry_dp:04X}",
+        entry_db=f"0x{contract.entry_db:02X}",
         ram_input_setup="\n".join(ram_input_setup_lines) or "        // no RAM inputs",
         reg_input_random="\n".join(reg_input_random_lines),
         c_call=c_call,
