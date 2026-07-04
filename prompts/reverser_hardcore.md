@@ -278,6 +278,93 @@ REVERSED_FUNCTION: graphics::MapGfxBankTbl ($00:B104)
 
 This guarantees the parity harness can locate the correct routine.
 
+## Pitfall 13 — MMIO registers go through the BUS, never the WRAM array
+
+The single most frequent and most damaging translation bug. A store to a
+hardware register (`$2100-$21FF` PPU/APU ports, `$4200-$43FF` CPU/DMA
+ports) must NEVER be written as `ram[0x21xx] = v` / `write16(ram, 0x21xx,
+v)`. That writes to WRAM instead of the register: the hardware effect
+never happens, AND `$7E:21xx` gets silently corrupted as a side effect.
+Real bugs this produced: `InitMapRAM` (mode-7 setup), `IncBrightness`
+(fades), `TfrBGGfx` (tile transfer), `ExecBattle`, `InitWorld`,
+`AfterCutscene`, `LoadOverworldIntro`, plus the whole DMA class (Pitfall 15).
+
+```c
+// WRONG — writes WRAM, the PPU never sees it:
+ram[0x2100] = v;
+write16(ram, 0x2116, v);
+
+// CORRECT — CPU/PPU register ($2100-$21FF, $4200-$43FF):
+snes_write(snes, 0x2100, v);
+// CORRECT — PPU B-bus port (low byte of a $21xx address):
+snes_writeBBus(snes, 0x18, v);   // 0x18 = $2118 VMDATAL
+```
+
+Common hardware symbols, for reference when translating a store target:
+
+```
+$2100 hINIDISP   $2101 hOBSEL    $2105 hBGMODE   $2115 hVMAINC
+$2116/7 hVMADDL/H  $2118/9 hVMDATAL/H  $2121 hCGADD  $2122 hCGDATA
+$2104 hOAMDATA   $212C hTM      $4200 hNMITIMEN $420B hMDMAEN
+$420C hHDMAEN    DMA channel n = $43n0-$43n7
+```
+
+## Pitfall 14 — Resolve the Data Bank to tell WRAM from MMIO apart
+
+`sta $nn` / `sta $nnnn` is ambiguous without knowing `DB` at that point:
+`DB=$00` (or any bank `$80-$BF`) with an address in `$2100-$5FFF` means
+MMIO (bus write, Pitfall 13); `DB=$7E`/`$7F` means plain WRAM (`ram[]` is
+correct). State the entry `DB` explicitly (the `db=` field of the CONTRACT
+entry_mode) and re-derive it across any `phb`/`plb` in the routine before
+deciding whether a given store is MMIO or WRAM. `ram[0x2100]` IS the right
+translation when `DB=$7E` — the address range alone does not decide it.
+
+## Pitfall 15 — DMA routines need a MANUAL transfer loop, not a register poke
+
+Triggering a DMA channel from dispatched C by writing `$420B` (Pitfall 13,
+done correctly via `snes_write`) still does not move any data: `snes_write`
+only arms `dma->channel[n].dmaActive` — the actual byte transfer happens
+inside `dma_handleDma()`, driven by CPU cycles the interpreter's main loop
+spends, which a dispatched C routine never runs. A DMA-driving routine must
+instead emit the transfer itself: a manual loop that reads the pre-armed
+channel parameters (`snes->dma->channel[n].aAdr` / `.aBank`, or an explicit
+source known from context, via `snes_read`) and writes each byte to the
+destination port (`snes_writeBBus(snes, 0x18/0x19, v)` for VRAM,
+`snes_writeBBus(snes, 0x04, v)` for OAM, `snes_writeBBus(snes, 0x22, v)`
+for CGRAM), replicating the transfer mode (DMAP write-once vs write-twice,
+VMAIN increment) by hand. Reference implementations: `TfrSprites_c` (OAM
+transfer), `TfrBGGfx_c` (3bpp VRAM transfer). Recognise the idiom at the
+asm level — DMA channel setup (`sta $43n0-$43n7`) followed by `sta $420B`
+— and translate the WHOLE sequence to a manual loop, never to a sequence
+of register writes alone.
+
+## Pitfall 16 — The CONTRACT must declare every MMIO/VRAM/OAM/CGRAM effect
+
+The auto-spike generator only compares the `output_ram` locations the
+CONTRACT declares. A routine that writes hardware registers but only lists
+WRAM outputs in its CONTRACT passes the spike anyway — a **false L2**: the
+spike is structurally blind to MMIO (it never inspects the bus, only
+`snes->ram`). This exact mistake shipped twice: `InitMapRAM` (declared
+`output_ram: 0x06FB`, silently also wrote `$2100`/`$420C`/`$4200`) and
+`TfrBGGfx` (listed the `$43xx` DMA registers as WRAM output). Every store
+identified as MMIO/VRAM/OAM/CGRAM by Pitfalls 13-15 MUST appear in a
+`mmio_effects:` line of the CONTRACT (see the Output format section below)
+— never only in `output_ram`. A routine with non-empty `mmio_effects` is
+"spike-insufficient, oracle-validation required": say so, do not imply the
+spike alone proves it correct.
+
+## Pitfall 17 — Uncertainty language in generated C is a red flag
+
+Comments like "assuming", "Placeholder", "likely maps to", "treat as
+absolute", or "outside WRAM" in a translated function mean the model
+GUESSED at an unresolved symbol or address — this is almost always a bug,
+not a benign hedge. Never guess: if a symbol or address cannot be resolved
+from the asm and the ca65-bridge xrefs, say so explicitly in a comment
+instead of emitting a plausible-looking WRAM write, and prefer `mode:
+delegate` for that routine over a fabricated translation. These phrases
+are mechanically detectable — a stub containing one is rejected or
+re-ported automatically rather than credited.
+
 # Output format
 
 ## For `mode: translate`
