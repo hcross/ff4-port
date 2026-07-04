@@ -6,6 +6,16 @@ original ROM, and delivers validated translations to
 [hcross/ff4-gnw](https://github.com/hcross/ff4-gnw) for integration into the
 Game & Watch firmware.
 
+> **New to reverse engineering, 65816 assembly, or SNES hardware?** Read
+> the umbrella repo's primer first —
+> [`ff4/docs/primer/`](https://github.com/hcross/ff4/tree/main/docs/primer)
+> covers just enough background to follow the rest of this README, with
+> pointers to authoritative external references for going deeper. For a
+> guided tour of this specific repository's layout and pipeline, see
+> [`docs/architecture-overview.md`](docs/architecture-overview.md),
+> [`docs/workflow/translation-cascade.md`](docs/workflow/translation-cascade.md)
+> and [`docs/workflow/validation-oracle.md`](docs/workflow/validation-oracle.md).
+
 ## Role in the ecosystem
 
 ```
@@ -162,6 +172,8 @@ cd ca65-bridge
 - [ADR-001](docs/adr/adr-001-native-c-port.md) — Native C port over full emulator port
 - [ADR-002](docs/adr/adr-002-lakesnes-upstream.md) — Use LakeSnes upstream unmodified
 - [ADR-003](docs/adr/adr-003-classification.md) — Binary classification: translate vs delegate
+- [ADR-004](docs/adr/adr-004-prompt-mutation-loop.md) — Automated, regression-gated prompt-mutation loop (P3; dormant, see the ADR's "Current status")
+- [ADR 0001](docs/adr/0001-desktop-validation-in-re-loop.md) — Desktop LakeSnes host as the mandatory RE validation gate (separate numbering track — see that file's own header)
 
 ## The 17 pitfalls
 
