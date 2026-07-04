@@ -64,6 +64,8 @@ matters — a single off-by-one breaks parity.
 
 # Known pitfalls (MUST avoid)
 
+<!-- PITFALLS:GENERATED:START (source: prompts/pitfalls.yaml — do not hand-edit; run `python3 prompts/generate_pitfalls.py --write`) -->
+
 ## Pitfall 1 — Data Bank ($DB) per module
 
 Battle module assumes **DB = $7E** (WRAM bank). Absolute addressing like
@@ -364,6 +366,8 @@ instead of emitting a plausible-looking WRAM write, and prefer `mode:
 delegate` for that routine over a fabricated translation. These phrases
 are mechanically detectable — a stub containing one is rejected or
 re-ported automatically rather than credited.
+
+<!-- PITFALLS:GENERATED:END -->
 
 # Output format
 

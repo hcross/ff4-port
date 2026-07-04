@@ -64,8 +64,10 @@ ff4-port/
 │   └── runs/                    JSONL audit trail — every run appended here
 │
 ├── prompts/             — LLM system prompts (versioned)
-│   ├── reverser_system.md       v2 — 12 documented pitfalls
-│   ├── reverser_hardcore.md     extends v2 with H1-H5 hardcore sections
+│   ├── pitfalls.yaml            single source of truth for the 17 documented pitfalls
+│   ├── generate_pitfalls.py     renders pitfalls.yaml into both prompts below (--check/--write)
+│   ├── reverser_system.md       v2 — pitfalls section generated from pitfalls.yaml
+│   ├── reverser_hardcore.md     extends v2 with H1-H5 hardcore sections, same pitfalls
 │   └── history/v0/, v1/, v2/    adopted versions with regression scores at adoption
 │
 ├── parity/              — spike harness (function-level parity tests)
@@ -161,9 +163,13 @@ cd ca65-bridge
 - [ADR-002](docs/adr/adr-002-lakesnes-upstream.md) — Use LakeSnes upstream unmodified
 - [ADR-003](docs/adr/adr-003-classification.md) — Binary classification: translate vs delegate
 
-## The 10+ pitfalls
+## The 17 pitfalls
 
-Documented in `prompts/reverser_system.md`. Highlights:
+Single source of truth: [`prompts/pitfalls.yaml`](prompts/pitfalls.yaml),
+rendered into `reverser_system.md` and `reverser_hardcore.md` by
+`prompts/generate_pitfalls.py` (`--check` for drift, `--write` to
+regenerate — see the script's docstring for why `reverser_system.md`
+needs care around `prompt_mutation_loop.py`). Highlights:
 
 1. `CMP/BCS` inversion (`bcs` branches when ≥, C uses `<`)
 2. Z/N flags must be simulated on entry when jumping past the caller's `LDA`
