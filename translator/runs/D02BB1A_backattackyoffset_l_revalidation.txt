@@ -1,0 +1,46 @@
+### WARNING — NON-PROBATIVE / HOLLOW RUN. DO NOT USE FOR L2 PROMOTION. ###
+#
+# D02BB1A BackAttackYOffset_l_c ($02:BB1A) — bundled in
+# ff4-gnw/battle/btlgfx_prim.c. Extracted to
+# translator/port/battle/BackAttackYOffset_l.c and generated via
+# translator/generate_spike.py on 2026-07-05.
+#
+# The `fails: 0` below is MEANINGLESS. This routine's ONLY output is
+# register A (+ N/Z/C/V flags); it writes no WRAM (the PHA/PLA pair is
+# stack-net-zero, and the stack page is masked by the harness anyway).
+# generate_spike.py has no `output_reg` comparison mode: with no
+# `output_ram` and no `SPIKE_COMPARE: region`, it falls into the branch
+# at generate_spike.py:850-855 that emits:
+#
+#     uint16_t out_asm = 0; (void)snes;
+#     uint16_t out_c   = 0;
+#     bool ok = (out_asm == out_c);   // 0 == 0 -> always true
+#
+# So the run below compares 0 to 0, 300 times, and can never fail. It
+# validates NOTHING about the routine's behaviour. The `output_reg: a=8`
+# line in the CONTRACT is dead metadata — the parser never reads it
+# (confirmed: no `find("output_reg")` call in parse_contract).
+#
+# This is a systemic harness gap, not specific to this routine: NO spike
+# in parity/src (auto or manual) captures register A into its compare —
+# e.g. spike_getantielem_*.c, spike_max99_*.c return in A and also use
+# the identical hollow 0==0 branch. BackAttackYOffset_s_c (D02BB0B) and
+# any other register-only-output routine in the custom_spike bucket are
+# blocked on the same limitation.
+#
+# BLOCKED: cannot produce a probative standalone spike for a
+# register-output routine without either (a) adding an `output_reg`
+# comparison mode to generate_spike.py (out of scope for this skill —
+# forbidden CONTRACT-format/harness change), or (b) validating it
+# transitively through a caller's WRAM-output spike (the way _s is
+# covered by BuildOAMEntries' $0300 region compare; the analogous caller
+# for _l is the cursor-draw routine ~$02:BB29, which is not ported).
+#
+### END WARNING ###
+
+BackAttackYOffset_l asm vs C : 300 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 300, fails: 0

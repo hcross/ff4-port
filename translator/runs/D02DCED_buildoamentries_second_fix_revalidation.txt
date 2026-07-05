@@ -1,0 +1,14 @@
+BuildOAMEntries_c (D02DCED) SECOND fix re-verification — 2026-07-05T11:02:35Z
+Second bug found by re-running at higher trial count (1000) than the original
+promotion run (300): slot_w = (uint16_t)((uint16_t)slot << 1) did not truncate
+to 8 bits before widening, matching the asm's TXA/ASL/TAX (8-bit A). Diverged for
+slot>=128. Fixed to (uint16_t)(uint8_t)(slot << 1) in both translator/port/battle/
+BuildOAMEntries.c and ff4-gnw/battle/btlgfx_monsters.c.
+Command: parity/ff4-spike-auto-buildoamentries ../upstream/rom/ff4-jp1.sfc 3000
+
+BuildOAMEntries asm vs C : 3000 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 3000, fails: 0

@@ -1,0 +1,6 @@
+Mult8_btlgfx asm vs C : 300 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 300, fails: 0

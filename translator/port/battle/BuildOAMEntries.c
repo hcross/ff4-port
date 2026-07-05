@@ -31,7 +31,10 @@ void BackAttackYOffset_s_c(Snes *snes) {
 
 void BuildOAMEntries_c(Snes *snes) {
     uint8_t slot = (uint8_t)(snes->cpu->x);
-    uint16_t y_row = (uint16_t)((uint16_t)slot << 2);
+    /* TXA/ASL/ASL/TAY, A is 8-bit (mf=true): each ASL truncates to 8 bits,
+     * so the real hardware wraps at 256, not 65536 — mask before widening
+     * or slot>=64 diverges from the original. */
+    uint16_t y_row = (uint16_t)(uint8_t)(slot << 2);
     uint8_t tile_count = snes->cart->rom[LOROM(0x16, 0xFD15) + slot];
     uint16_t loop_limit = (uint16_t)tile_count << 2;
     snes->ram[0x0E] = (uint8_t)(loop_limit & 0xFF);
@@ -52,7 +55,11 @@ void BuildOAMEntries_c(Snes *snes) {
         snes->ram[0xF07D + y_row]++;
     }
 
-    uint16_t slot_w = (uint16_t)((uint16_t)slot << 1);
+    /* TXA/ASL/TAX ($02:DD26-28): A is 8-bit (mf=true), the ASL truncates
+     * to 8 bits before TAX widens it back to the 16-bit X -- truncate
+     * before widening or slot>=128 silently diverges (same bug class as
+     * y_row above, found by a higher-trial-count re-run, 2026-07-05). */
+    uint16_t slot_w = (uint16_t)(uint8_t)(slot << 1);
     uint8_t x_base = snes->ram[0x6CF3 + slot_w];
     snes->ram[0x12] = x_base;
     uint8_t y_base = snes->ram[0x6CF4 + slot_w];

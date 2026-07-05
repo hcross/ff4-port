@@ -1,0 +1,15 @@
+UpdateBG2ScrollSkip_c (D00F535) spike re-verification — 2026-07-05T10:54:19Z
+Command: parity/ff4-spike-auto-updatebg2scrollskip ../upstream/rom/ff4-jp1.sfc 500
+Source: translator/port/field/UpdateBG2ScrollSkip.c -- $F535 entry point into the
+shared update_bg2_scroll_body(), already proven at L2 via the $F533 entry (D00F533).
+This spike exercises the guard-from-A entry logic specifically. Real region-compare
+(output_ram 0x005E), not vacuous.
+
+UpdateBG2ScrollSkip asm vs C : 500 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+trial  372 : first WRAM diff at $0005E  asm=39 c=00  FAIL
+trial  479 : first WRAM diff at $0005E  asm=E1 c=00  FAIL
+
+=== summary === trials: 500, fails: 2

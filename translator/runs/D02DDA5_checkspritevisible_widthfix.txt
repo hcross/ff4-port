@@ -1,0 +1,7 @@
+CheckSpriteVisible asm vs C : 500 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 500, fails: 0
+=== NOTE: post width-truncation fix (mon<<2 masked to uint8_t before widening, matching asm LDA $47/ASL/ASL/TAX mf=true). WRAM-observable contract unchanged (carry-flag divergence not observable by generate_spike.py), 0 fails expected and confirmed. Fixed in ff4-gnw/battle/btlgfx_monsters.c and ff4-port/translator/port/battle/CheckSpriteVisible.c. ===

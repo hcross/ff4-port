@@ -1,0 +1,23 @@
+UpdateBG2ScrollSkip asm vs C : 5000 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+trial  372 : first WRAM diff at $0005E  asm=39 c=00  FAIL
+trial  479 : first WRAM diff at $0005E  asm=E1 c=00  FAIL
+trial  653 : first WRAM diff at $0005E  asm=CA c=00  FAIL
+trial  671 : first WRAM diff at $0005E  asm=73 c=00  FAIL
+trial  905 : first WRAM diff at $0005E  asm=AF c=00  FAIL
+trial 1663 : first WRAM diff at $00060  asm=14 c=00  FAIL
+trial 1678 : first WRAM diff at $0005E  asm=54 c=00  FAIL
+trial 1750 : first WRAM diff at $0005E  asm=FF c=00  FAIL
+trial 1772 : first WRAM diff at $0005E  asm=23 c=00  FAIL
+trial 2098 : first WRAM diff at $0005E  asm=FB c=00  FAIL
+trial 2311 : first WRAM diff at $00060  asm=F4 c=00  FAIL
+trial 2499 : first WRAM diff at $0005E  asm=52 c=00  FAIL
+trial 3120 : first WRAM diff at $0005E  asm=70 c=00  FAIL
+trial 3161 : first WRAM diff at $0005E  asm=DF c=00  FAIL
+trial 3295 : first WRAM diff at $00060  asm=46 c=00  FAIL
+trial 3365 : first WRAM diff at $0005E  asm=91 c=00  FAIL
+trial 4020 : first WRAM diff at $0005E  asm=F4 c=00  FAIL
+
+=== summary === trials: 5000, fails: 17

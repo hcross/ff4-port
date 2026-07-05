@@ -1,0 +1,14 @@
+BuildOAMEntries_c (D02DCED) spike re-verification after y_row 8-bit truncation fix — 2026-07-05T10:14:09Z
+Command: parity/ff4-spike-auto-buildoamentries ../upstream/rom/ff4-jp1.sfc 300
+Fix: y_row = (uint16_t)(uint8_t)(slot << 2) instead of (uint16_t)((uint16_t)slot << 2)
+     -- matches the original TXA/ASL/ASL/TAY 8-bit-truncating sequence; the previous
+     16-bit shift diverged for slot>=64. Applied to both translator/port/battle/
+     BuildOAMEntries.c (this spike) and the dispatched ff4-gnw/battle/btlgfx_monsters.c.
+Fuzz coverage: arg_x = (uint8_t)host_rng(), full 0-255 range, ~75% of trials have slot>=64.
+
+BuildOAMEntries asm vs C : 300 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 300, fails: 0

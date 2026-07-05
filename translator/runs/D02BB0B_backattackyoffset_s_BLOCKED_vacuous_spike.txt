@@ -1,0 +1,68 @@
+D02BB0B  BackAttackYOffset_s_c  ($02:BB0B, asm label BackAttackFlipX, module btlgfx)
+STATUS: BLOCKED — NOT promoted. This file is a diagnostic, NOT L2 promotion evidence.
+
+WHY BLOCKED
+-----------
+BackAttackYOffset_s_c is a REGISTER-OUTPUT routine. Its only observable outputs
+are CPU register A and the NZVC flags:
+
+    A_out = ram[$6CC0] ? (uint8_t)((~A_in) - 8) : A_in   (flags set accordingly)
+
+The asm at $02:BB0B (PHA / LDA $6CC0 / BEQ / PLA / EOR #$FF / SEC / SBC #$08 /
+RTS ...) writes NOTHING to WRAM — it only PHA/PLA on the stack (balanced) and
+leaves the result in A.
+
+translator/generate_spike.py can only compare WRAM: a fixed `output_ram` slot
+or `SPIKE_COMPARE: region` (whole-WRAM memcmp, stack-masked). It has NO
+register-output comparison path (verified: the Contract dataclass and parser
+know only `output_ram`; there is no `output_reg`). With `output_ram: none`, the
+generator emits the fallback comparison:
+
+    uint16_t out_asm = 0; (void)snes;   // line 211 of the generated spike
+    ...
+    uint16_t out_c   = 0;               // line 222
+    bool ok = (out_asm == out_c);       // 0 == 0 -> ALWAYS true
+
+So the run below reports `fails: 0` while comparing two hardcoded zeros. It runs
+the real asm and the real C, but observes neither's output. Promoting D02BB0B to
+L2 on this would be a FALSE L2 — exactly what SKILL.md point 5 / "What NOT to do"
+and prompts/reverser_system.md Pitfall 16 forbid.
+
+CAPTURED RUN (proves the vacuity — fails:0 is meaningless here)
+---------------------------------------------------------------
+$ ./ff4-spike-auto-backattackyoffset_s ../upstream/rom/ff4-jp1.sfc 300
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 300, fails: 0
+
+^ fails:0 because ok=(0==0), not because A/flags matched. NOT a proof.
+
+CROSS-CHECK: WHAT reverser_system.md SAYS TO DO INSTEAD
+------------------------------------------------------
+prompts/reverser_system.md (lines 393-395, 426): a routine with "no clean
+single-output contract" must be declared `output_ram: none` + `// CUSTOM_SPIKE:
+yes`, so the generator SKIPS it and "the human writes the spike manually"
+(reading the output register directly). That is a MANUAL spike — a deviation
+from ff4-custom-spike-author/SKILL.md, which mandates the generate_spike.py
+auto path and does not cover register-output routines. Per the executor
+contract ("if the skill file and something you read elsewhere disagree, the
+skill file wins; report the discrepancy rather than resolving it yourself"),
+this deviation was NOT taken unilaterally. Reported to team lead for a decision.
+
+SIBLING NOTE (data-integrity risk)
+----------------------------------
+The twin routine D02BB1A (BackAttackYOffset_l, $02:BB1A) has the identical
+register-output shape. Its port file translator/port/battle/BackAttackYOffset_l.c
+declares a PHANTOM `output_reg: a=8` field (the generator has no such field —
+silently ignored), and translator/runs/D02BB1A_backattackyoffset_l_revalidation.txt
+records the same vacuous `fails: 0`. D02BB1A is still L1 as of this writing; it
+should NOT be promoted to L2 on that evidence.
+
+ARTIFACT DELIVERED
+------------------
+translator/port/battle/BackAttackYOffset_s.c — standalone extraction, body
+verbatim from ff4-gnw/battle/btlgfx_prim.c (dispatched code), correct CONTRACT.
+The extracted body itself is believed correct: it is exercised (as a sub-call)
+inside the PASSING region spike for BuildOAMEntries (D02DCED), which stores its
+result A into OAM WRAM $0300+ — but that is indirect coverage under a different
+dispatch ID, not a standalone L2 proof for D02BB0B.

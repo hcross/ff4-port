@@ -1,0 +1,257 @@
+UpdateMonsterAnim asm vs C : 300 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+trial    0 : first WRAM diff at $0F063  asm=60 c=40  FAIL
+trial    1 : first WRAM diff at $0F082  asm=60 c=40  FAIL
+trial    2 : first WRAM diff at $0F000  asm=60 c=40  FAIL
+trial    3 : first WRAM diff at $0F006  asm=60 c=40  FAIL
+trial    4 : first WRAM diff at $0F05C  asm=60 c=40  FAIL
+trial    6 : first WRAM diff at $0F072  asm=60 c=40  FAIL
+trial    7 : first WRAM diff at $0F04D  asm=60 c=40  FAIL
+trial    8 : first WRAM diff at $0EFCF  asm=60 c=40  FAIL
+trial    9 : first WRAM diff at $0EFD2  asm=60 c=40  FAIL
+trial   10 : first WRAM diff at $0F0C8  asm=60 c=40  FAIL
+trial   12 : first WRAM diff at $0F07D  asm=60 c=40  FAIL
+trial   14 : first WRAM diff at $0EFC3  asm=01 c=00  FAIL
+trial   15 : first WRAM diff at $0F0BB  asm=60 c=40  FAIL
+trial   17 : first WRAM diff at $0EFE7  asm=60 c=40  FAIL
+trial   19 : first WRAM diff at $0EFED  asm=60 c=40  FAIL
+trial   21 : first WRAM diff at $0F05E  asm=60 c=40  FAIL
+trial   22 : first WRAM diff at $0F039  asm=60 c=40  FAIL
+trial   23 : first WRAM diff at $0EFD7  asm=60 c=40  FAIL
+trial   25 : first WRAM diff at $0F09F  asm=60 c=40  FAIL
+trial   29 : first WRAM diff at $0F010  asm=60 c=40  FAIL
+trial   30 : first WRAM diff at $0F035  asm=60 c=40  FAIL
+trial   31 : first WRAM diff at $0EFF4  asm=60 c=40  FAIL
+trial   33 : first WRAM diff at $0F053  asm=60 c=40  FAIL
+trial   34 : first WRAM diff at $0F047  asm=60 c=40  FAIL
+trial   35 : first WRAM diff at $0EFEC  asm=60 c=40  FAIL
+trial   36 : first WRAM diff at $0F072  asm=01 c=00  FAIL
+trial   38 : first WRAM diff at $0F078  asm=60 c=40  FAIL
+trial   41 : first WRAM diff at $0F003  asm=60 c=40  FAIL
+trial   42 : first WRAM diff at $0F035  asm=60 c=40  FAIL
+trial   44 : first WRAM diff at $0F0A2  asm=60 c=40  FAIL
+trial   45 : first WRAM diff at $0F098  asm=60 c=40  FAIL
+trial   46 : first WRAM diff at $0EFF2  asm=60 c=40  FAIL
+trial   48 : first WRAM diff at $0F0BD  asm=60 c=40  FAIL
+trial   51 : first WRAM diff at $0F084  asm=60 c=40  FAIL
+trial   52 : first WRAM diff at $0F05A  asm=60 c=40  FAIL
+trial   54 : first WRAM diff at $0F038  asm=60 c=40  FAIL
+trial   55 : first WRAM diff at $0F066  asm=60 c=40  FAIL
+trial   56 : first WRAM diff at $0F0AE  asm=60 c=40  FAIL
+trial   57 : first WRAM diff at $0F096  asm=60 c=40  FAIL
+trial   58 : first WRAM diff at $0F03C  asm=60 c=40  FAIL
+trial   60 : first WRAM diff at $0F0BF  asm=60 c=40  FAIL
+trial   61 : first WRAM diff at $0F028  asm=60 c=40  FAIL
+trial   62 : first WRAM diff at $0EFE6  asm=60 c=40  FAIL
+trial   63 : first WRAM diff at $0EFE6  asm=60 c=40  FAIL
+trial   65 : first WRAM diff at $0F0B9  asm=60 c=40  FAIL
+trial   66 : first WRAM diff at $0F04A  asm=60 c=40  FAIL
+trial   67 : first WRAM diff at $0F048  asm=60 c=40  FAIL
+trial   68 : first WRAM diff at $0F055  asm=60 c=40  FAIL
+trial   69 : first WRAM diff at $0F01C  asm=60 c=40  FAIL
+trial   70 : first WRAM diff at $0F089  asm=60 c=40  FAIL
+trial   71 : first WRAM diff at $0EFD4  asm=60 c=40  FAIL
+trial   73 : first WRAM diff at $0F05A  asm=60 c=40  FAIL
+trial   74 : first WRAM diff at $0F0AA  asm=60 c=40  FAIL
+trial   75 : first WRAM diff at $0F084  asm=60 c=40  FAIL
+trial   76 : first WRAM diff at $0F0C1  asm=60 c=40  FAIL
+trial   77 : first WRAM diff at $0EFE5  asm=60 c=40  FAIL
+trial   78 : first WRAM diff at $0EFED  asm=60 c=40  FAIL
+trial   79 : first WRAM diff at $0F06B  asm=60 c=40  FAIL
+trial   80 : first WRAM diff at $0EFF5  asm=60 c=40  FAIL
+trial   81 : first WRAM diff at $0EFED  asm=60 c=40  FAIL
+trial   82 : first WRAM diff at $0F01A  asm=60 c=40  FAIL
+trial   84 : first WRAM diff at $0F037  asm=60 c=40  FAIL
+trial   85 : first WRAM diff at $0EFC3  asm=01 c=00  FAIL
+trial   88 : first WRAM diff at $0EFC3  asm=01 c=00  FAIL
+trial   89 : first WRAM diff at $0F0A5  asm=60 c=40  FAIL
+trial   90 : first WRAM diff at $0F017  asm=60 c=40  FAIL
+trial   92 : first WRAM diff at $0F052  asm=60 c=40  FAIL
+trial   93 : first WRAM diff at $0F09A  asm=60 c=40  FAIL
+trial   94 : first WRAM diff at $0EFD4  asm=60 c=40  FAIL
+trial   95 : first WRAM diff at $0F078  asm=60 c=40  FAIL
+trial   97 : first WRAM diff at $0F03E  asm=60 c=40  FAIL
+trial   98 : first WRAM diff at $0F07E  asm=60 c=40  FAIL
+trial   99 : first WRAM diff at $0F07D  asm=60 c=40  FAIL
+trial  101 : first WRAM diff at $0F065  asm=60 c=40  FAIL
+trial  102 : first WRAM diff at $0F033  asm=60 c=40  FAIL
+trial  103 : first WRAM diff at $0EFE6  asm=60 c=40  FAIL
+trial  104 : first WRAM diff at $0F03D  asm=60 c=40  FAIL
+trial  105 : first WRAM diff at $0F088  asm=60 c=40  FAIL
+trial  106 : first WRAM diff at $0F083  asm=60 c=40  FAIL
+trial  117 : first WRAM diff at $0F020  asm=60 c=40  FAIL
+trial  118 : first WRAM diff at $0F051  asm=60 c=40  FAIL
+trial  119 : first WRAM diff at $0F067  asm=60 c=40  FAIL
+trial  120 : first WRAM diff at $0EFEC  asm=60 c=40  FAIL
+trial  121 : first WRAM diff at $0F011  asm=60 c=40  FAIL
+trial  122 : first WRAM diff at $0F06B  asm=60 c=40  FAIL
+trial  123 : first WRAM diff at $0F0A9  asm=60 c=40  FAIL
+trial  124 : first WRAM diff at $0F01E  asm=60 c=40  FAIL
+trial  126 : first WRAM diff at $0F036  asm=60 c=40  FAIL
+trial  127 : first WRAM diff at $0F015  asm=60 c=40  FAIL
+trial  128 : first WRAM diff at $0F052  asm=60 c=40  FAIL
+trial  129 : first WRAM diff at $0F006  asm=60 c=40  FAIL
+trial  130 : first WRAM diff at $0F054  asm=60 c=40  FAIL
+trial  134 : first WRAM diff at $0F060  asm=60 c=40  FAIL
+trial  135 : first WRAM diff at $0F031  asm=60 c=40  FAIL
+trial  136 : first WRAM diff at $0F092  asm=60 c=40  FAIL
+trial  137 : first WRAM diff at $0F0BA  asm=60 c=40  FAIL
+trial  138 : first WRAM diff at $0F091  asm=60 c=40  FAIL
+trial  139 : first WRAM diff at $0F01C  asm=60 c=40  FAIL
+trial  140 : first WRAM diff at $0EFCE  asm=60 c=40  FAIL
+trial  141 : first WRAM diff at $0F0AD  asm=6F c=4F  FAIL
+trial  142 : first WRAM diff at $0F06F  asm=60 c=40  FAIL
+trial  143 : first WRAM diff at $0F0A7  asm=60 c=40  FAIL
+trial  145 : first WRAM diff at $0F00E  asm=60 c=40  FAIL
+trial  146 : first WRAM diff at $0F0B7  asm=60 c=40  FAIL
+trial  147 : first WRAM diff at $0F07D  asm=60 c=40  FAIL
+trial  148 : first WRAM diff at $0F0CB  asm=60 c=40  FAIL
+trial  149 : first WRAM diff at $0F087  asm=60 c=40  FAIL
+trial  150 : first WRAM diff at $0F06E  asm=60 c=40  FAIL
+trial  152 : first WRAM diff at $0EFFB  asm=60 c=40  FAIL
+trial  153 : first WRAM diff at $0F0B0  asm=60 c=40  FAIL
+trial  154 : first WRAM diff at $0EFD6  asm=60 c=40  FAIL
+trial  157 : first WRAM diff at $0F046  asm=60 c=40  FAIL
+trial  158 : first WRAM diff at $0F09C  asm=60 c=40  FAIL
+trial  159 : first WRAM diff at $0F055  asm=60 c=40  FAIL
+trial  161 : first WRAM diff at $0F03B  asm=60 c=40  FAIL
+trial  164 : first WRAM diff at $0F087  asm=60 c=40  FAIL
+trial  165 : first WRAM diff at $0F047  asm=60 c=40  FAIL
+trial  167 : first WRAM diff at $0F064  asm=60 c=40  FAIL
+trial  168 : first WRAM diff at $0EFDF  asm=60 c=40  FAIL
+trial  169 : first WRAM diff at $0F031  asm=60 c=40  FAIL
+trial  170 : first WRAM diff at $0F0B0  asm=60 c=40  FAIL
+trial  171 : first WRAM diff at $0F076  asm=60 c=40  FAIL
+trial  174 : first WRAM diff at $0F0CA  asm=60 c=40  FAIL
+trial  175 : first WRAM diff at $0F029  asm=60 c=40  FAIL
+trial  176 : first WRAM diff at $0F09F  asm=60 c=40  FAIL
+trial  178 : first WRAM diff at $0EFFF  asm=60 c=40  FAIL
+trial  181 : first WRAM diff at $0F072  asm=60 c=40  FAIL
+trial  182 : first WRAM diff at $0EFF4  asm=60 c=40  FAIL
+trial  183 : first WRAM diff at $0F018  asm=60 c=40  FAIL
+trial  185 : first WRAM diff at $0F0BC  asm=60 c=40  FAIL
+trial  187 : first WRAM diff at $0EFE0  asm=60 c=40  FAIL
+trial  188 : first WRAM diff at $0F078  asm=60 c=40  FAIL
+trial  189 : first WRAM diff at $0F079  asm=60 c=40  FAIL
+trial  190 : first WRAM diff at $0F0BF  asm=60 c=40  FAIL
+trial  192 : first WRAM diff at $0F045  asm=60 c=40  FAIL
+trial  193 : first WRAM diff at $0F083  asm=60 c=40  FAIL
+trial  196 : first WRAM diff at $0EFDB  asm=60 c=40  FAIL
+trial  198 : first WRAM diff at $00064  asm=01 c=00  FAIL
+trial  199 : first WRAM diff at $0F0C4  asm=60 c=40  FAIL
+trial  200 : first WRAM diff at $0EFE7  asm=60 c=40  FAIL
+trial  202 : first WRAM diff at $0F056  asm=60 c=40  FAIL
+trial  203 : first WRAM diff at $0F0C8  asm=60 c=40  FAIL
+trial  204 : first WRAM diff at $0F001  asm=60 c=40  FAIL
+trial  205 : first WRAM diff at $0F07F  asm=60 c=40  FAIL
+trial  206 : first WRAM diff at $0F051  asm=60 c=40  FAIL
+trial  207 : first WRAM diff at $0EFFD  asm=60 c=40  FAIL
+trial  208 : first WRAM diff at $0F061  asm=60 c=40  FAIL
+trial  209 : first WRAM diff at $0F079  asm=60 c=40  FAIL
+trial  210 : first WRAM diff at $0F011  asm=60 c=40  FAIL
+trial  212 : first WRAM diff at $0F02E  asm=60 c=40  FAIL
+trial  213 : first WRAM diff at $0EFF5  asm=60 c=40  FAIL
+trial  215 : first WRAM diff at $0EFED  asm=60 c=40  FAIL
+trial  216 : first WRAM diff at $0F0C6  asm=60 c=40  FAIL
+trial  217 : first WRAM diff at $0F06D  asm=60 c=40  FAIL
+trial  221 : first WRAM diff at $0F006  asm=60 c=40  FAIL
+trial  222 : first WRAM diff at $0F09D  asm=60 c=40  FAIL
+trial  223 : first WRAM diff at $0F047  asm=60 c=40  FAIL
+trial  224 : first WRAM diff at $0F00F  asm=60 c=40  FAIL
+trial  225 : first WRAM diff at $0F036  asm=60 c=40  FAIL
+trial  226 : first WRAM diff at $0F008  asm=60 c=40  FAIL
+trial  227 : first WRAM diff at $0F0C7  asm=60 c=40  FAIL
+trial  229 : first WRAM diff at $0F079  asm=60 c=40  FAIL
+trial  230 : first WRAM diff at $0F0A2  asm=60 c=40  FAIL
+trial  231 : first WRAM diff at $0F045  asm=60 c=40  FAIL
+trial  232 : first WRAM diff at $0EFD6  asm=60 c=40  FAIL
+trial  233 : first WRAM diff at $0F0B4  asm=60 c=40  FAIL
+trial  234 : first WRAM diff at $0EFEE  asm=60 c=40  FAIL
+trial  235 : first WRAM diff at $00064  asm=01 c=00  FAIL
+trial  239 : first WRAM diff at $0F046  asm=60 c=40  FAIL
+trial  241 : first WRAM diff at $0F0CC  asm=60 c=40  FAIL
+trial  242 : first WRAM diff at $0F045  asm=60 c=40  FAIL
+trial  243 : first WRAM diff at $0EFDA  asm=60 c=40  FAIL
+trial  244 : first WRAM diff at $0F040  asm=60 c=40  FAIL
+trial  246 : first WRAM diff at $0F029  asm=60 c=40  FAIL
+trial  250 : first WRAM diff at $0EFEF  asm=60 c=40  FAIL
+trial  251 : first WRAM diff at $0F007  asm=60 c=40  FAIL
+trial  252 : first WRAM diff at $0F05B  asm=60 c=40  FAIL
+trial  253 : first WRAM diff at $0F081  asm=60 c=40  FAIL
+trial  254 : first WRAM diff at $0F059  asm=60 c=40  FAIL
+trial  255 : first WRAM diff at $0F0BE  asm=60 c=40  FAIL
+trial  256 : first WRAM diff at $0EFF8  asm=60 c=40  FAIL
+trial  259 : first WRAM diff at $0F03D  asm=60 c=40  FAIL
+trial  261 : first WRAM diff at $0F0B6  asm=60 c=40  FAIL
+trial  262 : first WRAM diff at $0F0C8  asm=60 c=40  FAIL
+trial  263 : first WRAM diff at $0F055  asm=60 c=40  FAIL
+trial  266 : first WRAM diff at $0F071  asm=60 c=40  FAIL
+trial  267 : first WRAM diff at $0EFEC  asm=60 c=40  FAIL
+trial  268 : first WRAM diff at $0F062  asm=60 c=40  FAIL
+trial  270 : first WRAM diff at $0F0C4  asm=60 c=40  FAIL
+trial  272 : first WRAM diff at $0F071  asm=60 c=40  FAIL
+trial  274 : first WRAM diff at $0F02A  asm=60 c=40  FAIL
+trial  276 : first WRAM diff at $0F075  asm=60 c=40  FAIL
+trial  278 : first WRAM diff at $0EFEF  asm=60 c=40  FAIL
+trial  279 : first WRAM diff at $0F096  asm=60 c=40  FAIL
+trial  280 : first WRAM diff at $0EFE6  asm=60 c=40  FAIL
+trial  281 : first WRAM diff at $0F0B9  asm=60 c=40  FAIL
+trial  282 : first WRAM diff at $0F011  asm=60 c=40  FAIL
+trial  283 : first WRAM diff at $0F035  asm=60 c=40  FAIL
+trial  284 : first WRAM diff at $0F086  asm=60 c=40  FAIL
+trial  285 : first WRAM diff at $0F00B  asm=60 c=40  FAIL
+trial  286 : first WRAM diff at $0F091  asm=60 c=40  FAIL
+trial  287 : first WRAM diff at $0F01B  asm=60 c=40  FAIL
+trial  289 : first WRAM diff at $0EFDA  asm=60 c=40  FAIL
+trial  291 : first WRAM diff at $0F0C3  asm=60 c=40  FAIL
+trial  293 : first WRAM diff at $0EFDF  asm=60 c=40  FAIL
+trial  294 : first WRAM diff at $0F087  asm=60 c=40  FAIL
+trial  295 : first WRAM diff at $0F058  asm=60 c=40  FAIL
+trial  298 : first WRAM diff at $0F0C8  asm=60 c=40  FAIL
+trial  299 : first WRAM diff at $0EFF4  asm=60 c=40  FAIL
+
+=== summary === trials: 300, fails: 209
+
+================================================================================
+ANALYSIS (author: teammate spike run, 2026-07-05) — NOT PROMOTED
+================================================================================
+Spike: parity/src/spike_updatemonsteranim_auto.c (region compare, 300 trials).
+Extraction: translator/port/battle/UpdateMonsterAnim.c (verbatim body + all
+same-file callees: CheckSpriteVisible_c, DrawMonsterSprite_c, InitMonsterAnim_c,
+dd99_sub, dbda_sub, dc52_sub).
+
+Result: 209/300 FAIL. An instrumented run (EFCF[x] pre-state + first-diff offset)
+proved the split is 100% path-determined:
+
+  NORMAL path  (EFCF[slot] != 0, the per-frame animation tick):  0 fails / ~91 trials
+  ZERO path    (EFCF[slot] == 0, "re-init from scratch" JMP $DE87): 209 fails / 209 trials
+
+Every failing trial is a ZERO-path trial; every NORMAL-path trial passes. The
+first diverging byte is ALWAYS $EFCE+X (asm=0x60, c=0x40).
+
+Root causes of the ZERO-path divergence (both must be fixed for L2):
+  1. STALE cpu->y. UpdateMonsterAnim_c computes entry_y = mon47*4 as a LOCAL but
+     never writes snes->cpu->y. Its zero-path callees dc52_sub / dbda_sub /
+     InitMonsterAnim_c / the E03A block read snes->cpu->y directly, so they index
+     $F015[Y] with a stale Y (0 in the fuzz) -> wrong attr30 -> wrong EFCE bits
+     ($EFCE+X = 0x40 instead of 0x60). The asm's DDDC preamble sets Y=mon47*4
+     (LDA $47/ASL/ASL/TAY); the C must mirror that onto cpu->y before any callee
+     that reads it. This is a latent bug in the DISPATCHED body too (ff4-gnw/
+     battle/btlgfx_monsters.c) whenever the caller's Y != mon47*4.
+  2. THREE unported sub-calls, stubbed in the body (cycle placeholders, WRAM
+     effects skipped):
+       $DEE2 JSR $DADC     -> writes $ED56/$ED58/$ED60,X (OAM buffer)
+       $DEFA JSL $01:EAAE  -> writes $F079/$F07A/$EFD0,X/$F078 (calls $EA7D)
+       $DFAF JSR $E018     -> sine table $1C:FF00 + hw-mult $85D2 -> $EFC8,X
+     Reachable via monster attribute bits $F015/$F016/$F017; the fuzz hits them.
+
+CONCLUSION: the per-frame NORMAL path is proven equivalent, but the routine
+CANNOT reach fails:0 without (1) the stale-Y fix AND (2) porting DADC + $01:EAAE
++ E018. Per ff4-custom-spike-author's hard bar ("Repeat until fails: 0 ... never
+promote on unverified evidence"), D02DDDC is LEFT AT L1. Note: the whole-game
+oracle (MemPalace ff4-gnw, handoff_key=ff4-port-frame26-debug, 2026-06-24) found
+0 diff for this routine on savestates 002/005/006 — i.e. the zero-path is not
+exercised (or its effects unobserved) in those real scenes; the divergence is a
+synthetic-fuzz reachability gap, not an in-combat regression.

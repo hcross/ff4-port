@@ -1,0 +1,10 @@
+DrawMonsterSprite_c (D02DA73) spike re-verification — 2026-07-05T10:12:10Z
+Command: parity/ff4-spike-auto-drawmonstersprite ../upstream/rom/ff4-jp1.sfc 300
+Source: translator/port/battle/DrawMonsterSprite.c (region-compare spike, SPIKE_MASK 0x1C-0x1D)
+
+DrawMonsterSprite asm vs C : 300 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 300, fails: 0

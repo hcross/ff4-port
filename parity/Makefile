@@ -5695,3 +5695,48 @@ ff4-spike-hcm1_maptitletilestop-maptitletilestop: src/spike_maptitletilestop_hcm
 # AUTO (hcm1_maptitletilesbtm): spike for MapTitleTilesBtm
 ff4-spike-hcm1_maptitletilesbtm-maptitletilesbtm: src/spike_maptitletilesbtm_hcm1_maptitletilesbtm.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_maptitletilesbtm_hcm1_maptitletilesbtm.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for DrawMonsterSprite
+ff4-spike-auto-drawmonstersprite: src/spike_drawmonstersprite_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_drawmonstersprite_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for BuildOAMEntries
+ff4-spike-auto-buildoamentries: src/spike_buildoamentries_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_buildoamentries_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for IncrTextPtr
+ff4-spike-auto-incrtextptr: src/spike_incrtextptr_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_incrtextptr_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for Mult8_btlgfx
+ff4-spike-auto-mult8_btlgfx: src/spike_mult8_btlgfx_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_mult8_btlgfx_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for BackAttackYOffset_l
+ff4-spike-auto-backattackyoffset_l: src/spike_backattackyoffset_l_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_backattackyoffset_l_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for HardMult_btlgfx
+ff4-spike-auto-hardmult_btlgfx: src/spike_hardmult_btlgfx_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_hardmult_btlgfx_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for BackAttackYOffset_s
+ff4-spike-auto-backattackyoffset_s: src/spike_backattackyoffset_s_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_backattackyoffset_s_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for CheckSpriteVisible
+ff4-spike-auto-checkspritevisible: src/spike_checkspritevisible_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_checkspritevisible_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for UpdateMonsterAnim
+ff4-spike-auto-updatemonsteranim: src/spike_updatemonsteranim_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatemonsteranim_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for InitMonsterAnim
+ff4-spike-auto-initmonsteranim: src/spike_initmonsteranim_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_initmonsteranim_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for UpdateBG2ScrollSkip
+ff4-spike-auto-updatebg2scrollskip: src/spike_updatebg2scrollskip_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_updatebg2scrollskip_auto.c $(CORE_SRC) $(LDFLAGS)
+
