@@ -1,0 +1,14 @@
+UpdateBG2ScrollSkip_c (D00F535) FIX applied and re-verified -- 2026-07-05T16:37:44Z
+Fix: guard source changed from cpu->a to ram[dp+0xC9], matching the real
+$00:F535 asm (LDA $C9), per direct ROM-byte inspection. Applied to both
+ff4-gnw/field/UpdateBG2Scroll.c (dispatched) and this spike source.
+Dead dispatch entry { 0x00f533, UpdateBG2Scroll_c } removed from
+ff4-gnw/dispatch_all.c (FF4_DISPATCH_COUNT 205->204).
+Command: parity/ff4-spike-auto-updatebg2scrollskip ../upstream/rom/ff4-jp1.sfc 5000
+
+UpdateBG2ScrollSkip asm vs C : 5000 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 5000, fails: 0

@@ -1,36 +1,26 @@
 #include "snes/snes.h"
 
-/* ============================ FINDING (2026-07-05) ============================
- * This spike does NOT pass, and that is the deliverable: it proved the
- * dispatched C body `UpdateBG2ScrollSkip_c` is WRONG for its registered
- * address $00:F535, and the error is a 2-byte address shift, not a code bug in
- * the body.
- *
- *   - ff4-jp1.sfc is a headerless LoROM ("FINAL FANTASY 4", map $20). The byte
- *     pattern `A5 C9 D0 0E AD 00 17 C9 03` (lda $c9 / bne / lda $1700 / cmp #3)
- *     sits at file 0x7535 => SNES $00:F535. So in the REAL rom the routine
- *     ENTRY (lda $c9) is at $00:F535 and the BNE (skip-lda point) is at $00:F537.
- *   - The ca65-bridge and upstream/notes/ff4j-sfc.asm are 2 bytes off here:
- *     they place `lda $c9` at $00:F533 and the BNE at $00:F535. The dispatch
- *     table + registry were built from that 2-off model:
- *         { 0x00f533, UpdateBG2Scroll_c }      // "$C9 guard" entry
- *         { 0x00f535, UpdateBG2ScrollSkip_c }  // "A guard" (skip-lda) entry
- *   - The game's ONLY callers are `JSR $F535` at $00:84FE and $00:9391 (no
- *     caller of $F533 or $F537). Both hit the real ENTRY (lda $c9). So $00:F535
- *     must load its guard from $C9, exactly like UpdateBG2Scroll_c — NOT from A.
- *   - Proof: guard-from-A (this body) vs the $00:F535 asm = 17/5000 fails
- *     (asm runs the body whenever $C9==0 regardless of A; C wrongly early-exits
- *     when A!=0). A guard-from-$C9 body vs the SAME $00:F535 asm = 0/5000 fails.
- *   - Consequence: { 0x00f533, ... } is a dead entry ($00:F533 = `43 60`, tail
- *     of the prior routine, never called) and { 0x00f535, UpdateBG2ScrollSkip_c }
- *     misfires (reads caller's A instead of $C9). Latent because the routine is
- *     FIELD BG2 scroll and the oracle savestates (002/005/006) are combat.
- *
- * Fix is a dispatch/registry decision (drop the dead F533 entry + point F535 at
- * the $C9-guard body, or shift both entries +2 to F535/F537) — deferred to the
- * team lead. This file is kept as the reproduction. See MemPalace ff4-gnw
- * obstacles-and-solutions "UpdateBG2Scroll F535 guard-source / 2-byte shift".
- * ============================================================================ */
+/* ============================ FIX APPLIED (2026-07-05) ============================
+ * Was previously guard-from-A ("skip the lda $c9" model) — WRONG. Confirmed
+ * by direct ROM-byte inspection: ff4-jp1.sfc (headerless LoROM) has the
+ * pattern `A5 C9 D0 0E AD 00 17 C9 03` (lda $c9 / bne / lda $1700 / cmp #3)
+ * at file offset 0x7535 => SNES $00:F535. The real $00:F535 instruction is
+ * `LDA $C9` -- it always loads its own guard byte, exactly like
+ * UpdateBG2Scroll_c. The disassembly's two-entry model ($00:F533 = "full"
+ * entry loading $C9, $00:F535 = "skip" entry reading A) was off by 2 bytes:
+ * $00:F533 is not even an instruction boundary (operand byte of the
+ * PRECEDING routine's LDX $43 at $00:F532). The game's only callers,
+ * `JSR $F535` at $00:84FE and $00:9391, both hit the real lda-$C9 entry.
+ * Dispatch fixed to match: dispatch_all.c's dead { 0x00f533, ... } entry
+ * removed; { 0x00f535, UpdateBG2ScrollSkip_c } kept (name unchanged --
+ * registry_promote.py can't rename a dispatch ID's `name` field -- but the
+ * body below now reads $C9 like it always should have.
+ * Proof: guard-from-A vs the real $00:F535 asm failed at scale (17/5000,
+ * this session's own re-runs: 2/500, 4/1000); guard-from-$C9 vs the SAME
+ * asm = 0/2000 (independently re-verified before applying this fix).
+ * Full writeup: MemPalace wing=ff4-gnw room=obstacles-and-solutions,
+ * "UpdateBG2ScrollSkip_c REAL DISPATCH BUG".
+ * ==================================================================== */
 
 /*
  * Helpers for 16-bit DP/WRAM access.
@@ -140,31 +130,29 @@ static void update_bg2_scroll_body(Snes *snes, uint8_t guard_val) {
     snes->cpu->a  = (snes->cpu->a & 0xFF00); /* low byte = 0 */
 }
 
-/* Entry $F533 — loads ram[dp + $C9] as the guard value (full entry point). */
+/* Bank $16 entry ($16:F533, dispatch D16F533) — untouched, separate, valid. */
 void UpdateBG2Scroll_c(Snes *snes) {
     update_bg2_scroll_body(snes, snes->ram[(uint16_t)(snes->cpu->dp + 0xC9)]);
 }
 
-/* Entry $F535 — caller pre-loaded A; BNE tests A directly (skips lda $C9).
- * Dispatch entry: { 0x00f535, UpdateBG2ScrollSkip_c }.                   */
+/* Bank $00's sole real entry point, dispatched at $00:F535 (D00F535).
+ * Name kept as UpdateBG2ScrollSkip_c (registry name field not renameable
+ * via registry_promote.py) but the body now reads $C9 itself -- see the
+ * FIX APPLIED note above. */
 void UpdateBG2ScrollSkip_c(Snes *snes) {
-    update_bg2_scroll_body(snes, (uint8_t)(snes->cpu->a & 0xFF));
+    update_bg2_scroll_body(snes, snes->ram[(uint16_t)(snes->cpu->dp + 0xC9)]);
 }
 
 // SPIKE_COMPARE: region
 // CONTRACT:
-//   inputs_reg:  a=8
-//   inputs_ram:  0x1700=1, 0x0FE4=1, 0x005A=2, 0x005C=2, 0x0066=2, 0x0068=2, 0x007A=1
+//   inputs_ram:  0x00C9=1, 0x1700=1, 0x0FE4=1, 0x005A=2, 0x005C=2, 0x0066=2, 0x0068=2, 0x007A=1
 //   output_ram:  0x005E=2
 //   entry_mode:  mf=true, xf=false, dp=0x0, db=0x00
 //   entry_flags: z=auto, n=auto
 // REVERSED_FUNCTION: field::UpdateBG2Scroll ($00:F535)
 //
-// This is the $F535 entry point (guard byte pre-loaded in A; the BNE tests A
-// directly, skipping the `lda $c9` of the $F533 entry). The shared body
-// update_bg2_scroll_body is already proven equivalent at L2 via the $F533
-// entry (dispatch D00F533); this spike exercises the guard-from-A entry logic
-// specifically. dp is forced to 0 so the dp-relative body accesses land on the
-// numeric addresses declared above (the routine is DP_SENSITIVE = D is
-// caller-supplied $0600 in the field engine, but the arithmetic is
-// dp-agnostic; asm and C both run at dp=0 here, matching the $F533 spike).
+// This is the $F535 entry point, now spiked with its real behavior (loads
+// its own $C9 guard, exactly like the $16:F533 entry). dp is forced to 0 so
+// the dp-relative body accesses land on the numeric addresses declared
+// above (the routine is DP_SENSITIVE -- D is caller-supplied $0600 in the
+// field engine, but the arithmetic itself is dp-agnostic).
