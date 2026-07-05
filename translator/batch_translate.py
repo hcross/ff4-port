@@ -54,6 +54,8 @@ import subprocess
 # LLM providers (claude-cli, anthropic-sdk, openai-compat)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from llm_providers import create_provider, CallStats, DEFAULT_MODELS
+# Auto-curated few-shot exemplars (--dynamic-examples, opt-in, Wave 3 / Part B)
+from select_exemplars import select as select_exemplars, render_block as render_exemplars
 # Auto-spike helper (only imported lazily inside main when --validate is set,
 # to avoid the import cost when batches skip validation).
 GENERATE_SPIKE_PY = Path(__file__).resolve().parent / "generate_spike.py"
@@ -302,6 +304,14 @@ def main(argv: list[str] | None = None) -> int:
                     help="Skip routines whose asm has fewer than N "
                          "instructions. Useful to drop parser artefacts "
                          "(labels reported as instr_count=0).")
+    ap.add_argument("--dynamic-examples", action="store_true",
+                    help="Append up to 2 auto-selected L2+ exemplars from "
+                         "the same module (select_exemplars.py) after the "
+                         "static reverser_examples.md floor. The candidate "
+                         "isn't dispatched yet, so matching is module-only "
+                         "(no dispatch flags to compare against) -- see "
+                         "select_exemplars.py's own docstring for the full "
+                         "scoring rule used once a routine IS dispatched.")
     args = ap.parse_args(argv)
 
     # Per-provider default model
@@ -385,10 +395,19 @@ def main(argv: list[str] | None = None) -> int:
             n_delegate_done += 1
         else:
             user_prompt = build_user_prompt(r, "translate", prompts["task_template"])
+            examples_text = prompts["examples"]
+            if args.dynamic_examples:
+                picked = select_exemplars(r.module, [], n=2)
+                if picked:
+                    examples_text = (
+                        examples_text
+                        + f"\n\n## Dynamic exemplars (auto-selected, module: {r.module})\n\n"
+                        + render_exemplars(picked)
+                    )
             sys.stderr.write(f"[trace]   translate START prompt_len={len(user_prompt)}\n"); sys.stderr.flush()
             code, stats = provider.translate(
                 system=prompts["system"],
-                examples=prompts["examples"],
+                examples=examples_text,
                 user_prompt=user_prompt,
                 model=model,
                 max_output_tokens=args.max_output_tokens,
