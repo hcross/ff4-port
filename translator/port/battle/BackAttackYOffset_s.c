@@ -39,6 +39,7 @@ void BackAttackYOffset_s_c(Snes *snes) {
     }
 }
 
+// SPIKE_OUTPUT_REG: a, c, z, n, v
 // CONTRACT:
 //   inputs_reg:  a=8
 //   inputs_ram:  0x6CC0=1
@@ -48,3 +49,9 @@ void BackAttackYOffset_s_c(Snes *snes) {
 //   entry_mode:  mf=true, xf=false, dp=0x0, db=0x7E
 //   entry_flags: z=auto, n=auto
 // REVERSED_FUNCTION: btlgfx::BackAttackFlipX ($02:BB0B)
+//
+// No WRAM footprint at all -- SPIKE_OUTPUT_REG (added 2026-07-05) compares
+// the accumulator and NZVC directly instead of falling into the vacuous
+// "output_ram: none" fallback (see generate_spike.py and
+// translator/runs/D02BB0B_backattackyoffset_s_BLOCKED_vacuous_spike.txt for
+// why the previous "300/300 pass" was meaningless).

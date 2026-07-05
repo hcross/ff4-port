@@ -1,0 +1,11 @@
+BackAttackYOffset_s_c (D02BB0B) -- REAL register/flag comparison via new SPIKE_OUTPUT_REG mode
+generate_spike.py extended 2026-07-05 to support // SPIKE_OUTPUT_REG: a,c,z,n,v
+(compares snes->cpu->{a,c,z,n,v} directly instead of the vacuous 0==0 fallback
+that a WRAM-only harness produces for a routine with no WRAM footprint).
+Command: parity/ff4-spike-auto-backattackyoffset_s ../upstream/rom/ff4-jp1.sfc 2000
+
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 2000, fails: 0

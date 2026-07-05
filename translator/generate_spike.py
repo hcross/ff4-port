@@ -194,12 +194,47 @@ class Contract:
                                    # actually stores to an address missing from this list).
     dma: Optional[str] = None     # // CONTRACT: dma: — 'none' | 'manual-loop' | 'delegate',
                                    # or None if the field is absent (legacy contract).
+    output_regs: list = dataclasses.field(default_factory=list)
+                                   # // SPIKE_OUTPUT_REG: a, c, z, n, v — compare CPU
+                                   # register/flag state instead of a WRAM slot, for
+                                   # routines with no WRAM footprint at all (their only
+                                   # observable effect is the accumulator and/or NZVC —
+                                   # e.g. BackAttackYOffset_s/l, $02:BB0B/BB1A). Without
+                                   # this, a routine with no output_ram and no
+                                   # SPIKE_COMPARE:region falls into the vacuous
+                                   # "compare 0 to 0" fallback below, which always
+                                   # "passes" without observing anything (found
+                                   # 2026-07-05, see translator/runs/
+                                   # D02BB0B_backattackyoffset_s_BLOCKED_vacuous_spike.txt).
 
 
 _CONTRACT_RE = re.compile(r"//\s*CONTRACT:\s*\n((?:\s*//\s*[^\n]*\n)+)", re.MULTILINE)
 _CUSTOM_RE = re.compile(r"//\s*CUSTOM_SPIKE:\s*yes", re.IGNORECASE)
 _REGION_RE = re.compile(r"//\s*SPIKE_COMPARE:\s*region", re.IGNORECASE)
 _MASK_RE = re.compile(r"//\s*SPIKE_MASK:\s*([0-9A-Fa-fx,\s\-]+)", re.IGNORECASE)
+_OUTPUT_REG_RE = re.compile(r"//\s*SPIKE_OUTPUT_REG:\s*([A-Za-z,\s]+)", re.IGNORECASE)
+_VALID_OUTPUT_REGS = ("a", "x", "y", "c", "z", "v", "n")
+
+
+def parse_output_regs(text: str) -> list:
+    """Parse `// SPIKE_OUTPUT_REG: a, c, z, n, v` into an ordered, deduped list
+    of Cpu field names to compare after the run — the register/flag-output
+    mode, an alternative to `output_ram`/`SPIKE_COMPARE: region` for routines
+    whose only observable effect is the accumulator and/or NZVC flags."""
+    m = _OUTPUT_REG_RE.search(text)
+    if not m:
+        return []
+    out = []
+    for part in m.group(1).split(","):
+        part = part.strip().lower()
+        if not part:
+            continue
+        if part in _VALID_OUTPUT_REGS:
+            if part not in out:
+                out.append(part)
+        else:
+            sys.stderr.write(f"[gen] skipping unknown SPIKE_OUTPUT_REG entry: {part!r}\n")
+    return out
 
 
 def parse_mask_ranges(text: str) -> list:
@@ -445,6 +480,7 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
         mask_ranges=parse_mask_ranges(text),
         mmio_effects=mmio_effects,
         dma=dma,
+        output_regs=parse_output_regs(text),
     )
 
 
@@ -816,7 +852,35 @@ def render_spike(c_translation: str, contract: Contract) -> str:
     )
 
     # Output capture + comparison
-    if contract.compare_region:
+    if contract.output_regs:
+        # Register/flag-output mode: compare snes->cpu->{a,x,y,c,z,v,n} directly
+        # for routines with no WRAM footprint at all -- e.g. BackAttackYOffset_s/l
+        # ($02:BB0B/BB1A), whose only observable effect is the accumulator and
+        # NZVC. Both sides mutate the SAME Cpu struct in place (run_asm via the
+        # interpreter, the C body directly), so this only needs to read the
+        # declared fields at the two existing capture points, same as the
+        # output_ram slot mode below -- no new plumbing into run_asm/c_call.
+        _reg_c_type = {"a": "uint16_t", "x": "uint16_t", "y": "uint16_t",
+                       "c": "bool", "z": "bool", "v": "bool", "n": "bool"}
+        asm_lines, c_lines, cmp_terms, fmt_parts, fmt_args = [], [], [], [], []
+        for reg in contract.output_regs:
+            ty = _reg_c_type[reg]
+            asm_lines.append(f"        {ty} out_asm_{reg} = snes->cpu->{reg};")
+            c_lines.append(f"        {ty} out_c_{reg} = snes->cpu->{reg};")
+            cmp_terms.append(f"(out_asm_{reg} == out_c_{reg})")
+            fmt_parts.append(f"{reg}=asm:%d/c:%d")
+            fmt_args.append(f"out_asm_{reg}, out_c_{reg}")
+        capture_asm_output = "\n".join(asm_lines)
+        capture_c_output = "\n".join(c_lines)
+        compare_block = (
+            f"        bool ok = {' && '.join(cmp_terms)};\n"
+            "        if (!ok) {\n"
+            f'            printf("trial %4d : {" ".join(fmt_parts)}  FAIL\\n", trial, '
+            + ", ".join(fmt_args) + ");\n"
+            "            fails++;\n"
+            "        }"
+        )
+    elif contract.compare_region:
         # Region mode: snapshot the full WRAM after each run, then memcmp,
         # masking the stack page ($0100-$01FF) where the asm's push/pull frames
         # and run_emulated_func's return frame live (the inlined C never touches

@@ -52,10 +52,18 @@ void BackAttackYOffset_l_c(Snes *snes) {
     inject_cycles(snes, 0);
 }
 
+// SPIKE_OUTPUT_REG: a, c, z, n, v
 // CONTRACT:
 //   inputs_reg:  a=8
 //   inputs_ram:  0x6CC0=1
-//   output_reg:  a=8
+//   output_ram:  none
+//   mmio_effects: none
+//   dma:         none
 //   entry_mode:  mf=true, xf=false, dp=0x0, db=0x7E
 //   entry_flags: z=auto, n=auto
 // REVERSED_FUNCTION: battle::BackAttackYOffset_l ($02:BB1A)
+//
+// The old `output_reg: a=8` line was a phantom field the generator silently
+// ignored (never a real key in the Contract parser). SPIKE_OUTPUT_REG (added
+// 2026-07-05) is the real mechanism -- see BackAttackYOffset_s.c's identical
+// note and translator/runs/D02BB0B_backattackyoffset_s_BLOCKED_vacuous_spike.txt.
