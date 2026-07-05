@@ -51,7 +51,12 @@ desktop/ppmdiff
 desktop/trace_interp.txt
 desktop/trace_native.txt
 
-# Pre-made savestate seeds (provenance unconfirmed, see F2; large binaries)
+# Pre-made savestate seeds (provenance unconfirmed, see F2; large binaries).
+# The 11 catalogued fixtures live in the fixtures/ submodule (private repo,
+# see FIXTURES.md) and are unaffected by this pattern (a submodule is a
+# gitlink, not a set of ignorable files). This still matters for anything
+# NOT in that submodule, e.g. desktop/seed-*.lss (uncatalogued SDL scratch
+# saves, see FIXTURES.md's note on them).
 *.lss
 
 # ============================================================================

@@ -92,7 +92,7 @@ sdl: $(BIN_SDL)
 	./$(BIN_SDL) $(ROM)
 
 # M3 A/B oracle. SEED=path to a savestate; defaults to the healthy menu seed.
-SEED ?= ../004-menu.lss
+SEED ?= ../fixtures/004-menu.lss
 oracle: $(BIN_ORC)
 	./$(BIN_ORC) $(ROM) --load $(SEED) --frames $(FRAMES)
 

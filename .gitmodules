@@ -4,3 +4,6 @@
 [submodule "LakeSnes"]
 	path = LakeSnes
 	url = https://github.com/elzo-d/LakeSnes.git
+[submodule "fixtures"]
+	path = fixtures
+	url = ssh://git@192.168.196.254:222/hcross/ff4-fixtures.git

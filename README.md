@@ -173,6 +173,7 @@ cd ca65-bridge
 - [ADR-002](docs/adr/adr-002-lakesnes-upstream.md) — Use LakeSnes upstream unmodified
 - [ADR-003](docs/adr/adr-003-classification.md) — Binary classification: translate vs delegate
 - [ADR-004](docs/adr/adr-004-prompt-mutation-loop.md) — Automated, regression-gated prompt-mutation loop (P3; dormant, see the ADR's "Current status")
+- [ADR-005](docs/adr/adr-005-fixtures-private-submodule.md) — Reference savestates live in a private Gitea submodule, not gitignored local files
 - [ADR 0001](docs/adr/0001-desktop-validation-in-re-loop.md) — Desktop LakeSnes host as the mandatory RE validation gate (separate numbering track — see that file's own header)
 
 ## The 17 pitfalls

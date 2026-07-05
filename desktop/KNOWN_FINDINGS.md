@@ -56,7 +56,7 @@ identical translation unit; this finding is logged rather than silently fixed.
 (fresh seeds captured by this core, 2026-06-19) — root cause of the pre-made
 seeds still uncharacterised
 
-Loading the pre-made `.lss` seeds in `ff4-port/` and running:
+Loading the pre-made `.lss` seeds in `ff4-port/fixtures/` and running:
 
 | State | 120 frames |
 |-------|-----------|
@@ -256,7 +256,7 @@ via MMIO (`snes_write`/`snes_writeBBus`), NOT the WRAM array. Consequences:
 **Fix direction:** route every `$43xx`/`$420B` access through the bus
 (`snes_write(snes, 0x004340, …)` / `snes_writeBBus`) instead of `snes->ram[...]`,
 matching how a real `sta $43xx` reaches the DMA controller. Re-run
-`oracle-baseline SEED=../006-in-combat.lss` to confirm zero divergence after.
+`oracle-baseline SEED=../fixtures/006-in-combat.lss` to confirm zero divergence after.
 
 ## F7 — `_15c163` inverted map check + direct-page base — FIXED
 
