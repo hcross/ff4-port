@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -26,9 +27,61 @@
 /* ff4-gnw glue (ff4-gnw/main.c) */
 extern bool ff4_init(const uint8_t *rom_bytes, int rom_length);
 extern void ff4_step(void);
+extern void init_ctrl_emu(Snes *snes);
 extern void ff4_shutdown(void);
 extern void ff4_blit_to_lcd(uint16_t *lcd_fb);
+extern void ff4_set_button(int player, int button, bool pressed);
 extern Snes *ff4_snes;
+
+/* --interp-except-input: mirrors main_sdl.c's 'g' key exactly (host_keep_native)
+ * -- interpret everything EXCEPT the input-mirror writers and the field-menu
+ * text-window primitive, which stay native. Needed to headlessly reproduce an
+ * SDL repro captured with 'g' toggled on: --no-dispatch disables ALL dispatch
+ * including the input hooks, which is a DIFFERENT (already-documented, separate)
+ * "input dead in interpreter mode" bug -- not what 'g' actually does. */
+static int host_keep_native(uint32_t pc) {
+    return pc == 0x018010 || pc == 0x14fd03 || pc == 0x14fd00 || pc == 0x048004;
+}
+
+/* --press BUTTON:FRAME[:HOLD] (repeatable) — inject a scripted button press
+ * at a given 1-based frame number, held for HOLD frames (default 1). Button
+ * indices match main_sdl.c's key_to_button (same LakeSnes controller layout):
+ * B=0 Y=1 Select=2 Start=3 Up=4 Down=5 Left=6 Right=7 A=8 X=9 L=10 R=11. Lets
+ * a headless run reproduce an SDL repro (e.g. "open the menu") without a
+ * human at the keyboard. */
+#define PRESS_MAX 8
+static int      g_press_btn[PRESS_MAX];
+static int      g_press_frame[PRESS_MAX];
+static int      g_press_hold[PRESS_MAX];
+static int      g_press_n = 0;
+
+static int button_name_to_index(const char *name) {
+    static const char *names[12] = {
+        "b", "y", "select", "start", "up", "down", "left", "right",
+        "a", "x", "l", "r"
+    };
+    for (int i = 0; i < 12; i++)
+        if (!strcasecmp(name, names[i])) return i;
+    return -1;
+}
+
+static int parse_press_spec(const char *spec) {
+    if (g_press_n >= PRESS_MAX) return 0;
+    char buf[64];
+    strncpy(buf, spec, sizeof(buf) - 1);
+    buf[sizeof(buf) - 1] = '\0';
+    char *btn_s = strtok(buf, ":");
+    char *frame_s = btn_s ? strtok(NULL, ":") : NULL;
+    char *hold_s = frame_s ? strtok(NULL, ":") : NULL;
+    if (!btn_s || !frame_s) return 0;
+    int btn = button_name_to_index(btn_s);
+    if (btn < 0) return 0;
+    g_press_btn[g_press_n]   = btn;
+    g_press_frame[g_press_n] = atoi(frame_s);
+    g_press_hold[g_press_n]  = hold_s ? atoi(hold_s) : 1;
+    g_press_n++;
+    return 1;
+}
 
 /* dispatch counters + runtime toggle (ff4-gnw/dispatch_all.c) */
 extern uint32_t ff4_dispatch_hits;
@@ -120,7 +173,8 @@ static int dump_ppm(const char *path) {
 int main(int argc, char **argv) {
     if (argc < 2) {
         fprintf(stderr,
-            "usage: %s <rom.sfc> [--frames N] [--budget OPS] [--load f.lss] [--save f.lss] [--out f.ppm]\n",
+            "usage: %s <rom.sfc> [--frames N] [--budget OPS] [--load f.lss] [--save f.lss] [--out f.ppm]\n"
+            "       [--press BUTTON:FRAME[:HOLD]] (repeatable; BUTTON=start|select|a|b|x|y|l|r|up|down|left|right)\n",
             argv[0]);
         return 2;
     }
@@ -129,6 +183,7 @@ int main(int argc, char **argv) {
     uint64_t budget = 4000000;   /* CPU-opcode budget per frame; matches oracle_ab.c's
                                   * default so a hang trips the same signal here */
     const char *load_path = NULL, *save_path = NULL, *out_ppm = NULL;
+    int force_init_ctrl = 0;
 
     for (int i = 2; i < argc; i++) {
         if      (!strcmp(argv[i], "--frames") && i + 1 < argc) frames = atoi(argv[++i]);
@@ -141,6 +196,11 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--watch-wram") && i + 1 < argc) watch_wram_addr = (uint32_t)strtoul(argv[++i], NULL, 16);
         else if (!strcmp(argv[i], "--watch-wram-hi") && i + 1 < argc) watch_wram_hi = (uint32_t)strtoul(argv[++i], NULL, 16);
         else if (!strcmp(argv[i], "--exclude") && i + 1 < argc && g_excl_n < EXCL_MAX) g_excl[g_excl_n++] = (uint32_t)strtoul(argv[++i], NULL, 16);
+        else if (!strcmp(argv[i], "--press") && i + 1 < argc) {
+            if (!parse_press_spec(argv[++i])) { fprintf(stderr, "error: bad --press spec '%s' (want BUTTON:FRAME[:HOLD])\n", argv[i]); return 2; }
+        }
+        else if (!strcmp(argv[i], "--interp-except-input")) ff4_dispatch_filter = host_keep_native;
+        else if (!strcmp(argv[i], "--force-init-ctrl")) force_init_ctrl = 1;
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
     if (g_excl_n > 0) ff4_dispatch_filter = excl_filter;
@@ -163,6 +223,21 @@ int main(int argc, char **argv) {
         if (!ok) { fprintf(stderr, "error: snes_loadState rejected '%s' (%ld bytes)\n", load_path, st_len); free(rom); return 1; }
         printf("loaded state  : %s (%ld bytes) | pc=%02X:%04X\n",
                load_path, st_len, ff4_snes->cpu->k, ff4_snes->cpu->pc);
+        printf("  ram[0x1A05..0x1A1C] (ctrl remap table): ");
+        for (int i = 0; i < 24; i++) printf("%02X ", ff4_snes->ram[0x1A05 + i]);
+        printf("\n");
+        if (force_init_ctrl) {
+            /* Testing aid only: pre-2026-07-06 savestates were captured
+             * under a no-op InitCtrl stub, so their button-remap table
+             * ($1A05+) is baked in as all-zero -- a real fresh boot after
+             * the fix populates it correctly, but this lets an OLD
+             * savestate exercise the fixed ReadCtrl/UpdateCtrl algorithm
+             * for verification without a full recapture. */
+            init_ctrl_emu(ff4_snes);
+            printf("  [force-init-ctrl] ram[0x1A05..0x1A1C] now: ");
+            for (int i = 0; i < 24; i++) printf("%02X ", ff4_snes->ram[0x1A05 + i]);
+            printf("\n");
+        }
     }
 
     if (watch_wram_addr != (uint32_t)-1) {
@@ -175,6 +250,17 @@ int main(int argc, char **argv) {
     bool stalled = false;
     for (int i = 0; i < frames; i++) {
         watch_cur_frame = i + 1;
+        for (int p = 0; p < g_press_n; p++) {
+            int frame_1based = i + 1;
+            if (frame_1based == g_press_frame[p]) {
+                ff4_set_button(1, g_press_btn[p], true);
+                printf("  [press] frame=%-4d btn=%d DOWN\n", frame_1based, g_press_btn[p]);
+            }
+            if (frame_1based == g_press_frame[p] + g_press_hold[p]) {
+                ff4_set_button(1, g_press_btn[p], false);
+                printf("  [press] frame=%-4d btn=%d UP\n", frame_1based, g_press_btn[p]);
+            }
+        }
         if (trace_frame >= 0 && i == trace_frame - 1)
             ff4_dispatch_trace = dispatch_trace_cb;
         else if (trace_frame >= 0 && i == trace_frame)
