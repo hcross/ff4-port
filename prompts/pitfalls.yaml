@@ -311,3 +311,37 @@ pitfalls:
     delegate` for that routine over a fabricated translation. These phrases
     are mechanically detectable — a stub containing one is rejected or
     re-ported automatically rather than credited.
+- id: 18
+  title: A callee's own LDA/TAX (or TAY) reassigns the index register — don't assume it shares the caller's
+  body: |
+    When a bundled sub-routine's *own entry* does `LDA $nn / TAX` (or `TAY`),
+    every indexed access in the rest of that sub-routine's body uses the
+    freshly-loaded value, NOT whatever the caller passed in X/Y. Translating
+    the sub-routine's body by re-using the caller's already-computed index
+    variable (because it happens to have the same *type* of value — a slot
+    index) silently produces a plausible-looking, fully-compiling routine
+    that is nonetheless wrong for every caller whose index differs from the
+    value the callee's own TAX/TAY produces.
+
+    ```asm
+    ; caller has X = mon_x (slot*16)
+    dc52_sub:
+        lda $47         ; mon47 (entity index, NOT the slot*16 caller's X)
+        tax             ; X is now mon47 -- the caller's mon_x is gone
+        lda $EFC5,X     ; indexed by mon47, not mon_x
+    ```
+
+    The wrong translation keeps using the caller's slot index throughout the
+    ported body (`ram[0xEFC5 + mon_x]`) because it's already in scope and
+    looks right by inspection. The fix is to re-derive the value the
+    callee's own preamble actually produces (`ram[0xEFC5 + mon47]`) and use
+    that for every access inside the sub-routine, while any access that the
+    sub-routine reaches via a register the preamble did NOT reassign (e.g. Y
+    in this example) correctly keeps using the caller's value.
+
+    Discovered in `dc52_sub`/`dbda_sub` (both called from `UpdateMonsterAnim_c`,
+    $02:DDDC) — a spike stayed at ~65% failure through several rounds of
+    unrelated fixes before re-reading the ground-truth disassembly for these
+    two callees line by line surfaced this. Whenever a bundled routine calls
+    a same-file helper, check the helper's own preamble for a fresh LDA/TAX
+    or LDA/TAY before assuming it shares any register value with its caller.
