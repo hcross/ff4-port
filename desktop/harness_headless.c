@@ -49,7 +49,7 @@ static int host_keep_native(uint32_t pc) {
  * B=0 Y=1 Select=2 Start=3 Up=4 Down=5 Left=6 Right=7 A=8 X=9 L=10 R=11. Lets
  * a headless run reproduce an SDL repro (e.g. "open the menu") without a
  * human at the keyboard. */
-#define PRESS_MAX 8
+#define PRESS_MAX 64
 static int      g_press_btn[PRESS_MAX];
 static int      g_press_frame[PRESS_MAX];
 static int      g_press_hold[PRESS_MAX];
