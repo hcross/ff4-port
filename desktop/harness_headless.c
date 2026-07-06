@@ -185,6 +185,7 @@ int main(int argc, char **argv) {
     uint64_t budget = 4000000;   /* CPU-opcode budget per frame; matches oracle_ab.c's
                                   * default so a hang trips the same signal here */
     const char *load_path = NULL, *save_path = NULL, *out_ppm = NULL;
+    const char *dump_wram_path = NULL;
     int force_init_ctrl = 0;
 
     for (int i = 2; i < argc; i++) {
@@ -192,6 +193,7 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--budget") && i + 1 < argc) budget = strtoull(argv[++i], NULL, 0);
         else if (!strcmp(argv[i], "--load")   && i + 1 < argc) load_path = argv[++i];
         else if (!strcmp(argv[i], "--save")   && i + 1 < argc) save_path = argv[++i];
+        else if (!strcmp(argv[i], "--dump-wram") && i + 1 < argc) dump_wram_path = argv[++i];
         else if (!strcmp(argv[i], "--out")    && i + 1 < argc) out_ppm = argv[++i];
         else if (!strcmp(argv[i], "--no-dispatch")) ff4_dispatch_enabled = 0;
         else if (!strcmp(argv[i], "--trace-frame") && i + 1 < argc) trace_frame = atoi(argv[++i]);
@@ -296,6 +298,12 @@ int main(int argc, char **argv) {
 
     if (out_ppm && dump_ppm(out_ppm))
         printf("frame dumped   : %s (%dx%d)\n", out_ppm, LCD_W, LCD_H);
+
+    if (dump_wram_path) {
+        FILE *o = fopen(dump_wram_path, "wb");
+        if (o) { fwrite(ff4_snes->ram, 1, 0x20000, o); fclose(o);
+                 printf("wram dumped    : %s (131072 bytes)\n", dump_wram_path); }
+    }
 
     if (save_path) {
         int sz = snes_saveState(ff4_snes, NULL);
