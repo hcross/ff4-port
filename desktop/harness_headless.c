@@ -91,8 +91,10 @@ extern void (*ff4_dispatch_trace)(uint32_t pc);
 extern int  (*ff4_dispatch_filter)(uint32_t pc);
 
 static int trace_frame = -1;
+static int trace_all = 0;
+static int trace_cur_frame = 0;
 static void dispatch_trace_cb(uint32_t pc) {
-    printf("  hit: %06X\n", pc);
+    printf("  hit: %06X frame=%d\n", pc, trace_cur_frame);
 }
 
 /* --exclude PC (repeatable): force the listed routines to pure interpretation
@@ -201,6 +203,7 @@ int main(int argc, char **argv) {
         }
         else if (!strcmp(argv[i], "--interp-except-input")) ff4_dispatch_filter = host_keep_native;
         else if (!strcmp(argv[i], "--force-init-ctrl")) force_init_ctrl = 1;
+        else if (!strcmp(argv[i], "--trace-all")) trace_all = 1;
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
     if (g_excl_n > 0) ff4_dispatch_filter = excl_filter;
@@ -261,7 +264,10 @@ int main(int argc, char **argv) {
                 printf("  [press] frame=%-4d btn=%d UP\n", frame_1based, g_press_btn[p]);
             }
         }
-        if (trace_frame >= 0 && i == trace_frame - 1)
+        trace_cur_frame = i + 1;
+        if (trace_all)
+            ff4_dispatch_trace = dispatch_trace_cb;
+        else if (trace_frame >= 0 && i == trace_frame - 1)
             ff4_dispatch_trace = dispatch_trace_cb;
         else if (trace_frame >= 0 && i == trace_frame)
             ff4_dispatch_trace = NULL;
