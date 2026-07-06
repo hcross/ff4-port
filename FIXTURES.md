@@ -35,8 +35,9 @@ the spikes, and SDL inspection.
 | `fixtures/009-first-free-roam.lss` | Player's first **free-roam** instant (first control) | `00:9133` | Field control/movement baseline (captured in SDL 2026-06-30) | — |
 | `fixtures/010-castle-exit-anim.lss` | Castle exit animation (per filename; capture context not recorded) | `00:9135` | Undocumented — added to this catalog 2026-07-03, no recorded primary use or findings link | — |
 | `fixtures/011-worldmap-entry.lss` | Worldmap entry (per filename; capture context not recorded) | `00:9133` | Undocumented — added to this catalog 2026-07-03, no recorded primary use or findings link | — |
+| `fixtures/012-first-worldmap-combat.lss` | First random encounter triggered near Baron castle on the world map, captured right before the SPC-handshake black-screen freeze | `00:9144` | Combat black-screen repro (fixed, see `ExecSound_ext_stub` fix, ff4-gnw `450cfe8`) ; now also the reference fixture for the physical-attack-always-misses and monster-damage-oversized bugs under investigation (native-dispatch-only) | combat black-screen (fixed) |
 
-> `desktop/seed-*.lss` (7 files) are a **separate, uncatalogued** set of ad
+> `desktop/seed-*.lss` (8 files) are a **separate, uncatalogued** set of ad
 > hoc saves from interactive SDL sessions (`--save-prefix`) — not part of
 > this catalogue, not in the `fixtures/` submodule, still plain gitignored
 > local scratch. Don't confuse the two; if one of them turns out to matter
