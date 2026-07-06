@@ -206,6 +206,19 @@ class Contract:
                                    # "passes" without observing anything (found
                                    # 2026-07-05, see translator/runs/
                                    # D02BB0B_backattackyoffset_s_BLOCKED_vacuous_spike.txt).
+    extra_src: list = dataclasses.field(default_factory=list)
+                                   # // SPIKE_EXTRA_SRC: ../../ff4-gnw/battle/Add16.c, ...
+                                   # additional ff4-gnw .c files (paths relative to
+                                   # parity/) to link into this spike's Makefile rule,
+                                   # for a translation that calls a SIBLING already-
+                                   # dispatched routine (e.g. Mult16_c, Div16_c) by name
+                                   # rather than through an auto-emittable "_emu"
+                                   # delegation wrapper. Without this, such a call is an
+                                   # unresolved symbol at link time (parity/Makefile's
+                                   # $(CORE_SRC) is LakeSnes-only, never ff4-gnw sources)
+                                   # -- this was the exact reason RandXA_c (which calls
+                                   # Div16_c directly) sat at "spike does not compile
+                                   # (inter-routine dependency)" for months (D038379).
 
 
 _CONTRACT_RE = re.compile(r"//\s*CONTRACT:\s*\n((?:\s*//\s*[^\n]*\n)+)", re.MULTILINE)
@@ -214,6 +227,22 @@ _REGION_RE = re.compile(r"//\s*SPIKE_COMPARE:\s*region", re.IGNORECASE)
 _MASK_RE = re.compile(r"//\s*SPIKE_MASK:\s*([0-9A-Fa-fx,\s\-]+)", re.IGNORECASE)
 _OUTPUT_REG_RE = re.compile(r"//\s*SPIKE_OUTPUT_REG:\s*([A-Za-z,\s]+)", re.IGNORECASE)
 _VALID_OUTPUT_REGS = ("a", "x", "y", "c", "z", "v", "n")
+_EXTRA_SRC_RE = re.compile(r"//\s*SPIKE_EXTRA_SRC:\s*([^\n]+)", re.IGNORECASE)
+
+
+def parse_extra_src(text: str) -> list:
+    """Parse `// SPIKE_EXTRA_SRC: path1, path2, ...` into a deduped, ordered
+    list of extra source files (paths as written, relative to parity/) to
+    link into this spike's Makefile rule alongside $(CORE_SRC)."""
+    m = _EXTRA_SRC_RE.search(text)
+    if not m:
+        return []
+    out = []
+    for part in m.group(1).split(","):
+        part = part.strip()
+        if part and part not in out:
+            out.append(part)
+    return out
 
 
 def parse_output_regs(text: str) -> list:
@@ -481,6 +510,7 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
         mmio_effects=mmio_effects,
         dma=dma,
         output_regs=parse_output_regs(text),
+        extra_src=parse_extra_src(text),
     )
 
 
@@ -579,8 +609,15 @@ SPIKE_SKELETON = r"""// AUTO-GENERATED parity spike for {module}::{func_name} @ 
 // Forward declarations for helpers defined later in this TU but used by the
 // inlined LLM translation below.
 static void run_emulated_func(Snes *snes, uint32_t pc24);
-static inline uint16_t read16(const uint8_t *ram, int addr);
-static inline void write16(uint8_t *ram, int addr, uint16_t v);
+// External linkage (not "static inline"): a SPIKE_EXTRA_SRC file (e.g. an
+// already-dispatched sibling ff4-gnw/*.c called directly, not via an
+// auto-emitted _emu wrapper) compiles as its own translation unit and needs
+// a real symbol to link against -- ff4-gnw's own read16/write16 (in
+// ff4_helpers.c) are implicitly declared (int) by such callers, same as on
+// the device. Only one spike .c ever defines these per binary, so external
+// linkage can't collide.
+uint16_t read16(const uint8_t *ram, int addr);
+void write16(uint8_t *ram, int addr, uint16_t v);
 
 // ---------------------------------------------------------------------------
 // Auto-emitted *_emu delegation helpers (one per stub referenced by the
@@ -655,10 +692,10 @@ static void snap_restore(const Snap *s, Snes *snes) {{
     c->irqWanted=s->irqWanted; c->nmiWanted=s->nmiWanted;
 }}
 
-static inline uint16_t read16(const uint8_t *ram, int addr) {{
+uint16_t read16(const uint8_t *ram, int addr) {{
     return (uint16_t)(ram[addr] | (ram[addr + 1] << 8));
 }}
-static inline void write16(uint8_t *ram, int addr, uint16_t v) {{
+void write16(uint8_t *ram, int addr, uint16_t v) {{
     ram[addr] = v & 0xFF; ram[addr + 1] = (v >> 8) & 0xFF;
 }}
 
@@ -983,17 +1020,22 @@ BIN_AUTO_{upper} := ff4-spike-auto-{slug}
 """
 
 
-def add_makefile_rule(name: str, suffix: str = "auto") -> str:
-    """Append a build rule for the auto spike. Returns the binary name."""
+def add_makefile_rule(name: str, suffix: str = "auto", extra_src: list = None) -> str:
+    """Append a build rule for the auto spike. Returns the binary name.
+
+    extra_src: additional source files (e.g. sibling ff4-gnw .c files a
+    translation calls directly, like Mult16_c/Div16_c) to link alongside
+    $(CORE_SRC) -- see Contract.extra_src / SPIKE_EXTRA_SRC."""
     slug = name.lower()
     bin_name = f"ff4-spike-{suffix}-{slug}"
     text = PARITY_MAKEFILE.read_text()
     if bin_name in text:
         return bin_name
+    extra = " " + " ".join(extra_src) if extra_src else ""
     rule = f"""
 # AUTO ({suffix}): spike for {name}
-{bin_name}: src/spike_{slug}_{suffix}.c $(CORE_SRC)
-\t$(CC) $(CFLAGS) -o $@ src/spike_{slug}_{suffix}.c $(CORE_SRC) $(LDFLAGS)
+{bin_name}: src/spike_{slug}_{suffix}.c $(CORE_SRC){extra}
+\t$(CC) $(CFLAGS) -o $@ src/spike_{slug}_{suffix}.c $(CORE_SRC){extra} $(LDFLAGS)
 """
     PARITY_MAKEFILE.write_text(text + rule)
     return bin_name
@@ -1077,7 +1119,7 @@ def main(argv: list[str] | None = None) -> int:
     suffix = args.spike_suffix
     spike_src = PARITY_SRC / f"spike_{contract.func_name.lower()}_{suffix}.c"
     spike_src.write_text(render_spike(text, contract))
-    bin_name = add_makefile_rule(contract.func_name, suffix)
+    bin_name = add_makefile_rule(contract.func_name, suffix, contract.extra_src)
     print(f"[gen] wrote {spike_src.relative_to(ROOT)} (target {bin_name})")
 
     if args.build:

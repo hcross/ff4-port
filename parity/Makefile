@@ -5,7 +5,15 @@ LAKESNES := ../LakeSnes
 ROM       := ../upstream/rom/ff4-jp1.sfc
 
 CC       := clang
-CFLAGS   := -O2 -Wall -Wextra -std=c11 -I$(LAKESNES) -I$(LAKESNES)/snes -I$(LAKESNES)/zip
+# Same warning contract as ff4-port/desktop/Makefile and the retro-go-sd
+# device build: ff4-gnw .c files linked in as SPIKE_EXTRA_SRC call sibling
+# helpers (read16/write16, *_emu delegates) via implicit (int) declarations
+# by design (they don't include ff4_helpers.h) -- reproduce that here too,
+# or those files fail to compile as hard errors instead of the warnings
+# the device build tolerates.
+CFLAGS   := -O2 -Wall -Wextra -std=c11 -I$(LAKESNES) -I$(LAKESNES)/snes -I$(LAKESNES)/zip \
+            -Wno-implicit-function-declaration -Wno-incompatible-pointer-types \
+            -Wno-int-conversion -Wno-strict-aliasing
 LDFLAGS  :=
 
 CORE_SRC := \
@@ -5740,3 +5748,7 @@ ff4-spike-auto-initmonsteranim: src/spike_initmonsteranim_auto.c $(CORE_SRC)
 ff4-spike-auto-updatebg2scrollskip: src/spike_updatebg2scrollskip_auto.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_updatebg2scrollskip_auto.c $(CORE_SRC) $(LDFLAGS)
 
+
+# AUTO (auto): spike for CalcDmg
+ff4-spike-auto-calcdmg: src/spike_calcdmg_auto.c $(CORE_SRC) ../../ff4-gnw/battle/Add16.c ../../ff4-gnw/battle/Mult16.c ../../ff4-gnw/battle/Div16.c
+	$(CC) $(CFLAGS) -o $@ src/spike_calcdmg_auto.c $(CORE_SRC) ../../ff4-gnw/battle/Add16.c ../../ff4-gnw/battle/Mult16.c ../../ff4-gnw/battle/Div16.c $(LDFLAGS)
