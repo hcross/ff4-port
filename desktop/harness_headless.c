@@ -32,6 +32,7 @@ extern void ff4_shutdown(void);
 extern void ff4_blit_to_lcd(uint16_t *lcd_fb);
 extern void ff4_set_button(int player, int button, bool pressed);
 extern Snes *ff4_snes;
+extern int ff4_ppu_render_enabled;   /* frameskip hook (ff4-gnw/snes/ppu.c) */
 
 /* --interp-except-input: mirrors main_sdl.c's 'g' key exactly (host_keep_native)
  * -- interpret everything EXCEPT the input-mirror writers and the field-menu
@@ -187,6 +188,12 @@ int main(int argc, char **argv) {
     const char *load_path = NULL, *save_path = NULL, *out_ppm = NULL;
     const char *dump_wram_path = NULL;
     int force_init_ctrl = 0;
+    int render_every = 1;   /* --render-every K: frameskip validation -- render
+                             * only frames where (frame % K) == K-1, mirroring
+                             * the device loop's emulate-N-render-1 pattern.
+                             * WRAM/emulation state must be identical to K=1
+                             * by construction (ppu_runLine only skips the
+                             * pixel loop; sprite evaluation still runs). */
 
     for (int i = 2; i < argc; i++) {
         if      (!strcmp(argv[i], "--frames") && i + 1 < argc) frames = atoi(argv[++i]);
@@ -206,6 +213,10 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--interp-except-input")) ff4_dispatch_filter = host_keep_native;
         else if (!strcmp(argv[i], "--force-init-ctrl")) force_init_ctrl = 1;
         else if (!strcmp(argv[i], "--trace-all")) trace_all = 1;
+        else if (!strcmp(argv[i], "--render-every") && i + 1 < argc) {
+            render_every = atoi(argv[++i]);
+            if (render_every < 1) { fprintf(stderr, "error: --render-every wants K >= 1\n"); return 2; }
+        }
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
     if (g_excl_n > 0) ff4_dispatch_filter = excl_filter;
@@ -273,6 +284,7 @@ int main(int argc, char **argv) {
             ff4_dispatch_trace = dispatch_trace_cb;
         else if (trace_frame >= 0 && i == trace_frame)
             ff4_dispatch_trace = NULL;
+        ff4_ppu_render_enabled = (render_every == 1) || (i % render_every == render_every - 1);
         if (!snes_runFrameBounded(ff4_snes, budget)) {
             fprintf(stderr, "error: stalled at frame %d (opcode budget %llu exhausted — hang)\n",
                     i + 1, (unsigned long long)budget);
