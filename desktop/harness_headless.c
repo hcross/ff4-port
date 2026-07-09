@@ -32,7 +32,10 @@ extern void ff4_shutdown(void);
 extern void ff4_blit_to_lcd(uint16_t *lcd_fb);
 extern void ff4_set_button(int player, int button, bool pressed);
 extern Snes *ff4_snes;
-extern int ff4_ppu_render_enabled;   /* frameskip hook (ff4-gnw/snes/ppu.c) */
+/* Frameskip hook (ff4-gnw/snes/ppu.c). Weak DEFINITION, not extern: lets
+ * this harness also link against pre-hook ff4-gnw checkouts (A/B archaeology
+ * builds) -- ppu.c's strong definition wins whenever it exists. */
+int ff4_ppu_render_enabled __attribute__((weak)) = 1;
 
 /* --interp-except-input: mirrors main_sdl.c's 'g' key exactly (host_keep_native)
  * -- interpret everything EXCEPT the input-mirror writers and the field-menu
@@ -194,6 +197,13 @@ int main(int argc, char **argv) {
                              * WRAM/emulation state must be identical to K=1
                              * by construction (ppu_runLine only skips the
                              * pixel loop; sprite evaluation still runs). */
+    int fb_crc = 0;         /* --fb-crc: print the blitted framebuffer's crc32
+                             * EVERY frame. Purpose: transient-artifact hunts --
+                             * the final-frame PPM proves nothing about frames
+                             * in between; diffing per-frame CRC logs between
+                             * two builds pins the exact frames where their
+                             * rendering diverges (found 2026-07-09 while
+                             * chasing a fleeting battle-menu artifact). */
 
     for (int i = 2; i < argc; i++) {
         if      (!strcmp(argv[i], "--frames") && i + 1 < argc) frames = atoi(argv[++i]);
@@ -217,6 +227,7 @@ int main(int argc, char **argv) {
             render_every = atoi(argv[++i]);
             if (render_every < 1) { fprintf(stderr, "error: --render-every wants K >= 1\n"); return 2; }
         }
+        else if (!strcmp(argv[i], "--fb-crc")) fb_crc = 1;
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
     if (g_excl_n > 0) ff4_dispatch_filter = excl_filter;
@@ -295,6 +306,12 @@ int main(int argc, char **argv) {
             printf("  frame %4d | pc=%02X:%04X | hits=%u misses=%u\n",
                    i + 1, ff4_snes->cpu->k, ff4_snes->cpu->pc,
                    ff4_dispatch_hits, ff4_dispatch_misses);
+        if (fb_crc) {
+            static uint16_t fbc[320 * 240];
+            memset(fbc, 0, sizeof(fbc));
+            ff4_blit_to_lcd(fbc);
+            printf("FBCRC %d %08X\n", i + 1, crc32((const uint8_t *)fbc, sizeof(fbc)));
+        }
     }
 
     uint32_t wram_crc = crc32(ff4_snes->ram, sizeof(ff4_snes->ram));
