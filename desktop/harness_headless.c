@@ -32,10 +32,15 @@ extern void ff4_shutdown(void);
 extern void ff4_blit_to_lcd(uint16_t *lcd_fb);
 extern void ff4_set_button(int player, int button, bool pressed);
 extern Snes *ff4_snes;
-/* Frameskip hook (ff4-gnw/snes/ppu.c). Weak DEFINITION, not extern: lets
- * this harness also link against pre-hook ff4-gnw checkouts (A/B archaeology
- * builds) -- ppu.c's strong definition wins whenever it exists. */
-int ff4_ppu_render_enabled __attribute__((weak)) = 1;
+/* Weak DEFINITIONS, not externs: let this harness also link against older
+ * ff4-gnw checkouts that predate these hooks (A/B archaeology builds) --
+ * the ff4-gnw strong definitions win whenever they exist. On a pre-hook
+ * checkout the affected flags (--render-every, --watch-wram) silently
+ * degrade to no-ops, which is fine for archaeology runs. */
+int ff4_ppu_render_enabled __attribute__((weak)) = 1;            /* snes/ppu.c  */
+void (*snes_wram_write_hook)(uint32_t, uint8_t, void *)
+    __attribute__((weak)) = 0;                                   /* snes/snes.c */
+void *snes_wram_write_hook_ctx __attribute__((weak)) = 0;        /* snes/snes.c */
 
 /* --interp-except-input: mirrors main_sdl.c's 'g' key exactly (host_keep_native)
  * -- interpret everything EXCEPT the input-mirror writers and the field-menu
@@ -204,6 +209,10 @@ int main(int argc, char **argv) {
                              * two builds pins the exact frames where their
                              * rendering diverges (found 2026-07-09 while
                              * chasing a fleeting battle-menu artifact). */
+    int out_every = 0;      /* --out-every N PREFIX: dump PREFIX%04d.ppm every
+                             * N frames -- exhaustive visual sweep companion to
+                             * --fb-crc for the same transient-artifact hunts. */
+    const char *out_every_prefix = NULL;
 
     for (int i = 2; i < argc; i++) {
         if      (!strcmp(argv[i], "--frames") && i + 1 < argc) frames = atoi(argv[++i]);
@@ -228,6 +237,11 @@ int main(int argc, char **argv) {
             if (render_every < 1) { fprintf(stderr, "error: --render-every wants K >= 1\n"); return 2; }
         }
         else if (!strcmp(argv[i], "--fb-crc")) fb_crc = 1;
+        else if (!strcmp(argv[i], "--out-every") && i + 2 < argc) {
+            out_every = atoi(argv[++i]);
+            out_every_prefix = argv[++i];
+            if (out_every < 1) { fprintf(stderr, "error: --out-every wants N >= 1 and a path prefix\n"); return 2; }
+        }
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
     if (g_excl_n > 0) ff4_dispatch_filter = excl_filter;
@@ -311,6 +325,11 @@ int main(int argc, char **argv) {
             memset(fbc, 0, sizeof(fbc));
             ff4_blit_to_lcd(fbc);
             printf("FBCRC %d %08X\n", i + 1, crc32((const uint8_t *)fbc, sizeof(fbc)));
+        }
+        if (out_every && ((i + 1) % out_every) == 0) {
+            char path[1024];
+            snprintf(path, sizeof(path), "%s%04d.ppm", out_every_prefix, i + 1);
+            dump_ppm(path);
         }
     }
 
