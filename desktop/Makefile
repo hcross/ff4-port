@@ -82,6 +82,13 @@ input_probe: input_probe.c $(GNW_SRC)
 wram_diff: wram_diff.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ wram_diff.c $(GNW_SRC) $(LDFLAGS)
 
+# Device-state exfiltration: build a .lss from a GDB capture of the live G&W
+# (see state_inject.c header). CAPTURE_DIR must hold the *.bin dumps and the
+# device_state.inc emitted by the capture GDB script.
+CAPTURE_DIR ?= /tmp/ff4cap
+ff4-state-inject: state_inject.c $(GNW_SRC) $(CAPTURE_DIR)/device_state.inc
+	$(CC) $(CFLAGS) -I$(CAPTURE_DIR) -o $@ state_inject.c $(GNW_SRC) $(LDFLAGS)
+
 wram_diff_dbg: wram_diff.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -DDEBUG_DCED -o $@ wram_diff.c $(GNW_SRC) $(LDFLAGS)
 
