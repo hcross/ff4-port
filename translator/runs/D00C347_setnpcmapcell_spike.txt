@@ -1,0 +1,8 @@
+[gen] ca65-bridge could not resolve field::SetNpcMapCell; using REVERSED_FUNCTION $00:C347 (port name differs from asm label).
+SetNpcMapCell asm vs C : 5000 trials
+[gen] wrote parity/src/spike_setnpcmapcell_auto.c (target ff4-spike-auto-setnpcmapcell)
+[gen] built parity/ff4-spike-auto-setnpcmapcell
+Loaded LoROM rom (NTSC)
+
+=== summary === trials: 5000, fails: 0
+

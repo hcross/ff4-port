@@ -1,0 +1,8 @@
+[gen] ca65-bridge could not resolve field::SetNpcMapPtr; using REVERSED_FUNCTION $00:C357 (port name differs from asm label).
+SetNpcMapPtr asm vs C : 5000 trials
+[gen] wrote parity/src/spike_setnpcmapptr_auto.c (target ff4-spike-auto-setnpcmapptr)
+[gen] built parity/ff4-spike-auto-setnpcmapptr
+Loaded LoROM rom (NTSC)
+
+=== summary === trials: 5000, fails: 0
+

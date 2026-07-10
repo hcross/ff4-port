@@ -5756,3 +5756,15 @@ ff4-spike-auto-calcdmg: src/spike_calcdmg_auto.c $(CORE_SRC) ../../ff4-gnw/battl
 # AUTO (auto): spike for CalcObjScreenPos
 ff4-spike-auto-calcobjscreenpos: src/spike_calcobjscreenpos_auto.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_calcobjscreenpos_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for SetNpcMapPtr
+ff4-spike-auto-setnpcmapptr: src/spike_setnpcmapptr_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_setnpcmapptr_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for ClearNpcMapCell
+ff4-spike-auto-clearnpcmapcell: src/spike_clearnpcmapcell_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_clearnpcmapcell_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for SetNpcMapCell
+ff4-spike-auto-setnpcmapcell: src/spike_setnpcmapcell_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_setnpcmapcell_auto.c $(CORE_SRC) $(LDFLAGS)
