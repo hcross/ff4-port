@@ -1,0 +1,16 @@
+[gen] wrote parity/src/spike_updatelocaltilesentry_auto.c (target ff4-spike-auto-updatelocaltilesentry)
+[gen] built parity/ff4-spike-auto-updatelocaltilesentry
+UpdateLocalTilesEntry asm vs C : 5000 trials (target $00:9F6E)
+=== summary === trials: 5000, fails: 0
+
+Notes:
+- Port file is named UpdateLocalTilesEntry.c on purpose: generate_spike.py
+  resolves the spike target from the FILE stem via ca65-bridge and trusts it
+  over the REVERSED_FUNCTION line; the asm label `UpdateLocalTiles` resolves
+  to the annotated $00:9F6C, which is the off-by-2 WRONG address (a run built
+  from that name fails 4975/5000 with the asm side executing garbage).
+- In-game (009-first-free-roam, 300 frames, canonical excludes): dispatch
+  hits 15000/8400 miss with 009F6E firing ~2/frame; FB and OAM byte-identical
+  to the pure interpreter; WRAM divergence set is the pre-existing
+  stack-residue class (verdict "divergence" unchanged in regress.sh, 7/7
+  fixtures unchanged).
