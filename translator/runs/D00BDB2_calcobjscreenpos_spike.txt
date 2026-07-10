@@ -1,0 +1,2 @@
+[gen] ca65-bridge could not resolve field::CalcObjScreenPos; using REVERSED_FUNCTION $00:BDB2 (port name differs from asm label).
+[gen] wrote parity/src/spike_calcobjscreenpos_auto.c (target ff4-spike-auto-calcobjscreenpos)

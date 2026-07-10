@@ -5752,3 +5752,7 @@ ff4-spike-auto-updatebg2scrollskip: src/spike_updatebg2scrollskip_auto.c $(CORE_
 # AUTO (auto): spike for CalcDmg
 ff4-spike-auto-calcdmg: src/spike_calcdmg_auto.c $(CORE_SRC) ../../ff4-gnw/battle/Add16.c ../../ff4-gnw/battle/Mult16.c ../../ff4-gnw/battle/Div16.c
 	$(CC) $(CFLAGS) -o $@ src/spike_calcdmg_auto.c $(CORE_SRC) ../../ff4-gnw/battle/Add16.c ../../ff4-gnw/battle/Mult16.c ../../ff4-gnw/battle/Div16.c $(LDFLAGS)
+
+# AUTO (auto): spike for CalcObjScreenPos
+ff4-spike-auto-calcobjscreenpos: src/spike_calcobjscreenpos_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_calcobjscreenpos_auto.c $(CORE_SRC) $(LDFLAGS)
