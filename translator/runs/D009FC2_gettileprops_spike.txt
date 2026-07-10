@@ -1,0 +1,5 @@
+[gen] ca65-bridge could not resolve field::GetTileProps; using REVERSED_FUNCTION $00:9FC2 (port name differs from asm label).
+[gen] wrote parity/src/spike_gettileprops_auto.c (target ff4-spike-auto-gettileprops)
+[gen] built parity/ff4-spike-auto-gettileprops
+GetTileProps asm vs C : 5000 trials
+=== summary === trials: 5000, fails: 0

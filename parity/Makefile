@@ -5768,3 +5768,7 @@ ff4-spike-auto-clearnpcmapcell: src/spike_clearnpcmapcell_auto.c $(CORE_SRC)
 # AUTO (auto): spike for SetNpcMapCell
 ff4-spike-auto-setnpcmapcell: src/spike_setnpcmapcell_auto.c $(CORE_SRC)
 	$(CC) $(CFLAGS) -o $@ src/spike_setnpcmapcell_auto.c $(CORE_SRC) $(LDFLAGS)
+
+# AUTO (auto): spike for GetTileProps
+ff4-spike-auto-gettileprops: src/spike_gettileprops_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_gettileprops_auto.c $(CORE_SRC) $(LDFLAGS)
