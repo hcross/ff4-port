@@ -5776,3 +5776,7 @@ ff4-spike-auto-gettileprops: src/spike_gettileprops_auto.c $(CORE_SRC)
 # AUTO (auto): spike for UpdateLocalTilesEntry
 ff4-spike-auto-updatelocaltilesentry: src/spike_updatelocaltilesentry_auto.c $(CORE_SRC) ../../ff4-gnw/field/GetTileProps.c
 	$(CC) $(CFLAGS) -o $@ src/spike_updatelocaltilesentry_auto.c $(CORE_SRC) ../../ff4-gnw/field/GetTileProps.c $(LDFLAGS)
+
+# AUTO (auto): spike for ResetAllSprites
+ff4-spike-auto-resetallsprites: src/spike_resetallsprites_auto.c $(CORE_SRC)
+	$(CC) $(CFLAGS) -o $@ src/spike_resetallsprites_auto.c $(CORE_SRC) $(LDFLAGS)
