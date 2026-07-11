@@ -202,6 +202,7 @@ int main(int argc, char **argv) {
                              * WRAM/emulation state must be identical to K=1
                              * by construction (ppu_runLine only skips the
                              * pixel loop; sprite evaluation still runs). */
+    int audio_crc = 0;   /* --audio-crc: per-frame CRC of the DSP output (APU evidence) */
     int fb_crc = 0;         /* --fb-crc: print the blitted framebuffer's crc32
                              * EVERY frame. Purpose: transient-artifact hunts --
                              * the final-frame PPM proves nothing about frames
@@ -237,6 +238,7 @@ int main(int argc, char **argv) {
             if (render_every < 1) { fprintf(stderr, "error: --render-every wants K >= 1\n"); return 2; }
         }
         else if (!strcmp(argv[i], "--fb-crc")) fb_crc = 1;
+        else if (!strcmp(argv[i], "--audio-crc")) audio_crc = 1;
         else if (!strcmp(argv[i], "--out-every") && i + 2 < argc) {
             out_every = atoi(argv[++i]);
             out_every_prefix = argv[++i];
@@ -320,6 +322,18 @@ int main(int argc, char **argv) {
             printf("  frame %4d | pc=%02X:%04X | hits=%u misses=%u\n",
                    i + 1, ff4_snes->cpu->k, ff4_snes->cpu->pc,
                    ff4_dispatch_hits, ff4_dispatch_misses);
+        if (audio_crc) {
+            /* Pull one frame of DSP output through the same public API the
+             * device uses (catchup + resample) and CRC it: the byte-exact
+             * audio evidence channel for APU/DSP optimizations -- FB/WRAM
+             * CRCs are structurally deaf to the sound path. 534 stereo
+             * samples = the native NTSC per-frame count (no resampling
+             * ambiguity). */
+            static int16_t aud[534 * 2];
+            memset(aud, 0, sizeof(aud));
+            snes_setSamples(ff4_snes, aud, 534);
+            printf("AUDCRC %d %08X\n", i + 1, crc32((const uint8_t *)aud, sizeof(aud)));
+        }
         if (fb_crc) {
             static uint16_t fbc[320 * 240];
             memset(fbc, 0, sizeof(fbc));
