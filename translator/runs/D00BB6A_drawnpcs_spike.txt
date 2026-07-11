@@ -1,0 +1,15 @@
+=== D00BB6A DrawNpcs ($00:BB6A) — runtime-equivalence spike ===
+date: 2026-07-11
+port: translator/port/field/DrawNpcsEntry.c  (production: ff4-gnw/field/DrawNpcs.c)
+callees: CalcObjScreenPos_c ($00:BDB2 native L2, linked via SPIKE_EXTRA_SRC); next-sprite $88E2 inlined
+entry: real $00:BB6A (disasm off-by-2 vs $BB68; all 6 callers = 20 6A BB; 20 68 BB absent from ROM)
+compare: SPIKE_COMPARE region (full WRAM, stack-masked)
+
+--- run: generate_spike.py port/field/DrawNpcsEntry.c --build --run 5000 ---
+DrawNpcsEntry asm vs C : 5000 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 5000, fails: 0
+
