@@ -23,6 +23,7 @@
 #include <stdbool.h>
 
 #include "snes/snes.h"   /* Snes, snes_loadState/saveState */
+#include "snes/ppu.h"    /* ppu->vramGen (--vramgen-delta diagnostics) */
 
 /* ff4-gnw glue (ff4-gnw/main.c) */
 extern bool ff4_init(const uint8_t *rom_bytes, int rom_length);
@@ -203,6 +204,15 @@ int main(int argc, char **argv) {
                              * by construction (ppu_runLine only skips the
                              * pixel loop; sprite evaluation still runs). */
     int audio_crc = 0;   /* --audio-crc: per-frame CRC of the DSP output (APU evidence) */
+    int walk_square_start = 0;  /* --walk-square START: from frame START on,
+                             * loop the device's FF4_AUTO_WALK square (30
+                             * frames per DPAD direction) forever. 0 = off. */
+    int vramgen_delta = 0;  /* --vramgen-delta: print the per-frame VRAM-write
+                             * generation delta (ppu->vramGen). Any non-zero
+                             * frame invalidates the WHOLE R2b decoded-tile-row
+                             * cache, so this is the direct evidence channel
+                             * for cache-invalidation hypotheses (idle vs
+                             * walking scroll workloads). */
     int fb_crc = 0;         /* --fb-crc: print the blitted framebuffer's crc32
                              * EVERY frame. Purpose: transient-artifact hunts --
                              * the final-frame PPM proves nothing about frames
@@ -239,6 +249,8 @@ int main(int argc, char **argv) {
         }
         else if (!strcmp(argv[i], "--fb-crc")) fb_crc = 1;
         else if (!strcmp(argv[i], "--audio-crc")) audio_crc = 1;
+        else if (!strcmp(argv[i], "--vramgen-delta")) vramgen_delta = 1;
+        else if (!strcmp(argv[i], "--walk-square") && i + 1 < argc) walk_square_start = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--out-every") && i + 2 < argc) {
             out_every = atoi(argv[++i]);
             out_every_prefix = argv[++i];
@@ -293,6 +305,19 @@ int main(int argc, char **argv) {
     bool stalled = false;
     for (int i = 0; i < frames; i++) {
         watch_cur_frame = i + 1;
+        if (walk_square_start && i + 1 >= walk_square_start) {
+            /* Desktop mirror of the device's FF4_AUTO_WALK: DPAD square,
+             * 30 frames per side (120-frame period), looping forever. Keeps
+             * the map scrolling every frame so the R4/R5 render skips never
+             * fire -- the same "real play" workload the D6R ring measures. */
+            static const int walk_btn[4] = { 4 /*up*/, 7 /*right*/, 5 /*down*/, 6 /*left*/ };
+            const int t = (i + 1 - walk_square_start) % 120;
+            const int phase = t / 30;
+            if (t % 30 == 0) {
+                ff4_set_button(1, walk_btn[(phase + 3) & 3], false);
+                ff4_set_button(1, walk_btn[phase], true);
+            }
+        }
         for (int p = 0; p < g_press_n; p++) {
             int frame_1based = i + 1;
             if (frame_1based == g_press_frame[p]) {
@@ -322,6 +347,13 @@ int main(int argc, char **argv) {
             printf("  frame %4d | pc=%02X:%04X | hits=%u misses=%u\n",
                    i + 1, ff4_snes->cpu->k, ff4_snes->cpu->pc,
                    ff4_dispatch_hits, ff4_dispatch_misses);
+        if (vramgen_delta) {
+            static uint32_t vg_prev = 0;
+            static int      vg_primed = 0;
+            uint32_t vg = ff4_snes->ppu->vramGen;
+            printf("VRAMGEN %d %u\n", i + 1, vg_primed ? vg - vg_prev : 0);
+            vg_prev = vg; vg_primed = 1;
+        }
         if (audio_crc) {
             /* Pull one frame of DSP output through the same public API the
              * device uses (catchup + resample) and CRC it: the byte-exact
