@@ -37,13 +37,15 @@ the spikes, and SDL inspection.
 | `fixtures/011-worldmap-entry.lss` | Worldmap entry (per filename; capture context not recorded) | `00:9133` | Undocumented — added to this catalog 2026-07-03, no recorded primary use or findings link | — |
 | `fixtures/012-first-worldmap-combat.lss` | First random encounter triggered near Baron castle on the world map, captured right before the SPC-handshake black-screen freeze | `00:9144` | Combat black-screen repro (fixed, see `ExecSound_ext_stub` fix, ff4-gnw `450cfe8`) ; now also the reference fixture for the physical-attack-always-misses and monster-damage-oversized bugs under investigation (native-dispatch-only) | combat black-screen (fixed) |
 | `fixtures/013-airship-dialogue-pre-combat.lss` | Red Wings deck, soldier dialogue awaiting validation; pressing A leads straight into the Zu encounter (frame 14124 of a real playthrough) | `00:8E09` | Quick access to an intro-sequence battle without replaying ~14 k frames. **First fixture captured from the live G&W device** (GDB over ST-Link on the running game — no reset — then `desktop/ff4-state-inject` rebuilt the `.lss`; see `desktop/capture_device_state.gdb`). Caveat: APU internals are fresh-init defaults (mailbox ports only) — never use for audio validation | — |
+| `fixtures/014-baron-castle-exterior.lss` | Baron castle exterior (location banner, 4+ NPC guards, animated wall flags), player just outside the gate; captured 2026-07-13 in SDL | `00:9135` | **Performance bench** for the post-adaptive-skip optimization campaign: the zone with the heaviest device slowdowns without the adaptive render skip — worse than the interior corridor that benched the 2026-07 sub-frame campaign. First target of the vramGen-invalidation investigation (do the animated flags bump `vramGen` every frame → R16/R2b cache thrash?) | — |
 
-> `desktop/seed-*.lss` (8 files) are a **separate, uncatalogued** set of ad
+> `desktop/seed-*.lss` are a **separate, uncatalogued** set of ad
 > hoc saves from interactive SDL sessions (`--save-prefix`) — not part of
 > this catalogue, not in the `fixtures/` submodule, still plain gitignored
 > local scratch. Don't confuse the two; if one of them turns out to matter
 > for a specific finding, promote it into this catalogue and the submodule
-> rather than leaving it as an undocumented scratch file.
+> rather than leaving it as an undocumented scratch file (as was done for
+> `014-baron-castle-exterior`, promoted from `seed-009.lss` on 2026-07-13).
 
 > ℹ **Several fixtures share the same "PC at load" (`00:9144` / `00:9133` /
 > `00:9135`).** Verified 2026-07-03 by loading each `.lss` and reading back
@@ -65,7 +67,7 @@ the spikes, and SDL inspection.
 
 **If you have network access to the author's LAN** (the normal case for
 the author's own machines): `git submodule update --init fixtures` from
-this repo's root populates `fixtures/` with the 11 cataloged files. This
+this repo's root populates `fixtures/` with every cataloged file. This
 is the primary path — no manual capture needed.
 
 **If you don't** (a fresh clone from GitHub with no access to that LAN,
