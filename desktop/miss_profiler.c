@@ -7,6 +7,12 @@
  * Usage:
  *   ff4-miss-profiler <rom.sfc> [--frames N] [--load f.lss] [--save-seed f.lss]
  *                               [--top K] [--out f.ppm]
+ *                               [--walk-square START] [--walk-lr START[:HOLD]]
+ *
+ * --walk-square mirrors the device's FF4_AUTO_WALK (DPAD square, 30 frames
+ * per side, looping). --walk-lr holds left then right for HOLD frames each
+ * (default 60), looping -- the free-roam-style workload that exercises the
+ * event/NPC interpreter paths the square never touches (2026-07-12).
  *
  * Output: ranked miss list  "count  PC  bank" to stdout.
  */
@@ -27,6 +33,7 @@ extern uint32_t ff4_dispatch_hits;
 extern uint32_t ff4_dispatch_misses;
 extern int      ff4_dispatch_enabled;
 extern void   (*ff4_dispatch_miss_trace)(uint32_t pc);
+extern void     ff4_set_button(int player, int button, bool pressed);
 
 /* ---- miss PC frequency table -------------------------------------------- */
 #define MISS_CAP 4096
@@ -88,6 +95,7 @@ int main(int argc, char **argv) {
     int         frames    = 200;
     int         top_k     = 40;
     const char *load_path = NULL, *save_path = NULL, *out_ppm = NULL;
+    int         walk_square = 0, walk_lr = 0, walk_lr_hold = 60;
 
     for (int i = 2; i < argc; i++) {
         if      (!strcmp(argv[i], "--frames")    && i+1 < argc) frames    = atoi(argv[++i]);
@@ -95,6 +103,14 @@ int main(int argc, char **argv) {
         else if (!strcmp(argv[i], "--load")      && i+1 < argc) load_path = argv[++i];
         else if (!strcmp(argv[i], "--save-seed") && i+1 < argc) save_path = argv[++i];
         else if (!strcmp(argv[i], "--out")       && i+1 < argc) out_ppm   = argv[++i];
+        else if (!strcmp(argv[i], "--walk-square") && i+1 < argc) walk_square = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--walk-lr")   && i+1 < argc) {
+            char *spec = argv[++i];
+            char *colon = strchr(spec, ':');
+            if (colon) { *colon = '\0'; walk_lr_hold = atoi(colon + 1); }
+            walk_lr = atoi(spec);
+            if (walk_lr_hold < 1) walk_lr_hold = 60;
+        }
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
 
@@ -122,6 +138,20 @@ int main(int argc, char **argv) {
 
     printf("profiling %d frames (dispatch ON)...\n", frames);
     for (int i = 0; i < frames; i++) {
+        if (walk_square && i + 1 >= walk_square) {
+            static const int btn4[4] = { 4 /*up*/, 7 /*right*/, 5 /*down*/, 6 /*left*/ };
+            const int t = (i + 1 - walk_square) % 120;
+            const int phase = t / 30;
+            if (t % 30 == 0) {
+                ff4_set_button(1, btn4[(phase + 3) & 3], false);
+                ff4_set_button(1, btn4[phase], true);
+            }
+        }
+        if (walk_lr && i + 1 >= walk_lr) {
+            const int t = (i + 1 - walk_lr) % (2 * walk_lr_hold);
+            if (t == 0)            { ff4_set_button(1, 7, false); ff4_set_button(1, 6, true); }  /* left  */
+            else if (t == walk_lr_hold) { ff4_set_button(1, 6, false); ff4_set_button(1, 7, true); }  /* right */
+        }
         ff4_step();
         if ((i + 1) % 60 == 0)
             printf("  frame %4d | pc=%02X:%04X | hits=%u misses=%u unique_miss_pcs=%d\n",
