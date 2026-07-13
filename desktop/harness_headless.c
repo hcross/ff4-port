@@ -94,6 +94,14 @@ static int parse_press_spec(const char *spec) {
 }
 
 unsigned ff4_diag_trc_miss; /* R2b tile-row-cache miss counter (ppu.c diag) */
+unsigned ff4_diag_pal4_rebuild; /* R2a packed-palette full-rebuild counter
+                                 * (ppu_lrRefreshPal4 diag): >1 per frame means
+                                 * CGRAM writes land mid-frame and thrash the
+                                 * 256-color rebuild once per subsequent line */
+unsigned ff4_diag_lr_slow_lines; /* lines that miss ppu_lrRunLine's whole-line
+                                  * fast path (color math / clip / direct color
+                                  * active) and pay the per-pixel output loop --
+                                  * the structural cost split between scenes */
 
 /* dispatch counters + runtime toggle (ff4-gnw/dispatch_all.c) */
 extern uint32_t ff4_dispatch_hits;
@@ -214,7 +222,14 @@ int main(int argc, char **argv) {
                              * frame invalidates the WHOLE R2b decoded-tile-row
                              * cache, so this is the direct evidence channel
                              * for cache-invalidation hypotheses (idle vs
-                             * walking scroll workloads). */
+                             * walking scroll workloads). Also prints the
+                             * per-frame CGRAM generation delta (CGRAMGEN
+                             * lines, ppu->cgramGen): every CGRAM write bumps
+                             * it and invalidates the R2a packed-palette cache
+                             * (ppu_lrRefreshPal4 full 256-color rebuild), so
+                             * a large per-frame delta means palette cycling /
+                             * CGRAM HDMA is thrashing that cache (found on
+                             * 014-baron-castle-exterior, 2026-07-13). */
     int fb_crc = 0;         /* --fb-crc: print the blitted framebuffer's crc32
                              * EVERY frame. Purpose: transient-artifact hunts --
                              * the final-frame PPM proves nothing about frames
@@ -351,12 +366,23 @@ int main(int argc, char **argv) {
                    ff4_dispatch_hits, ff4_dispatch_misses);
         { extern unsigned ff4_diag_trc_miss; static unsigned prev_trc;
           if (vramgen_delta) { printf("TRCMISS %d %u\n", i + 1, ff4_diag_trc_miss - prev_trc); prev_trc = ff4_diag_trc_miss; } }
+        { static unsigned prev_pal4;
+          if (vramgen_delta) { printf("PAL4RB %d %u\n", i + 1, ff4_diag_pal4_rebuild - prev_pal4); prev_pal4 = ff4_diag_pal4_rebuild; } }
+        { static unsigned prev_slow;
+          if (vramgen_delta) { printf("SLOWLN %d %u\n", i + 1, ff4_diag_lr_slow_lines - prev_slow); prev_slow = ff4_diag_lr_slow_lines; } }
         if (vramgen_delta) {
             static uint32_t vg_prev = 0;
             static int      vg_primed = 0;
             uint32_t vg = ff4_snes->ppu->vramGen;
             printf("VRAMGEN %d %u\n", i + 1, vg_primed ? vg - vg_prev : 0);
             vg_prev = vg; vg_primed = 1;
+        }
+        if (vramgen_delta) {
+            static uint32_t cg_prev = 0;
+            static int      cg_primed = 0;
+            uint32_t cg = ff4_snes->ppu->cgramGen;
+            printf("CGRAMGEN %d %u\n", i + 1, cg_primed ? cg - cg_prev : 0);
+            cg_prev = cg; cg_primed = 1;
         }
         if (audio_crc) {
             /* Pull one frame of DSP output through the same public API the
