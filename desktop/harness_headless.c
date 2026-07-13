@@ -102,6 +102,9 @@ unsigned ff4_diag_lr_slow_lines; /* lines that miss ppu_lrRunLine's whole-line
                                   * fast path (color math / clip / direct color
                                   * active) and pay the per-pixel output loop --
                                   * the structural cost split between scenes */
+unsigned ff4_diag_lr_math_lines; /* lines served by the R17 half-add-subscreen
+                                  * whole-line path (perf/lr-halfadd-line);
+                                  * stays 0 on a pre-R17 ff4-gnw tree */
 
 /* dispatch counters + runtime toggle (ff4-gnw/dispatch_all.c) */
 extern uint32_t ff4_dispatch_hits;
@@ -370,6 +373,8 @@ int main(int argc, char **argv) {
           if (vramgen_delta) { printf("PAL4RB %d %u\n", i + 1, ff4_diag_pal4_rebuild - prev_pal4); prev_pal4 = ff4_diag_pal4_rebuild; } }
         { static unsigned prev_slow;
           if (vramgen_delta) { printf("SLOWLN %d %u\n", i + 1, ff4_diag_lr_slow_lines - prev_slow); prev_slow = ff4_diag_lr_slow_lines; } }
+        { static unsigned prev_math;
+          if (vramgen_delta) { printf("MATHLN %d %u\n", i + 1, ff4_diag_lr_math_lines - prev_math); prev_math = ff4_diag_lr_math_lines; } }
         if (vramgen_delta) {
             static uint32_t vg_prev = 0;
             static int      vg_primed = 0;
