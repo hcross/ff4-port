@@ -93,6 +93,8 @@ static int parse_press_spec(const char *spec) {
     return 1;
 }
 
+unsigned ff4_diag_trc_miss; /* R2b tile-row-cache miss counter (ppu.c diag) */
+
 /* dispatch counters + runtime toggle (ff4-gnw/dispatch_all.c) */
 extern uint32_t ff4_dispatch_hits;
 extern uint32_t ff4_dispatch_misses;
@@ -347,6 +349,8 @@ int main(int argc, char **argv) {
             printf("  frame %4d | pc=%02X:%04X | hits=%u misses=%u\n",
                    i + 1, ff4_snes->cpu->k, ff4_snes->cpu->pc,
                    ff4_dispatch_hits, ff4_dispatch_misses);
+        { extern unsigned ff4_diag_trc_miss; static unsigned prev_trc;
+          if (vramgen_delta) { printf("TRCMISS %d %u\n", i + 1, ff4_diag_trc_miss - prev_trc); prev_trc = ff4_diag_trc_miss; } }
         if (vramgen_delta) {
             static uint32_t vg_prev = 0;
             static int      vg_primed = 0;
