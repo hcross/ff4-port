@@ -77,10 +77,33 @@ e.g. a contributor without access to the private Gitea instance): the
 1. **Manual capture** via SDL: `make -C desktop sdl ROM=...`, reach the
    desired scene, `Space` to pause if needed, **`5`** to save the incremental
    slot (`--save-prefix`), then rename per the convention.
-2. **Boot-to-scene** *(tracked in [BACKLOG](../ff4/BACKLOG.md) — not implemented)*:
+2. **Boot-to-scene** *(tracked in the umbrella
+   [BACKLOG](https://github.com/hcross/ff4/blob/main/BACKLOG.md) — not implemented)*:
    a script that drives the emulator from boot to each target scene and
    regenerates the `.lss` locally from the user's ROM, without needing
    access to the private submodule at all.
+
+## Capturing new fixtures from the live device
+
+Two device→desktop pipelines exist (both author-side — they need the
+physical unit and the SWD probe):
+
+1. **GDB live capture, no reset** (how `013` was made): halt the running
+   game over ST-Link, dump the SNES state regions, rebuild the `.lss`
+   with `desktop/ff4-state-inject` — see `desktop/capture_device_state.gdb`.
+   Caveat on APU internals in the `013` row above.
+2. **Pause-menu savestates (2026-07-14)**: states saved on the device by
+   the retro-go-sd pause menu (TAMP-compressed on the internal LittleFS)
+   load **byte-identical** in the desktop harness once extracted.
+   Extraction recipe: `gnwmanager dump` the external-flash filesystem
+   region — offset `3407872`, size `786432` since the 768 KB filesystem
+   resize (retro-go-sd `a3792a60`) — then reverse each 4096-byte block
+   (the filesystem is stored block-reversed from the region's end),
+   mount the result with `littlefs-python`, and TAMP-decompress the slot
+   file back to a plain `.lss`. Afterwards run
+   `gnwmanager start 0x08100000`: `gnwmanager dump`/`ls` replace the
+   running app with gnwmanager's stub (see the umbrella
+   [WF-RELEASE guardrails](https://github.com/hcross/ff4/blob/main/workflows/WF-RELEASE.md)).
 
 ## Reproducibility note
 
