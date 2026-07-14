@@ -174,6 +174,8 @@ cd ca65-bridge
 - [ADR-003](docs/adr/adr-003-classification.md) — Binary classification: translate vs delegate
 - [ADR-004](docs/adr/adr-004-prompt-mutation-loop.md) — Automated, regression-gated prompt-mutation loop (P3; dormant, see the ADR's "Current status")
 - [ADR-005](docs/adr/adr-005-fixtures-private-submodule.md) — Reference savestates live in a private Gitea submodule, not gitignored local files
+- [ADR-006](docs/adr/adr-006-apu-accumulator-validation-bar.md) — Relax the byte-identical validation bar for the APU catchup accumulator only
+- [ADR-007](docs/adr/adr-007-display-cadence-floor.md) — Display-cadence floor outranks game-clock exactness (no deeper frame skip)
 - [ADR 0001](docs/adr/0001-desktop-validation-in-re-loop.md) — Desktop LakeSnes host as the mandatory RE validation gate (separate numbering track — see that file's own header)
 
 ## The 17 pitfalls
