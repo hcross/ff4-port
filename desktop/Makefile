@@ -39,7 +39,8 @@ GNW_SRC := $(wildcard $(FF4GNW)/snes/*.c) \
            $(wildcard $(FF4GNW)/sound/*.c) \
            $(FF4GNW)/dispatch_all.c \
            $(FF4GNW)/ff4_helpers.c \
-           $(FF4GNW)/main.c
+           $(FF4GNW)/main.c \
+           diag_counters.c
 
 BIN     := ff4-desktop-headless
 BIN_SDL := ff4-desktop-sdl
