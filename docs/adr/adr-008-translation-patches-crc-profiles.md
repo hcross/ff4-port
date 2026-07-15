@@ -119,3 +119,27 @@ dispatch profile keyed by the image's full-file CRC32.**
 - MemPalace: wing=ff4-gnw, room=architecture-decisions ("J2e v3.21
   canonical application facts"), room=task-handoff
   (`ff4-translation-patches`).
+
+## Post-decision note (2026-07-15, device bench)
+
+Device validation completed the same day: JP↔EN Language round-trip on
+the Game & Watch, English intro dialogue on the LCD, per-language
+savestate slots with no cross-language bleed — `validation.status` for
+J2e in the manifest is now `device-validated` (full bench evidence in
+its `validation.device` field). Two details of the Decision above are
+superseded by what actually shipped (scaffold `cb67a933`), recorded
+here rather than rewritten into the Decision:
+
+- The "Device UX v1" wording ("selects the ROM file at the next
+  launch") understates the shipped UX: the Language entry asks for
+  confirmation (`odroid_overlay_confirm`) and then **automatically
+  resets** into the other language (`HAL_NVIC_SystemReset`) — no manual
+  relaunch.
+- "Saves/savestates are per-variant ... documented, not engineered
+  around" — per-language savestate slots were engineered after all: the
+  scaffold namespaces every slot through the app descriptor's
+  `romPath`, so JP and EN slots never collide.
+
+Still open after the bench: the D6 cadence measurement on J2e
+dialogue/world-map and the unknown-ROM refusal-screen exercise
+(tracked in the umbrella `BACKLOG.md` §9).

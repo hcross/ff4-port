@@ -67,7 +67,9 @@ in FIXTURES.md) is the maintainer's call.
    (`registry/patch_impact.py`), review the disabled set.
 4. Oracle A/B on the patched image per the validation workflow, then record
    `validation.status` (`smoke-boot` → `desktop-validated` → `device-validated`)
-   with evidence.
+   with evidence. Every rung is proven reachable: `j2e-en-v321` walked the
+   full ladder to `device-validated` (2026-07-15 bench — see its manifest
+   entry for what each rung's evidence looks like).
 
 Base-ROM lineage matters: only patches targeting the **JP ROM** the dispatch
 table was proven against can run natively. US-lineage patches (e.g. Namingway
