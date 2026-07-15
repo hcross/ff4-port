@@ -621,3 +621,30 @@ Use `--no-charge` to reproduce the pre-hardening behaviour.
 verdict bug).** It already has a 50M-opcode guard + watchdog pet; it only makes
 the oracle *slow* on a delegated hang, never *wrong*. Deprioritised; revisit if
 a world-map-class delegated spin makes a run impractically slow.
+
+## Infra note — device-gated diag counters need a weak desktop fallback (2026-07-15)
+
+Diagnostic counters referenced from `snes/` under device-elided guards
+(the R17+ `TRCMISS`/`PAL4RB`/`SLOWLN`/`MATHLN` channels) used to be defined
+by `harness_headless.c` only — so every *other* desktop binary linking the
+core (SDL, oracle, `wram_diff`, `miss_profiler`, `input_probe`,
+`state_inject`) stopped linking the moment a new counter landed in `ppu.c`.
+Masked for a while by stale pre-R17 binaries; found 2026-07-15 while wiring
+the translation-patch runtime. Fix: `desktop/diag_counters.c` (linked into
+all non-headless tools) holds **weak** zero-initialized definitions that the
+headless harness's strong ones override. **Rule going forward**: any new
+diag counter added to `snes/` gets its weak twin in `diag_counters.c` in the
+same commit — the rule and rationale are restated in that file's header, and
+the reminder is a link failure in whichever tool gets rebuilt next.
+
+## Infra note — desktop exit codes were garbage until ff4-gnw `480f7d6` (2026-07-15)
+
+Under `-DFF4_PORT_STATIC_SNES` the LakeSnes components are static
+singletons, but the `*_free` teardown paths (`cpu`, `dma`, `input`, `spc`,
+`dsp`) still called `free()` on them: every desktop tool that reached
+`ff4_shutdown` died in SIGABRT *after* printing its results, so process
+exit codes carried no signal — masked by `regress.sh`'s `|| true` around
+oracle invocations. Fixed by guarding those `_free` paths under
+`FF4_PORT_STATIC_SNES` (ff4-gnw `480f7d6`); exit codes are meaningful
+since. Hardening candidate: drop the `|| true` in `scripts/regress.sh` now
+that a non-zero exit is a real failure, not teardown noise.

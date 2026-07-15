@@ -83,6 +83,10 @@ ff4-port/
 ├── parity/              — spike harness (function-level parity tests)
 │   └── src/spike_*.c            one file per validated spike scenario
 │
+├── patches/             — translation-patch variant images (ADR-008)
+│   ├── apply_ips.py         offline IPS applier → canonical image + range report
+│   └── manifest.json        known patches: hashes, params, validation status
+│
 ├── port/                — translation candidates in flight (not yet in ff4-gnw)
 │   ├── battle/              25 pending candidates
 │   └── field/               12 pending candidates
@@ -176,6 +180,7 @@ cd ca65-bridge
 - [ADR-005](docs/adr/adr-005-fixtures-private-submodule.md) — Reference savestates live in a private Gitea submodule, not gitignored local files
 - [ADR-006](docs/adr/adr-006-apu-accumulator-validation-bar.md) — Relax the byte-identical validation bar for the APU catchup accumulator only
 - [ADR-007](docs/adr/adr-007-display-cadence-floor.md) — Display-cadence floor outranks game-clock exactness (no deeper frame skip)
+- [ADR-008](docs/adr/adr-008-translation-patches-crc-profiles.md) — Translation patches via canonical variant images + CRC-keyed dispatch profiles (see [`patches/README.md`](patches/README.md) for day-to-day usage)
 - [ADR 0001](docs/adr/0001-desktop-validation-in-re-loop.md) — Desktop LakeSnes host as the mandatory RE validation gate (separate numbering track — see that file's own header)
 
 ## The 17 pitfalls
