@@ -31,7 +31,8 @@
         "internal_title": "Final Fantasy 4 (J2e)"
       },
       "validation": {
-        "status": "desktop-validated",
+        "status": "device-validated",
+        "device": "2026-07-15 bench (G&W Mario, 64 MB extflash, scaffold feat/ff4-port-scaffold cb67a933, SD_CARD=0 EXTFLASH_SIZE_MB=8, both ROMs baked in FrogFS): JP<->EN switch via the pause-menu Language entry (confirm dialog + automatic reset), English intro dialogue rendered on LCD, per-language savestate save/load with no cross-language slot bleed. Cadence (D6) on J2e dialogue/world-map NOT measured yet -- see the BACKLOG follow-up (UpdateMode7Regs et al. are fail-closed-gated).",
         "profile": "67 dispatch PCs gated (13 real overlaps/callee hits + 54 fail-closed unresolved ranges; see out/j2e-en-v321.impact.json). Review of the >25 alarm (2026-07-15): a dispatch-hit probe over boot+title+intro showed NONE of the 54 fail-closed entries ever fires there and the per-frame hot set (00F535, 15CA5E, 009179, 009F6E, ...) is NOT gated; the 3 gated entries that do fire (boot-time init, genuinely modified by the patch) cost nothing steady-state. Residual watch item: UpdateMode7Regs/UpdateWipe* (world map / transitions) are fail-closed-gated -- measure D6 on device, resolve their ranges manually if cadence suffers.",
         "evidence": [
           "2026-07-15 oracle A/B ON THE PATCHED IMAGE (A = native dispatch + profile, B = pure interpreter), standard baseline excludes (15cadc 048004 03fe03 15ca5e): IDENTICAL on all 4 seeds -- j2e-001-arrival-dialogue (600f), j2e-002-cain-dialogue (600f), j2e-003-baron-freeroam (600f, 14400 native hits), j2e-004-menu-open (300f). Seeds in out/seeds/ (regenerate: headless from reset with --press scripts, see out/seeds regeneration notes in patches/README.md).",
