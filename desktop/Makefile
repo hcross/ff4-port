@@ -39,6 +39,8 @@ GNW_SRC := $(wildcard $(FF4GNW)/snes/*.c) \
            $(wildcard $(FF4GNW)/sound/*.c) \
            $(FF4GNW)/dispatch_all.c \
            $(FF4GNW)/ff4_helpers.c \
+           $(FF4GNW)/rom_ident.c \
+           $(FF4GNW)/rom_profiles.c \
            $(FF4GNW)/main.c \
            diag_counters.c
 

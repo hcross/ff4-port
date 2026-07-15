@@ -1,0 +1,5 @@
+# Patch payloads and built variant images are licensed-asset-adjacent: never
+# tracked (same policy as ROMs/fixtures). manifest.json records their hashes
+# so anything here is verifiable and reproducible.
+files/
+out/

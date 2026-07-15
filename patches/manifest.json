@@ -1,0 +1,46 @@
+{
+  "comment": "Registry of known translation patches and the canonical variant images they produce. Patch files (files/) and built images (out/) are NOT tracked -- same policy as ROMs; this manifest carries the hashes that make every artifact verifiable and reproducible via apply_ips.py --patch-id <id>. Dispatch-profile validity per variant is recorded here (validation.status), NOT in registry/dispatch_state.jsonl, whose L-levels stay scoped to the vanilla ROM.",
+  "rom_identities": {
+    "vanilla-jp11": {
+      "crc32": "CAA15E97",
+      "size": 1048576,
+      "file_hint": "upstream/rom/ff4-jp1.sfc",
+      "notes": "Final Fantasy IV (Japan) rev 1.1, unheadered LoROM (No-Intro identity); the ROM every dispatch was proven against."
+    }
+  },
+  "patches": [
+    {
+      "id": "j2e-en-v321",
+      "name": "J2e Retranslation, 10th Anniversary Edition",
+      "short_name": "FF4 J2e EN v3.21",
+      "language": "en",
+      "version": "3.21",
+      "released": "2001-07-03",
+      "source_url": "https://fantasyanime.com/finalfantasy/ff4/ff4_english.zip",
+      "patch_file": "files/FF4EV321.IPS",
+      "patch_sha256": "fbe3f5bdc2c7c963d11ae30e01c774dac67a7ab0c7f3d15b2ed3ccc9f34d1f50",
+      "base": "vanilla-jp11",
+      "headered": true,
+      "pad_to": 2097152,
+      "output": {
+        "file": "ff4-j2e-v321.sfc",
+        "size": 2097152,
+        "size_prepad": 1572864,
+        "crc32": "F135CAE6",
+        "sha256": "d8059803a011cfa3231161166e706285c64f0373a015852541b0495c8b4f9184",
+        "internal_title": "Final Fantasy 4 (J2e)"
+      },
+      "validation": {
+        "status": "desktop-validated",
+        "profile": "67 dispatch PCs gated (13 real overlaps/callee hits + 54 fail-closed unresolved ranges; see out/j2e-en-v321.impact.json). Review of the >25 alarm (2026-07-15): a dispatch-hit probe over boot+title+intro showed NONE of the 54 fail-closed entries ever fires there and the per-frame hot set (00F535, 15CA5E, 009179, 009F6E, ...) is NOT gated; the 3 gated entries that do fire (boot-time init, genuinely modified by the patch) cost nothing steady-state. Residual watch item: UpdateMode7Regs/UpdateWipe* (world map / transitions) are fail-closed-gated -- measure D6 on device, resolve their ranges manually if cadence suffers.",
+        "evidence": [
+          "2026-07-15 oracle A/B ON THE PATCHED IMAGE (A = native dispatch + profile, B = pure interpreter), standard baseline excludes (15cadc 048004 03fe03 15ca5e): IDENTICAL on all 4 seeds -- j2e-001-arrival-dialogue (600f), j2e-002-cain-dialogue (600f), j2e-003-baron-freeroam (600f, 14400 native hits), j2e-004-menu-open (300f). Seeds in out/seeds/ (regenerate: headless from reset with --press scripts, see out/seeds regeneration notes in patches/README.md).",
+          "2026-07-15 desktop headless smoke: boot to title + scripted intro dialogue, English text rendered by the interpreted text engine, in-game menu fully English (Item/Magic/Equip/Status/Form/Change/Config/Save), no stall. Reproduce: ff4-desktop-headless out/ff4-j2e-v321.sfc --frames 4200 --press start:950 --press a:1100 --press a:1250 --out /tmp/j2e.ppm"
+        ],
+        "gaps": "No battle-with-messages or naming-screen seed yet (bank $03 battle code is nearly untouched by the patch -- 30 bytes -- and no battle routine is gated, so exposure is low; the naming screen is not reachable early on the intro rail). Add both when a deeper save exists.",
+        "next": "device validation (second ROM entry on SD, D6 dialogue/world-map cadence vs vanilla, liveness + screenshot per WF-RELEASE); target status: device-validated"
+      },
+      "notes": "Base-revision ambiguity resolved empirically: applies and plays correctly on rev 1.1. Patch writes into the copier-header region (harmless, stripped). Expands the ROM 1 MiB -> 1.5 MiB; padded to 2 MiB for snes_loadRom's power-of-2 requirement. SRAM/savestate compatibility with vanilla is NOT verified -- treat saves as per-variant."
+    }
+  ]
+}
