@@ -653,7 +653,10 @@ that a non-zero exit is a real failure, not teardown noise.
 
 **Severity:** high (every field-menu screen partially unrendered) · **Found:**
 2026-07-16 (user report: "big display problems" navigating the field menu
-from `009-first-free-roam.lss`) · **Status:** FIXED (`ff4-gnw`, device-confirmed)
+from `009-first-free-roam.lss`) · **Status:** FIXED on desktop (correct,
+regression-free) — **BLOCKED on device**: both fix attempts below crash on
+real hardware; the second's root cause is not yet identified (see "Fix
+attempt #2" for what was ruled out). Device left on the pre-fix firmware.
 
 ### Symptom
 
@@ -742,7 +745,7 @@ firmware's own BSOD crash screen) with *only* this delegation commit
 cherry-picked on top, nothing else changed. Bootloader and vector tables
 were verified healthy throughout (not a bricked unit, a stack-depth crash).
 
-### Fix attempt #2 — retire from dispatch (SHIPPED)
+### Fix attempt #2 — retire from dispatch (desktop-correct, ALSO DEVICE-CRASHES — root cause open)
 
 Same treatment as `CheckMenu_c`/`ExecBtlGfx_c`/`Mult8_btlgfx_c`: remove the
 three hooks (`D14FD06`, `D14FD09`, `D14FD0C`) from `dispatch_all.c` entirely
@@ -757,11 +760,26 @@ Verified: desktop screenshots byte-identical to fix attempt #1 (same WRAM
 CRC, same rendering); `scripts/regress.sh --frames 300`, zero verdict
 changes. Registry: `D14FD06`/`D14FD09`/`D14FD0C` L2 → RETIRED.
 
-Flashed to device (`external/ff4` bumped to this commit, `flash_intflash`
-only — the FrogFS/LittleFS filesystem regions were never touched, so
-on-device save states were never at risk throughout this whole
-investigation): liveness oracle confirms frames advancing normally, no
-fault.
+**Also crashes on device** — this removes fix attempt #1's nested-delegation
+theory as the (sole) explanation, since this fix has no such nesting at all.
+Isolated cleanly (cherry-picked alone onto the same known-good `3c57554`,
+confirmed reproducible with a **full `make clean` rebuild**, ruling out a
+stale-incremental-build artifact — this exact retro-go-sd tree has two prior
+documented "Firmware Frankenstein" incidents of that class, so it was
+checked explicitly rather than assumed away). Fault signature this time is
+different from attempt #1: a UsageFault (CFSR bit17, INVSTATE — invalid
+EPSR/Thumb-state, typically a corrupted or misaligned function-pointer
+call/branch) forced to HardFault, versus attempt #1's imprecise bus fault.
+Ruled out so far: array/macro size mismatch (`FF4_DISPATCH_COUNT`, updated
+to 205, matches the literal 205-entry table exactly); `rom_profiles.c`
+desync (the active vanilla-ROM profile has `gated_count=0`, so dispatch-
+table shrinkage cannot affect its gating at all — `rom_ident.c`'s PC-based,
+fail-safe-to-UNKNOWN lookup was read to confirm this). **Root cause NOT yet
+identified.** Device left on the pre-fix firmware (`3c57554`) in the
+meantime; save states were never at risk in any of this — every test
+throughout this investigation flashed internal flash only
+(`flash_intflash`), never touching the external-flash FrogFS/LittleFS
+regions.
 
 ### Lessons
 
@@ -772,13 +790,22 @@ fault.
   comparison remains the only trustworthy verdict for rendering bugs (same
   conclusion as the project's existing oracle-methodology notes above, now
   confirmed for a genuinely new failure mode).
-- **New pitfall class: nested `run_emulated_func` and device stack depth.**
-  A dispatched routine reached from *within* an already-interpreted call
-  (i.e. hanging off a retired dispatch like `CheckMenu_c`, not off the top-
-  level main loop) adds a real, extra level of interpreter-loop stack
-  nesting the moment its own delegation also calls `run_emulated_func`. The
-  desktop harness's large thread stack cannot reveal this; only real
-  hardware (or an explicit stack high-water-mark check) can. When fixing a
-  no-op stub that sits under an already-retired ancestor dispatch, prefer
-  **retiring the hook** over delegating, unless the nesting depth has been
-  specifically checked on device.
+- **Possible pitfall class (unconfirmed): nested `run_emulated_func` and
+  device stack depth.** Fix attempt #1's working theory was that a
+  dispatched routine reached from *within* an already-interpreted call
+  (hanging off a retired dispatch like `CheckMenu_c`) adds a real extra
+  level of interpreter-loop stack nesting the moment its own delegation
+  also calls `run_emulated_func`, invisible on the desktop's large thread
+  stack. **This theory is now in doubt**: fix attempt #2 removes that exact
+  nesting (no delegation at all, hooks simply retired) and *still* crashes
+  on device, with a different fault signature. Either both attempts hit the
+  same still-unidentified cause for unrelated reasons, or there are two
+  distinct device-only bugs here. Do not cite the nested-`run_emulated_func`
+  theory as settled until a real root cause is found for attempt #2.
+- **Desktop-verified-and-regression-free is not sufficient for a
+  device-affecting dispatch-table change.** Both fix attempts here passed
+  every desktop check (screenshots, WRAM CRC, full regression suite) and
+  both crash on real hardware. Any change to `dispatch_all.c`/`ff4_helpers.c`
+  intended to ship to device needs an on-device liveness check before being
+  declared done, not just a desktop one — this project's own WF-RELEASE
+  guardrails already said this; this finding is a concrete instance of why.
