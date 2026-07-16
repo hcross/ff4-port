@@ -653,7 +653,7 @@ that a non-zero exit is a real failure, not teardown noise.
 
 **Severity:** high (every field-menu screen partially unrendered) · **Found:**
 2026-07-16 (user report: "big display problems" navigating the field menu
-from `009-first-free-roam.lss`) · **Status:** FIXED (`ff4-gnw`, pending commit)
+from `009-first-free-roam.lss`) · **Status:** FIXED (`ff4-gnw`, device-confirmed)
 
 ### Symptom
 
@@ -706,7 +706,7 @@ architecturally-undeleg­atable routine (same lesson as `CheckMenu_c`/
 `ExecBtlGfx_c`: spike-level equivalence and real in-context behavior are
 different questions).
 
-### Fix
+### Fix attempt #1 — delegation (desktop-correct, DEVICE HARD-FAULT)
 
 `ff4-gnw/ff4_helpers.c`: gave the three helpers real bodies, following the
 existing `run_emulated_func(snes, addr)` delegation pattern used for
@@ -718,30 +718,67 @@ void update_scroll_regs_emu(Snes *snes) { run_emulated_func(snes, 0x14FD0Cu); }
 void update_window_color_emu(Snes *snes) { run_emulated_func(snes, 0x14FD09u); }
 ```
 
-Delegating to the dispatch-hooked address itself (not the further `JMP`
-target) matches the pattern already used elsewhere and lets the
-interpreter naturally follow the bank-local `JMP` trampoline.
+Verified on the desktop harness: `009-first-free-roam.lss`, headless
+`--press x:5:2` (open menu) — status window (portrait/name/level/HP/MP) and
+TIME/Gil window now render, byte-for-byte matching the
+`--interp-except-input` ground truth; navigation still works; entering the
+Item sub-menu (`--press a:…`) renders window frames/text/list correctly
+(confirmed broken pre-fix by reverting and re-testing); `scripts/regress.sh
+--frames 300` across all 14 vanilla fixtures: zero verdict changes.
 
-### Verification
+**This fix HARD-FAULTS ON REAL HARDWARE**, despite being correct and
+regression-free on desktop (commit `ff4-gnw 94ec088`, reverted). Root cause:
+these three hooks fire from *inside* `CheckMenu_c`'s own interpreted
+execution — `CheckMenu_c` itself runs interpreted (retired from dispatch,
+see the CHANTIER INPUT/MENU note above) and delegates into `MainMenu_ext`
+via `run_emulated_func`, which is already one level of nested interpretation.
+The delegation fix added a **second** nested `run_emulated_func` call
+whenever that interpreted execution hit a `JSL` to `$14:FD06/09/0C`. The
+desktop's multi-MB thread stack absorbs the extra nesting invisibly; the
+STM32H7 device's far smaller stack does not — confirmed by isolating the
+change on real hardware: the same known-good `external/ff4` commit boots
+and runs cleanly, and hard-faults (forced HardFault, imprecise bus fault,
+firmware's own BSOD crash screen) with *only* this delegation commit
+cherry-picked on top, nothing else changed. Bootloader and vector tables
+were verified healthy throughout (not a bricked unit, a stack-depth crash).
 
-- `009-first-free-roam.lss`, headless `--press x:5:2` (open menu): status
-  window (portrait/name/level/HP/MP) and TIME/Gil window now render,
-  byte-for-byte matching the `--interp-except-input` ground truth.
-  Navigation (`--press down:…`) still moves the cursor correctly (no
-  regression on the 2026-07-06 `ReadCtrl`/`UpdateCtrl` fix).
-- Same fixture, `--press a:…` to enter the Item sub-menu: window frames,
-  text layout, and the item list now render correctly (confirmed broken
-  pre-fix by reverting the change and re-running the identical sequence).
-- `scripts/regress.sh --frames 300` across all 14 vanilla fixtures: **zero
-  verdict changes** — `009-first-free-roam` and others keep their
-  pre-existing (unrelated, already-documented) divergences unchanged.
+### Fix attempt #2 — retire from dispatch (SHIPPED)
 
-### Lesson
+Same treatment as `CheckMenu_c`/`ExecBtlGfx_c`/`Mult8_btlgfx_c`: remove the
+three hooks (`D14FD06`, `D14FD09`, `D14FD0C`) from `dispatch_all.c` entirely
+(208→205) instead of delegating. With the hooks gone, the *already-running*
+interpreter (the one already executing `CheckMenu_c`/`MainMenu_ext`
+interpreted) simply executes the real ROM bytes at `$14:FD06/09/0C` inline —
+no native-C call, no second `run_emulated_func` nesting, no extra stack
+depth at all. This is the exact same code path already verified visually
+correct on desktop via the `--exclude 14fd06/14fd09/14fd0c` bisection.
 
-WRAM-CRC bisection can produce a **false equivalence** between two
-different `--exclude` sets when the actual bug lives in VRAM/PPU register
-state rather than WRAM — two candidate exclusion sets had identical WRAM
-CRC here even though only one of them actually fixed the screen. Screenshot
-comparison remains the only trustworthy verdict for rendering bugs (same
-conclusion as the project's existing oracle-methodology notes above, now
-confirmed for a genuinely new failure mode).
+Verified: desktop screenshots byte-identical to fix attempt #1 (same WRAM
+CRC, same rendering); `scripts/regress.sh --frames 300`, zero verdict
+changes. Registry: `D14FD06`/`D14FD09`/`D14FD0C` L2 → RETIRED.
+
+Flashed to device (`external/ff4` bumped to this commit, `flash_intflash`
+only — the FrogFS/LittleFS filesystem regions were never touched, so
+on-device save states were never at risk throughout this whole
+investigation): liveness oracle confirms frames advancing normally, no
+fault.
+
+### Lessons
+
+- WRAM-CRC bisection can produce a **false equivalence** between two
+  different `--exclude` sets when the actual bug lives in VRAM/PPU register
+  state rather than WRAM — two candidate exclusion sets had identical WRAM
+  CRC here even though only one of them actually fixed the screen. Screenshot
+  comparison remains the only trustworthy verdict for rendering bugs (same
+  conclusion as the project's existing oracle-methodology notes above, now
+  confirmed for a genuinely new failure mode).
+- **New pitfall class: nested `run_emulated_func` and device stack depth.**
+  A dispatched routine reached from *within* an already-interpreted call
+  (i.e. hanging off a retired dispatch like `CheckMenu_c`, not off the top-
+  level main loop) adds a real, extra level of interpreter-loop stack
+  nesting the moment its own delegation also calls `run_emulated_func`. The
+  desktop harness's large thread stack cannot reveal this; only real
+  hardware (or an explicit stack high-water-mark check) can. When fixing a
+  no-op stub that sits under an already-retired ancestor dispatch, prefer
+  **retiring the hook** over delegating, unless the nesting depth has been
+  specifically checked on device.
