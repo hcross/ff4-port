@@ -653,10 +653,13 @@ that a non-zero exit is a real failure, not teardown noise.
 
 **Severity:** high (every field-menu screen partially unrendered) · **Found:**
 2026-07-16 (user report: "big display problems" navigating the field menu
-from `009-first-free-roam.lss`) · **Status:** FIXED on desktop (correct,
-regression-free) — **BLOCKED on device**: both fix attempts below crash on
-real hardware; the second's root cause is not yet identified (see "Fix
-attempt #2" for what was ruled out). Device left on the pre-fix firmware.
+from `009-first-free-roam.lss`) · **Status:** FIXED — `ff4-gnw 7a2f093`
+(retire-from-dispatch) is the correct, shipped fix and is **NOT reverted**.
+The apparent "crash on device" that seemed to block it (2026-07-16, both fix
+attempts) was a **build/flash-methodology artifact, not a defect in either
+fix** — see "Why both fix attempts *appeared* to crash on device" below. Root
+cause identified and confirmed on device 2026-07-16 (register/RAM/ELF
+evidence). Device left running the known-good `3c57554` firmware.
 
 ### Symptom
 
@@ -709,7 +712,7 @@ architecturally-undeleg­atable routine (same lesson as `CheckMenu_c`/
 `ExecBtlGfx_c`: spike-level equivalence and real in-context behavior are
 different questions).
 
-### Fix attempt #1 — delegation (desktop-correct, DEVICE HARD-FAULT)
+### Fix attempt #1 — delegation (desktop-correct; superseded by #2)
 
 `ff4-gnw/ff4_helpers.c`: gave the three helpers real bodies, following the
 existing `run_emulated_func(snes, addr)` delegation pattern used for
@@ -729,23 +732,20 @@ Item sub-menu (`--press a:…`) renders window frames/text/list correctly
 (confirmed broken pre-fix by reverting and re-testing); `scripts/regress.sh
 --frames 300` across all 14 vanilla fixtures: zero verdict changes.
 
-**This fix HARD-FAULTS ON REAL HARDWARE**, despite being correct and
-regression-free on desktop (commit `ff4-gnw 94ec088`, reverted). Root cause:
-these three hooks fire from *inside* `CheckMenu_c`'s own interpreted
-execution — `CheckMenu_c` itself runs interpreted (retired from dispatch,
-see the CHANTIER INPUT/MENU note above) and delegates into `MainMenu_ext`
-via `run_emulated_func`, which is already one level of nested interpretation.
-The delegation fix added a **second** nested `run_emulated_func` call
-whenever that interpreted execution hit a `JSL` to `$14:FD06/09/0C`. The
-desktop's multi-MB thread stack absorbs the extra nesting invisibly; the
-STM32H7 device's far smaller stack does not — confirmed by isolating the
-change on real hardware: the same known-good `external/ff4` commit boots
-and runs cleanly, and hard-faults (forced HardFault, imprecise bus fault,
-firmware's own BSOD crash screen) with *only* this delegation commit
-cherry-picked on top, nothing else changed. Bootloader and vector tables
-were verified healthy throughout (not a bricked unit, a stack-depth crash).
+This fix (commit `ff4-gnw 94ec088`) was superseded by attempt #2 (`7a2f093`)
+because retire-from-dispatch is architecturally cleaner (no native-C ↔
+interpreter round-trip at all). When `94ec088` was flashed to device it
+appeared to hard-fault (imprecise bus fault, firmware BSOD), and an earlier
+version of this finding attributed that to a *second nested
+`run_emulated_func` call overflowing the STM32H7's small stack*. **That
+theory is WRONG.** Both `94ec088` and `7a2f093` hit the exact same
+device-only failure — a stale external overlay blob desynced from the freshly
+`flash_intflash`-ed internal app — which has nothing to do with call nesting
+or stack depth (attempt #2 has no nesting at all and failed identically). See
+"Why both fix attempts *appeared* to crash on device" below. Neither fix is a
+device-unsafe code bug.
 
-### Fix attempt #2 — retire from dispatch (desktop-correct, ALSO DEVICE-CRASHES — root cause open)
+### Fix attempt #2 — retire from dispatch (`ff4-gnw 7a2f093`, the SHIPPED fix)
 
 Same treatment as `CheckMenu_c`/`ExecBtlGfx_c`/`Mult8_btlgfx_c`: remove the
 three hooks (`D14FD06`, `D14FD09`, `D14FD0C`) from `dispatch_all.c` entirely
@@ -760,26 +760,78 @@ Verified: desktop screenshots byte-identical to fix attempt #1 (same WRAM
 CRC, same rendering); `scripts/regress.sh --frames 300`, zero verdict
 changes. Registry: `D14FD06`/`D14FD09`/`D14FD0C` L2 → RETIRED.
 
-**Also crashes on device** — this removes fix attempt #1's nested-delegation
-theory as the (sole) explanation, since this fix has no such nesting at all.
-Isolated cleanly (cherry-picked alone onto the same known-good `3c57554`,
-confirmed reproducible with a **full `make clean` rebuild**, ruling out a
-stale-incremental-build artifact — this exact retro-go-sd tree has two prior
-documented "Firmware Frankenstein" incidents of that class, so it was
-checked explicitly rather than assumed away). Fault signature this time is
-different from attempt #1: a UsageFault (CFSR bit17, INVSTATE — invalid
-EPSR/Thumb-state, typically a corrupted or misaligned function-pointer
-call/branch) forced to HardFault, versus attempt #1's imprecise bus fault.
-Ruled out so far: array/macro size mismatch (`FF4_DISPATCH_COUNT`, updated
-to 205, matches the literal 205-entry table exactly); `rom_profiles.c`
-desync (the active vanilla-ROM profile has `gated_count=0`, so dispatch-
-table shrinkage cannot affect its gating at all — `rom_ident.c`'s PC-based,
-fail-safe-to-UNKNOWN lookup was read to confirm this). **Root cause NOT yet
-identified.** Device left on the pre-fix firmware (`3c57554`) in the
-meantime; save states were never at risk in any of this — every test
-throughout this investigation flashed internal flash only
-(`flash_intflash`), never touching the external-flash FrogFS/LittleFS
-regions.
+This is the fix that shipped. It **appeared** to crash on device with a
+UsageFault (CFSR bit17, INVSTATE — invalid EPSR/Thumb-state) forced to
+HardFault, and an earlier version of this finding left the cause "not
+identified." The cause is now identified (below) and is **not a defect in
+this fix**: `7a2f093` is correct and stays in. Save states were never at
+risk at any point — every test flashed internal flash only (`flash_intflash`),
+never the external-flash FrogFS/LittleFS.
+
+### Why both fix attempts *appeared* to crash on device (the real root cause)
+
+**The FF4 overlay lives in EXTERNAL flash, and `flash_intflash` never
+updates it.** The internal app and the external overlay blob must stay in
+lockstep; any commit that changes the overlay's size, flashed with
+`flash_intflash` alone, desyncs them and corrupts the stale blob on next
+boot. This — not stack depth (#1) and not anything about retiring dispatches
+(#2) — is what crashed both attempts.
+
+Mechanism, confirmed on device 2026-07-16:
+
+- All FF4 code (`.overlay_ff4`: `app_main_ff4`, `ff4_dispatch_try`, the ported
+  routines, the linker-generated long-branch **veneers**) is NOT in the
+  internal app. `objcopy` (`retro-go-sd Makefile.common:1504`) extracts it
+  into the blob **`Final Fantasy IV.bin`**, stored in the LittleFS on external
+  flash. At launch `rg_emulators.c:1223`
+  (`odroid_overlay_cache_file_in_ram(..., __RAM_EMU_START__)`) copies that blob
+  into RAM, then `rg_emulators.c:1252` does
+  `memset(_OVERLAY_FF4_BSS_START, 0, _OVERLAY_FF4_BSS_SIZE)` and runs
+  `app_main_ff4`.
+- `flash_intflash` writes ONLY internal flash (`0x08100000`): the retro-go
+  framework, the dispatch table (`.rodata`, internal), and the linker size
+  constants (`_OVERLAY_FF4_BSS_START/_SIZE`, `__ff4_itcm_load_off__`). The
+  external `Final Fantasy IV.bin` stays whatever the last full
+  `flash`/`flash_extflash` wrote — here, a known-good-layout overlay.
+- `7a2f093` shrinks the overlay by `0x18` bytes. Flashed internal-only, the
+  fresh internal app applies its *new* constants to the *stale* (larger) blob:
+  `memset(_OVERLAY_FF4_BSS_START = 0x2405ed70 [new], …)` overwrites the tail of
+  the stale overlay (whose code extends to `0x2405ed88`), **zeroing its tail
+  veneers**. `app_main_ff4` (the stale blob's version) then executes
+  `bl 0x2405ed78` into the now-zeroed region → NOP-sled → INVSTATE.
+
+Evidence:
+
+- **RAM vs ELF**: on the crashed device, RAM at `app_main_ff4` (`0x2404bc40`)
+  reads `f012 ffe7` (`bl 0x2405ec20`) — byte-for-byte the *known-good* build,
+  NOT the `7a2f093` build actually flashed to internal (`f012 ffdb`,
+  `bl 0x2405ec08`). The overlay running is the stale one.
+- RAM past `0x2405ed70` is all zeros (erased by the new `memset`), while the
+  stale overlay's code extends to `0x2405ed88` → tail veneers gone.
+- Reconstructed exception frame: `r0=0x14`, `r1=0xbb80`, `lr=0x2404bc63`
+  (`app_main_ff4+34`), faulting PC ≈ 0 — exactly the state at the `bl` site
+  right after `movs r0,#20 / movw r1,#48000`. `CFSR=0x00020000` (INVSTATE),
+  `HFSR` bit30 FORCED.
+- **A/B proof**: `3c57554` internal + stale blob = MATCH = boots (frames
+  advance, confirmed twice). `7a2f093` internal + same stale blob = MISMATCH =
+  crash. Only the internal side changed.
+
+`FF4_DISPATCH_COUNT` (205) and `rom_profiles.c` gating (`gated_count=0` on the
+vanilla profile) were correctly ruled out earlier — they are genuinely not
+involved. `make clean` did not help because it only rebuilds the internal app
+(and, incidentally, `rm -fR sd_content`); it never touches the external blob,
+which `flash_intflash` also never touches.
+
+**To validate an overlay-affecting change on device you MUST update
+`Final Fantasy IV.bin` too**, not just `flash_intflash`. The full
+`flash`/`flash_extflash` path does this but regenerates the whole LittleFS
+from `sd_content/` and destroys the user's on-device save states — forbidden
+here. The save-safe path is to regenerate just the blob and `gnwmanager push`
+that single file into the existing LittleFS (needs the fs offset worked out;
+gnwmanager's `--offset` counts from the END of the fs, and this
+`EXTFLASH_SIZE_MB=4` build places the fs at `0x340000` from the start). A
+hardening option: have `rg_emulators.c` verify a blob-vs-internal version/hash
+before running, turning this silent desync into an explicit error.
 
 ### Lessons
 
@@ -790,22 +842,119 @@ regions.
   comparison remains the only trustworthy verdict for rendering bugs (same
   conclusion as the project's existing oracle-methodology notes above, now
   confirmed for a genuinely new failure mode).
-- **Possible pitfall class (unconfirmed): nested `run_emulated_func` and
-  device stack depth.** Fix attempt #1's working theory was that a
-  dispatched routine reached from *within* an already-interpreted call
-  (hanging off a retired dispatch like `CheckMenu_c`) adds a real extra
-  level of interpreter-loop stack nesting the moment its own delegation
-  also calls `run_emulated_func`, invisible on the desktop's large thread
-  stack. **This theory is now in doubt**: fix attempt #2 removes that exact
-  nesting (no delegation at all, hooks simply retired) and *still* crashes
-  on device, with a different fault signature. Either both attempts hit the
-  same still-unidentified cause for unrelated reasons, or there are two
-  distinct device-only bugs here. Do not cite the nested-`run_emulated_func`
-  theory as settled until a real root cause is found for attempt #2.
-- **Desktop-verified-and-regression-free is not sufficient for a
-  device-affecting dispatch-table change.** Both fix attempts here passed
-  every desktop check (screenshots, WRAM CRC, full regression suite) and
-  both crash on real hardware. Any change to `dispatch_all.c`/`ff4_helpers.c`
-  intended to ship to device needs an on-device liveness check before being
-  declared done, not just a desktop one — this project's own WF-RELEASE
-  guardrails already said this; this finding is a concrete instance of why.
+- **The nested-`run_emulated_func` / device-stack-depth theory (attempt #1)
+  was WRONG — do not cite it.** It was a plausible-sounding guess that
+  survived because attempt #1 was never register-level debugged. The actual
+  cause is the internal/external overlay desync (above); attempt #2 has no
+  nesting at all and failed identically, which is exactly what pointed away
+  from stack depth.
+- **The FF4 overlay is in external flash; `flash_intflash` alone is an
+  incomplete device test for any overlay-affecting change.** Whenever a commit
+  changes anything compiled into the FF4 overlay (`dispatch_all.c`,
+  `ff4_helpers.c`, any `ff4/*.o`), the on-device `Final Fantasy IV.bin` must
+  be updated in lockstep or the two silently desync and corrupt on boot. The
+  crash it produces is arbitrary (INVSTATE, bus fault, …) depending on how the
+  layout shifted — it is NOT diagnostic of the code change itself. Reach for
+  register/RAM-vs-ELF evidence before theorizing.
+- **Desktop-verified-and-regression-free was never the problem here.** Both
+  fixes were fully correct on desktop AND correct as code; the "device crash"
+  was purely a flash-methodology artifact. The real guardrail this finding
+  adds is the overlay-blob lockstep requirement above — an on-device liveness
+  check is still worthwhile, but it must be run against a device whose external
+  blob matches the internal app, or it reports phantom failures.
+
+## F14 — J2e combat bugs (magic animation, text-window artifact): NOT reproduced on vanilla desktop; J2e-specific, blocked on a battle fixture
+
+**Severity:** tbd (device reports) · **Found:** 2026-07-16 (user report on the
+G&W device, **J2e EN v3.21** variant) · **Status:** OPEN — investigated on the
+desktop harness, **neither symptom reproduced on the vanilla JP ROM**; strong
+evidence both are J2e-variant-specific; **blocked** on the absence of a J2e
+in-combat fixture. No code changed (repos clean).
+
+### Symptoms (device, J2e only)
+
+1. Cecil's magic-attack animation no longer triggers in the first few battles.
+2. Intermittent visual artifacts on the battle window that displays
+   attack/action text.
+
+### What was tested on vanilla (`upstream/rom/ff4-jp1.sfc`) and ruled out
+
+Using the frame-aligned **native-ALL vs btlgfx-cluster-EXCLUDED** method (both
+run at native speed, so this sidesteps the ~6× interpreter slowdown that makes
+`--interp-except-input` frame-alignment invalid in combat — see A.2):
+
+- **Bug #1 does not reproduce.** On `012-first-worldmap-combat`, driving the
+  party to act produces a full-screen magic-type animation (blue wave) plus
+  damage numerals, rendered **correctly under native dispatch**. Excluding the
+  whole battle-gfx cluster renders the *same* animation; the large per-frame
+  byte-diffs are **battle-state phase drift** (RNG/timing shift from excluding
+  routines → different enemy count / HP / whose-turn), not animation
+  corruption. Verified by screenshot at the peak-divergence frames.
+- The "premature battle end" on `013-airship-dialogue-pre-combat` (Zu vanishes,
+  transition out) is **scripted, not cluster-caused**: excluding the entire
+  cluster gives the same ending. (This is the trap the 2026-06-30 SDL-bisection
+  MemPalace note warned about — a shared-state/timing artifact, not a bug.)
+- **Bug #2 does not reproduce.** Action text renders cleanly under native
+  dispatch: `006-in-combat` item-use text (`あかいきば`) and `012` damage
+  numerals both show no window corruption; the remaining cluster contributes
+  only <336-byte enemy-sprite phase diffs. Consistent with `Mult8_btlgfx_c`
+  (the previous cause of the transient window band) already being RETIRED
+  (2026-07-09).
+
+### Battle-text delegation smells (found, judged benign)
+
+- `DrawMP_c` ($03:805F, dispatched) calls `ExecBtlGfx_emu` →
+  `run_emulated_func(0x038085)` with A=$0D. This is the exact synchronous-
+  delegate-into-`ExecBtlGfx` shape that got `ExecBtlGfx_c` retired — **but**
+  gfx command $0D = `DrawMPText` (BtlGfxTbl index 13), a non-blocking text
+  draw, **not** a `WaitFrame`/`WaitVblank` command ($02/$0F/$15), and the
+  delegated work runs interpreted. Benign in the scenarios tested; left as a
+  documented smell.
+- `MagicDmgEffect_c` ($03:D378) delegates `run_emulated_func(0xD3D416)` for an
+  untranslated JMP — a non-blocking damage path. Benign.
+
+### The J2e-specific structural finding (the lead)
+
+`patches/out/j2e-en-v321.impact.json` shows the J2e patch **modifies the
+battle-text pipeline**: `IncrTextPtr_c` ($02:A491, "code range modified" — the
+battle message text-pointer increment, reworked for the English variable-width
+engine), `UpdateMonsterAnim_c` ($02:DDDC), and `ExecBattle_c` ($03:8009, callee
+`InitBattle→InitRAM`). All three are **gated → interpreted on J2e** (protected).
+
+But the sibling battle-text/window routines — `DrawMP_c`, `AddMsg1/2/3_c`,
+`TfrBG2MenuTile_c`, `HardMult_btlgfx_c`, `BackAttackYOffset_{s,l}_c`, and the
+monster-sprite cluster — are **not gated and run native on J2e**, and were
+**never validated in combat**: all four J2e oracle seeds
+(`j2e-00{1,2,3,4}-*`) are non-combat, and `patches/manifest.json` itself flags
+"No battle-with-messages … seed yet." So J2e combat is genuinely unvalidated
+territory, and the reported bugs land exactly on the native, English-text-path
+routines that were never exercised.
+
+### Leading hypotheses (unconfirmed)
+
+1. **Bug #2** = the J2e English variable-width font interacting with the native
+   battle text/window rendering (same fragile BG2 menu window as the retired
+   `Mult8_btlgfx_c` artifact).
+2. **Bug #1** = animation-sequencing desync when the English "casts X" message
+   length differs from JP, and/or a J2e-modified gfx-command handler reached on
+   the English path.
+3. A device-only timing/rendering effect (real hardware ≈6–8 fps) not
+   observable in the desktop harness — cannot be excluded.
+
+### Blocker and next steps
+
+- **Blocker:** no J2e in-combat fixture exists; blind headless input scripting
+  cannot reliably reach or drive a J2e battle (castle geometry / long story
+  rail); the device is off-limits (in use by another investigation).
+- **Unblock:** capture a J2e "battle-with-messages" fixture — a human SDL
+  session (reach an early battle, cast magic, save state via key `5`) or a
+  device pause-menu savestate (loads byte-identical per `FIXTURES.md`).
+- Then confirm dispatch causation with the frame-aligned native-vs-cluster
+  method above and bisect the battle-text routines by **screenshot** (per the
+  F13 lesson: WRAM CRC lies for VRAM/PPU-state rendering bugs).
+- **Interim defensive option** (only if J2e combat must work on device before a
+  proper fix): gate the native battle-text/gfx cluster for the J2e profile
+  (fail-closed → interpreter), matching the profile's existing treatment of its
+  54 unresolved routines. Safe direction (the interpreter is ground truth) but
+  **speculative without a repro** — must not be shipped as a "fix" without
+  on-device confirmation (F13).
