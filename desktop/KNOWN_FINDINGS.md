@@ -648,3 +648,100 @@ oracle invocations. Fixed by guarding those `_free` paths under
 `FF4_PORT_STATIC_SNES` (ff4-gnw `480f7d6`); exit codes are meaningful
 since. Hardening candidate: drop the `|| true` in `scripts/regress.sh` now
 that a non-zero exit is a real failure, not teardown noise.
+
+## F13 — field-menu rendering: `update_scroll_regs_emu`/`clear_text_emu`/`update_window_color_emu` were permanent no-op stubs
+
+**Severity:** high (every field-menu screen partially unrendered) · **Found:**
+2026-07-16 (user report: "big display problems" navigating the field menu
+from `009-first-free-roam.lss`) · **Status:** FIXED (`ff4-gnw`, pending commit)
+
+### Symptom
+
+Opening the field menu (X button) in native mode showed the command list
+(アイテム/まほう/そうび/…) correctly, but the character status window
+(portrait, name, level, HP/MP) and the TIME/Gil window were **completely
+unrendered** — solid black, no window frame, no text, just the bare
+character sprite floating with no background. Entering a sub-menu (e.g.
+Item) was worse: window frames appeared but text was jammed on one line
+and the item list itself never rendered.
+
+This is a distinct, later bug from the `CheckMenu_c` dispatch-retirement
+fix (2026-06-30/07-06, see MemPalace `wing=ff4-gnw room=obstacles-and-solutions`
+"[CHANTIER INPUT/MENU]") — that fix made the menu **open and navigate**;
+this one is about what gets **drawn inside it** once open. Noted but
+explicitly deferred, unreproduced, 2026-07-06 (no precise repro at the time).
+
+### Root cause
+
+Same bug class as F1 (`Rand99_emu`/`rand_emu`/etc.): three of the `menu`
+module's dispatched `_ext_c` wrappers are one-line delegates to a helper
+in `ff4_helpers.c`, and that helper was left as a permanent
+`__attribute__((weak))` **no-op** — never wired to `run_emulated_func`:
+
+| Dispatch | Wrapper | Helper (was no-op) | Real routine |
+|----------|---------|---------------------|--------------|
+| `D14FD0C` | `UpdateScrollRegs_ext_c` | `update_scroll_regs_emu` | `$14:FD0C` → `$14:FF0A` |
+| `D14FD06` | `ClearText_ext_c` | `clear_text_emu` | `$14:FD06` → `$14:FE9E` |
+| `D14FD09` | `UpdateWindowColor_ext_c` | `update_window_color_emu` | `$14:FD09` → `$14:FED6` |
+
+Every real `JSL` to these addresses (from the interpreted `MainMenu_ext`,
+itself reached via `CheckMenu_c`'s interpreted path) got intercepted by
+native dispatch and did **nothing** instead of running the real window/
+scroll-register logic. `UpdateScrollRegs_ext_c` alone is the confirmed
+cause of the top-level menu's blank status/Gil windows (bisected via
+`--exclude 14fd0c` on `009-first-free-roam.lss` — WRAM CRC bisection was
+**misleading** here, since the bug is VRAM/PPU-register state, not WRAM;
+screenshot comparison was the only reliable signal, consistent with the
+project's "validate every rendering increment by screenshot" rule).
+`ClearText_ext_c`/`UpdateWindowColor_ext_c` are innocent on the top-level
+screen (excluding them made no visual difference there) but are the exact
+same defect and do matter once a sub-menu is opened (Item list rendering
+was broken pre-fix, confirmed by reverting and re-testing).
+
+All three had been credited **L2** by the fuzzed-spike sweep
+(`batch_spike_ffgnw.py`) — the spike only fuzzes the one-line wrapper
+calling its `_emu` helper in isolation, so a no-op stub "passes" trivially.
+**L2 does not catch a no-op delegate** any more than it catches an
+architecturally-undeleg­atable routine (same lesson as `CheckMenu_c`/
+`ExecBtlGfx_c`: spike-level equivalence and real in-context behavior are
+different questions).
+
+### Fix
+
+`ff4-gnw/ff4_helpers.c`: gave the three helpers real bodies, following the
+existing `run_emulated_func(snes, addr)` delegation pattern used for
+`ExecBtlGfx_emu`/`ExecBtlGfx_ext_emu`/`ExecDMA_emu` (F1/F10):
+
+```c
+void clear_text_emu(Snes *snes) { run_emulated_func(snes, 0x14FD06u); }
+void update_scroll_regs_emu(Snes *snes) { run_emulated_func(snes, 0x14FD0Cu); }
+void update_window_color_emu(Snes *snes) { run_emulated_func(snes, 0x14FD09u); }
+```
+
+Delegating to the dispatch-hooked address itself (not the further `JMP`
+target) matches the pattern already used elsewhere and lets the
+interpreter naturally follow the bank-local `JMP` trampoline.
+
+### Verification
+
+- `009-first-free-roam.lss`, headless `--press x:5:2` (open menu): status
+  window (portrait/name/level/HP/MP) and TIME/Gil window now render,
+  byte-for-byte matching the `--interp-except-input` ground truth.
+  Navigation (`--press down:…`) still moves the cursor correctly (no
+  regression on the 2026-07-06 `ReadCtrl`/`UpdateCtrl` fix).
+- Same fixture, `--press a:…` to enter the Item sub-menu: window frames,
+  text layout, and the item list now render correctly (confirmed broken
+  pre-fix by reverting the change and re-running the identical sequence).
+- `scripts/regress.sh --frames 300` across all 14 vanilla fixtures: **zero
+  verdict changes** — `009-first-free-roam` and others keep their
+  pre-existing (unrelated, already-documented) divergences unchanged.
+
+### Lesson
+
+WRAM-CRC bisection can produce a **false equivalence** between two
+different `--exclude` sets when the actual bug lives in VRAM/PPU register
+state rather than WRAM — two candidate exclusion sets had identical WRAM
+CRC here even though only one of them actually fixed the screen. Screenshot
+comparison remains the only trustworthy verdict for rendering bugs (same
+conclusion as the project's existing oracle-methodology notes above, now
+confirmed for a genuinely new failure mode).
