@@ -1012,3 +1012,64 @@ desktop harness (same class as F13: desktop-correct, device-divergent).
 3. If "Cecil's magic-attack" means his *own* interactive offensive turn, capture
    a fixture where a caster (or Dark-Knight Cecil's Darkness / an item) is
    driven to act interactively — the intro fixture cannot exercise that.
+
+### UPDATE 2026-07-16b — RETRACTED (measurement off-by-one): `--render-every` does NOT reproduce the bug; the line renderer IS frame-skip-coherent
+
+> **RETRACTED 2026-07-16c.** The "divergence" described below was a
+> measurement off-by-one, not a real bug. The harness dumps the frame executed
+> at loop index `i` under filename `i+1` (`--out-every`, harness_headless.c
+> line 433) but sets `ff4_ppu_render_enabled` from `i` (line 363). So filename
+> **N is freshly rendered iff `N % 8 == 0`** (for `--render-every 8`), NOT
+> `N % 8 == 7`. I compared the `N % 8 == 7` files — which in a `--render-every 8`
+> run are the **skipped** frames; they legitimately hold the previous rendered
+> frame (expected frame-skip staleness), so of course they differed from the
+> full-render run. Re-compared at the correctly-rendered frames (`N % 8 == 0`):
+> RE1 vs RE8 are **byte-identical at every rendered frame** (0 of 70 differ)
+> across the whole battle including the Red Fang animation — on the clean build
+> AND on a build with all per-line caches (R2b/R16/R20) + skipMode reuse
+> forcibly disabled. Savestates at f519 were already byte-identical, which is
+> what tipped me off (a full re-render of identical state cannot differ).
+> **Conclusion: the line renderer is frame-skip-coherent; `--render-every` does
+> NOT reproduce the device bug, and the per-line-cache hypothesis below is
+> unsupported.** The bug remains device-only; the desktop harness does not
+> reproduce it under simulated frame-skip on this fixture. Original (incorrect)
+> analysis retained below for the record.
+
+Answering "can the device's frame-skip be simulated on desktop to reproduce
+this without hardware": **yes, partially.** `--render-every K` drives
+`ff4_ppu_render_enabled` exactly like the device's frame-skip (renders 1 of
+every K frames; game logic still runs every frame). On the J2e Float-Eye
+fixture:
+
+- **Game state is byte-identical** across `--render-every 1/4/8` (same
+  `frames run`=24068, same WRAM crc32 `3549BAA1`) — frame-skip gates only pixel
+  output, not logic/VRAM/OAM/CGRAM.
+- **Yet the rendered frames diverge.** Comparing a skipped run's *rendered*
+  frames (`i % K == K-1`) against the full-render run (`--render-every 1`, the
+  always-correct reference) shows a persistent ~6 k-byte divergence through the
+  Red Fang animation window (and the idle enemy animation). Screenshot at
+  f0519: full-render shows the Red Fang effect overlaying the enemies;
+  render-every-8 shows it **stale/missing**. Because game state is identical, a
+  correct (stateless-per-PPU-state) renderer would produce identical pixels —
+  so the line renderer is **not frame-skip-coherent**: skipped frames leave a
+  per-line render cache serving stale content on the next rendered frame.
+- **Ruled out:** the R4/R5 whole-frame reuse (`ppu_handleFrameStart` skipMode
+  1/2). A targeted fix (invalidate the reuse baseline when
+  `ff4_ppu_render_enabled==0`) changed the divergence by **0 bytes** — because
+  an active battle has visible-line raster writes / HDMA every frame →
+  `geomStable=false` → `skipMode` is always 0 (full render) in battle. So the
+  incoherence is in the **always-on per-line caches** (R2b tile-row `s_trcGen`,
+  R16 map `s_mlGen`, R20 empty-line `s_emptyGen`) or the skipMode-2 output
+  replay — not the whole-frame reuse. (Change was reverted; tree clean.)
+
+**Caveat on device relevance:** this only matters if the device actually skips
+renders during battle. The 2026-07-09 MemPalace note recorded `FF4_FRAMESKIP`
+default 0 ("slideshow"), but the later **adaptive render-skip** campaign (see
+`014-baron-castle-exterior`, umbrella BACKLOG) suggests the device now drops
+renders adaptively under frame-budget pressure — which a heavy battle animation
+would trigger. **Device agent: first confirm whether `ff4_ppu_render_enabled`
+(adaptive skip / frameskip) ever goes 0 during the Red Fang animation on
+device.** If it does, this is very likely the mechanism, and the desktop
+testbed is: `--render-every 8 --out-every 1`, diff the `i%8==7` frames against
+`--render-every 1`; a fix (make the per-line caches frame-skip-coherent) can be
+validated here before device flashing.
