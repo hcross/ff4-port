@@ -143,3 +143,46 @@ here rather than rewritten into the Decision:
 Still open after the bench: the D6 cadence measurement on J2e
 dialogue/world-map and the unknown-ROM refusal-screen exercise
 (tracked in the umbrella `BACKLOG.md` §9).
+
+## Post-decision note (2026-07-16, validation-pipeline integration)
+
+Until this point, WF-DECOMP/WF-VALID (the per-routine translation
+pipeline) only ever proved equivalence against the vanilla ROM; a
+routine's variant status was purely informational, computed in a
+disconnected batch pass (`patch_impact.py`), not part of the routine
+loop itself. Closed the gap with two new empirical mechanisms, both
+opportunistic/cheap rather than mandatory-and-expensive:
+
+- **Per-routine spike-vs-variant** (`ff4-port/patches/spike_check.py`):
+  re-runs a routine's already-proven spike against a variant image for
+  every not-gated entry. `translator/qualify.py` now calls this
+  automatically after every vanilla L1→L2 promotion (best-effort,
+  never blocks the vanilla proof). Caught a real methodological trap
+  worth recording: the first implementation booted the spike directly
+  on the variant image, which inherited that variant's own (possibly
+  patched) boot sequence as undeclared entry-state noise — 37/122
+  false "diverged" verdicts on the first full sweep, including
+  register-only math helpers that cannot plausibly depend on ROM
+  content. Fixed by always booting on vanilla (the already-proven
+  baseline) and swapping ONLY the cart's ROM buffer
+  (`generate_spike.py --variant-rom`, via LakeSnes's `cart_load`,
+  which touches no CPU/PPU/WRAM state) after the baseline snapshot —
+  0 false positives on re-sweep. Gated by `manifest.json`'s new
+  `rom_identities[*].lineage` field (spikes' `TARGET_ADDR_24` is
+  resolved against the JP disassembly; a foreign-lineage base would
+  silently target the wrong address).
+- **Opportunistic oracle-on-variant** (WF-VALID step 1/3): a seed
+  reaching the target routine is looked up via
+  `patches/out/seeds/*.oracle.json`'s `native_hits` field (now always
+  populated by `oracle_ab.c`'s JSON output, not just on divergence) —
+  if found, the same isolation runs against the variant too; nothing
+  is manufactured on spec. Manually de-gating a fail-closed range
+  (`registry/RANGES.md`) is the one exception: both the spike-check
+  and an oracle pass become mandatory there, since it is a rare,
+  deliberate human claim that needs its own evidence.
+
+`registry/VARIANT_GAPS.md` now also reports how much of each variant's
+not-gated set the spike-check has actually confirmed (a "Spike sanity"
+line per variant) — the empirical backstop for what byte-range static
+analysis structurally cannot see (frozen ROM-data copies, indirect
+callee targets).
