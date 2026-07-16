@@ -295,6 +295,19 @@ static void write_json_verdict(const char *path, const char *verdict, int first_
                     seen[i], name ? "\"" : "", name ? name : "null", name ? "\"" : "");
         }
     }
+    fprintf(o, "],\n");
+    /* Whole-run native dispatch coverage, UNCONDITIONAL (unlike
+     * hook_attribution above, which only fires on divergence). This is
+     * what a translation-patch variant validation pass (ADR-008,
+     * ff4-port/docs/adr) reads back to answer "which dispatch IDs does
+     * this seed already exercise" -- see patches/out/seeds/*.oracle.json. */
+    fprintf(o, "  \"native_hits\": [");
+    {
+        uint32_t seen[256];
+        int sn = collect_hooks(frames_run_a - 1, true, seen, 256);
+        for (int i = 0; i < sn; i++)
+            fprintf(o, "%s\"%06X\"", i ? ", " : "", seen[i]);
+    }
     fprintf(o, "]\n");
     fprintf(o, "}\n");
     fclose(o);
