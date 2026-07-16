@@ -1131,3 +1131,58 @@ device.** If it does, this is very likely the mechanism, and the desktop
 testbed is: `--render-every 8 --out-every 1`, diff the `i%8==7` frames against
 `--render-every 1`; a fix (make the per-line caches frame-skip-coherent) can be
 validated here before device flashing.
+
+### RESOLVED 2026-07-16d — root cause: `PlayGameSfx_c` ($04:85E1) accessed WRAM instead of the APU ports; retired from dispatch
+
+This supersedes every "device-only / frame-skip / redirect" note above. Once
+the user captured an actual in-combat J2e savestate
+(`patches/out/seeds/j2e-combat-001.lss`) and clarified that the blue/violet
+wash I'd been treating as "the effect" is the **normal enemy-death animation**
+— so the *fire attack animation* is the missing piece — an objective
+**orange-fire pixel scan** cracked it:
+
+- **native dispatch:** ~0 orange-fire px across the Red Fang resolution — the
+  Fire2 explosion never plays; combat jumps straight to the death animation.
+- **pure interpreter (`--interp-except-input`, ground truth):** ~24 000 orange
+  px — the fire explosion plays. So it **is** a dispatch bug, reproducible
+  headless, on **both** vanilla (`006`) and J2e (`j2e-combat-001`). (My earlier
+  "same in all configs" was from comparing mis-aligned frames; the orange scan
+  is objective and frame-independent.)
+
+Bisected with `--exclude` + the orange scan: excluding the whole btlgfx cluster
+did nothing; the culprit is a single **non-cluster** hook — **`PlayGameSfx_c`
+($04:85E1)**. Excluding only it restores the fire.
+
+**Root cause:** `PlayGameSfx_c` reads/writes `snes->ram[0x2140..0x2143]` — WRAM
+`$7E:2140` — instead of the **APU I/O ports** `hAPUIO0-3` (MMIO `$2140-3`,
+reached via the bus). The asm (`upstream/sound/sound.asm:767`) does
+`sta hAPUIO0` then `@85f7: cmp hAPUIO0 / bne @85f7`: send the SFX command to the
+SPC, then spin until the SPC echoes the command byte back — the SNES↔SPC
+handshake. The C body never touches the real ports (SFX never sent) and its
+poll (`while (ram[0x2140] != ram[0x00])`) exits immediately (it just wrote
+`ram[0x2140]=ram[0x00]`), so the handshake is skipped. Battle attack animations
+are paced by that SFX handshake, so with the native body the fire animation is
+dropped. This is **Pitfall 13 (MMIO-in-WRAM)** — the *identical* bug that
+retired the sibling `ExecInterrupt_c` ($04:861E) on 2026-07-14; `PlayGameSfx_c`
+slipped through the same sound-unstub work. It was even flagged `SPC_MAILBOX`
+in the registry, credited L2 only by a fuzzed spike that can't see the
+MMIO-vs-WRAM distinction — same L2-blind-spot lesson as F13.
+
+**Fix:** retired `{ 0x0485e1, PlayGameSfx_c }` from `dispatch_all.c`
+(`FF4_DISPATCH_COUNT` 205→204; registry `D0485E1` L2→RETIRED) — interpreted,
+matching `ExecInterrupt_c`. Retired rather than bus-fixed because native
+APU-handshake polling from a mono-frame dispatch is exactly the fragile path
+the sound work already stumbled on, and triggering the SPC has ~0 perf value.
+The interpreter runs the real handshake against the emulated SPC / device
+`spc4_responder`, proven to complete (sound has been live + device-validated
+since the same 2026-07-14 work that retired `ExecInterrupt_c`).
+
+**Verified (desktop):** native now renders the full orange Fire2 explosion
+(~24 k orange px, screenshot-confirmed); `scripts/regress.sh --frames 250` over
+the vanilla subset → **no verdict changes**; J2e A/B oracle on all four
+non-combat seeds → **IDENTICAL** (device-validation evidence intact);
+`rom_profiles.c` unchanged (0485E1 was never gated). **Device validation is the
+remaining gate** (WF-RELEASE / F13) — but this is the *safe* retirement
+direction (interpret, no added `run_emulated_func` nesting), unlike F13's
+delegation crashes, and mirrors the already-device-validated `ExecInterrupt_c`
+retirement.
