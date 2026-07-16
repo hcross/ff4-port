@@ -958,3 +958,57 @@ routines that were never exercised.
   54 unresolved routines. Safe direction (the interpreter is ground truth) but
   **speculative without a repro** — must not be shipped as a "fix" without
   on-device confirmation (F13).
+
+### UPDATE 2026-07-16 — tested with a real J2e in-combat fixture; NEITHER bug reproduces on desktop → redirect to a device-only path
+
+The user captured a J2e in-combat fixture via SDL:
+`patches/out/seeds/j2e-005-early-battle-float-eye.lss` (local-only, same
+gitignored `out/seeds/` as the other J2e seeds). It is the **J2e twin of
+vanilla `006`** — the early Red Wings intro battle, 3 "Float Eye" vs Cecil
+(200/200), i.e. one of the "first few battles" from the report. Tested on
+`patches/out/ff4-j2e-v321.sfc`, native + frame-aligned cluster-excluded, 900
+frames dense (`--out-every 1`).
+
+- **Bug #2 (intermittent text-window artifact): NOT reproduced.** The English
+  action-text window renders cleanly and **stably**: "Float Eye", "Cecil
+  200/200", and the "Red Fang" action box (displayed continuously ~f350–545)
+  show no corruption across all 900 frames. A per-frame bright-pixel scan of
+  the window band finds only the normal white glyphs (constant count = stable
+  text), no transient band/sky-tile artifact. Native == cluster-excluded (only
+  Float-Eye sprite-animation phase diffs).
+- **Bug #1 (magic animation not triggering): NOT reproduced.** Every animation
+  present renders correctly under native dispatch and matches cluster-excluded:
+  battle-entry fade, the **Red Fang Fire2 magic animation** (f503–545: enemies
+  hit, then defeated — a genuine magic-attack effect), enemy death, and the
+  mode-7 battle-exit. Diffs at action frames are 0–303 bytes.
+- **Gap:** this fixture is an **AI-ally-driven scripted intro battle** — a Red
+  Wings crew ally throws Red Fang repeatedly and wins; **Cecil never takes an
+  interactive offensive turn** (his command menu never opens in the no-input
+  run, and A-mashing doesn't change the auto-resolution). So "Cecil's *own*
+  action animation" specifically was not exercised — but all other battle
+  animations, including a real magic effect, render correctly.
+
+**Conclusion:** neither symptom reproduces on the desktop harness on **vanilla
+OR the real J2e fixture**. The identical dispatch C code and the shared `ppu.c`
+line-renderer (R16–R20 paths are exercised on desktop — the diag counters prove
+it) render J2e combat correctly. This **redirects the root cause away from the
+dispatch table** (the initial framing) toward a **device-only path not present
+in the desktop harness**: the retro-go-sd frame-output/display pipeline (LCD
+push, adaptive render-skip, `FF4_FRAMESKIP`), real-hardware frame timing at
+~6–8 fps, or a device-specific build config — none reproduced by the LakeSnes
+desktop harness (same class as F13: desktop-correct, device-divergent).
+
+**Next steps (device-side, for a follow-up hardware session):**
+1. Reproduce on device and capture the actual **LCD frame output** during the
+   bug (`gnw-hardware:debug` frame-liveness oracle + screenshot) to localize
+   whether the animation/text is missing at the display or already at the
+   `ppu.c` pixelBuffer.
+2. Prime suspects are the **device rendering optimizations** landed just before
+   the report — R19 (`5bbcfe9`, inline compose) / R20 (`b5eee3f`, empty-line
+   skip for direct-decode BG layers) — and the `vramGen`-invalidation / R16 map
+   / R2b tile-row caches interacting with mid-frame battle-window updates. A
+   battle-specific regression there would be invisible to the every-frame
+   full-speed desktop render.
+3. If "Cecil's magic-attack" means his *own* interactive offensive turn, capture
+   a fixture where a caster (or Dark-Knight Cecil's Darkness / an item) is
+   driven to act interactively — the intro fixture cannot exercise that.
