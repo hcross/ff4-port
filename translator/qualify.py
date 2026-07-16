@@ -13,8 +13,17 @@ Writing a CONTRACT (needs an LLM call or a human) and L2 -> L3 oracle
 validation (needs fixture selection, a judgment call) are explicitly out
 of scope — see workflows/WF-DECOMP.md / WF-VALID.md for those steps.
 
+After a successful vanilla promotion, this ALSO runs the routine's spike
+against every known JP-lineage translation-patch variant it is not gated
+for (patches/spike_check.py --all-variants, ADR-008) -- cheap (reuses the
+just-proven vanilla spike, no seed to manufacture), best-effort, and never
+blocks or reverts the vanilla L2 promotion above. A "diverged" verdict
+here is real, rare signal: the static gating (registry/patch_impact.py)
+missed a data/callee dependency for that routine under that variant.
+Disable with --no-variant-check for fast iteration.
+
 Usage:
-    python translator/qualify.py D<id> [--trials N] [--no-promote]
+    python translator/qualify.py D<id> [--trials N] [--no-promote] [--no-variant-check]
 
 Exit code: 0 on a clean promotion, 1 on any escalation/blocked stage
 (see the printed STAGE=... line for the reason), 2 on usage error.
@@ -36,6 +45,7 @@ UMBRELLA = Path(os.environ.get("FF4_UMBRELLA_DIR", str(UMBRELLA)))
 REGISTRY_DIR = UMBRELLA / "registry"
 FFGNW = UMBRELLA / "ff4-gnw"
 GEN_SPIKE = HERE / "generate_spike.py"
+SPIKE_CHECK = PORT_ROOT / "patches" / "spike_check.py"
 
 MODULE_DIRS = ["battle", "field", "menu", "cutscene", "sound", "btlgfx"]
 
@@ -84,6 +94,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--trials", type=int, default=200)
     ap.add_argument("--no-promote", action="store_true",
                      help="run the spike but don't call registry_promote.py")
+    ap.add_argument("--no-variant-check", action="store_true",
+                     help="skip the automatic post-promotion spike-vs-variant pass "
+                          "(patches/spike_check.py) -- use for fast iteration; the "
+                          "check never blocks or reverts the vanilla L2 promotion")
     ap.add_argument("--registry-dir", type=Path, default=REGISTRY_DIR,
                      help="override for testing against an isolated registry copy")
     args = ap.parse_args(argv)
@@ -179,6 +193,34 @@ def main(argv: list[str] | None = None) -> int:
         emit("promote", "escalate", T6_INFRA + f" (registry_promote.py: {promote.stderr.strip()})")
         return 1
     emit("promote", "pass", f"{args.dispatch_id} -> L2")
+
+    if args.no_variant_check:
+        emit("variant_check", "skip", "--no-variant-check given")
+        return 0
+
+    # Best-effort, non-blocking: this vanilla L2 promotion already stands on
+    # its own proof. A missing spike_check.py, a missing variant image, or
+    # any other infra hiccup here must never revert or fail the promotion
+    # above -- see ADR-008 (ff4-port/docs/adr): variant facts live next to
+    # patches/manifest.json, never gate the vanilla-scoped registry.
+    try:
+        vcheck = subprocess.run(
+            [sys.executable, str(SPIKE_CHECK), args.dispatch_id, "--all-variants"],
+            capture_output=True, text=True, timeout=180, cwd=str(PORT_ROOT),
+        )
+        vout = (vcheck.stdout or "") + (vcheck.stderr or "")
+        if vcheck.returncode == 1:
+            emit("variant_check", "escalate",
+                 "spike diverged against a not-gated variant -- real signal, see "
+                 f"patches/spike_checks.json and the detail below:\n{vout.strip()}")
+        elif vcheck.returncode not in (0, 1):
+            emit("variant_check", "escalate", T6_INFRA + f" (spike_check.py: {vout.strip()})")
+        else:
+            emit("variant_check", "pass", vout.strip() or "no eligible variant/routine pair")
+    except subprocess.TimeoutExpired:
+        emit("variant_check", "escalate", T6_INFRA + " (spike_check.py timed out)")
+    except FileNotFoundError:
+        emit("variant_check", "escalate", T6_INFRA + f" ({SPIKE_CHECK} not found)")
     return 0
 
 
