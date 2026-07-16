@@ -645,6 +645,33 @@ static uint8_t *read_file(const char *path, size_t *out_len) {{
     fclose(f); *out_len = sz; return buf;
 }}
 
+// Translation-patch variant comparison (registry/patch_impact.py, ADR-008):
+// swap the cart's ROM buffer to a variant's canonical image AFTER the
+// vanilla baseline is already captured. cart_load() (see LakeSnes/snes/
+// cart.c) touches ONLY cart->{{type,rom,romSize,ram,ramSize}} -- unlike
+// snes_loadRom(), which calls snes_reset() internally and would destroy
+// the very WRAM/CPU baseline this swap exists to preserve. Boot and
+// baseline therefore ALWAYS come from argv[1] (vanilla in every documented
+// invocation); only the CODE BYTES the interpreter reads from here on
+// change. Without this, comparing a not-gated routine's spike against a
+// variant image would inherit that variant's OWN (possibly patched) boot
+// sequence as a confound -- e.g. Mult8_c's undeclared entry carry flag
+// silently differing because the variant's early-boot code differs,
+// producing mass false "diverged" verdicts unrelated to the routine
+// itself (found empirically 2026-07-16: 37/122 false positives before
+// this fix).
+static void swap_variant_rom(Snes *snes, const char *path) {{
+    size_t len = 0;
+    uint8_t *bytes = read_file(path, &len);
+    if (!bytes) {{ fprintf(stderr, "swap_variant_rom: failed to read %s\n", path); exit(4); }}
+    if (len == 0 || (len & (len - 1)) != 0) {{
+        fprintf(stderr, "swap_variant_rom: %s size %zu is not a power of 2\n", path, len);
+        exit(4);
+    }}
+    cart_load(snes->cart, snes->cart->type, bytes, (int)len, snes->cart->ramSize);
+    free(bytes);
+}}
+
 static inline uint32_t stack_addr(const Cpu *cpu) {{
     return cpu->e ? (0x0100u | (cpu->sp & 0xFFu)) : cpu->sp;
 }}
@@ -732,7 +759,7 @@ static uint32_t host_rng(void) {{
 
 int main(int argc, char **argv) {{
     if (argc < 2) {{
-        fprintf(stderr, "usage: %s <rom.sfc> [n_trials]\n", argv[0]);
+        fprintf(stderr, "usage: %s <rom.sfc> [n_trials] [variant_rom.sfc]\n", argv[0]);
         return 1;
     }}
     int n_trials = (argc >= 3) ? atoi(argv[2]) : 1000;
@@ -749,6 +776,11 @@ int main(int argc, char **argv) {{
 
     Snap baseline;
     snap_take(&baseline, snes);
+
+    // Optional variant-comparison mode: see swap_variant_rom's comment.
+    // argv[1] is still what booted and produced `baseline` above -- only
+    // the ROM bytes the interpreter reads from here on change.
+    if (argc >= 4) swap_variant_rom(snes, argv[3]);
 
     fprintf(stderr, "{func_name} asm vs C : %d trials\n", n_trials);
 
@@ -1051,7 +1083,18 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("source", type=Path, help="port/<module>/<name>.c file")
     ap.add_argument("--build", action="store_true", help="run `make <spike>` after generation")
     ap.add_argument("--run", type=int, default=0, help="run N trials after building (requires --build)")
-    ap.add_argument("--rom", type=Path, default=ROOT / "upstream/rom/ff4-jp1.sfc")
+    ap.add_argument("--rom", type=Path, default=ROOT / "upstream/rom/ff4-jp1.sfc",
+                    help="boots and produces the entry-state baseline (leave at the "
+                         "vanilla default when --variant-rom is set)")
+    ap.add_argument("--variant-rom", type=Path, default=None,
+                    help="translation-patch variant image (patches/manifest.json). If "
+                         "set, the spike still boots and snapshots its baseline from "
+                         "--rom, then swaps ONLY the cart's ROM buffer to this image "
+                         "before running trials -- so the comparison isolates the "
+                         "variant's code bytes without inheriting its own (possibly "
+                         "patched) boot sequence as a confound. Meaningful only for a "
+                         "routine registry/patch_impact.py judged NOT gated for this "
+                         "variant (patches/spike_check.py enforces that).")
     ap.add_argument("--spike-suffix", default="auto",
                     help="Suffix used for the generated spike file "
                          "(parity/src/spike_<name>_<suffix>.c). Set per "
@@ -1134,9 +1177,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.run > 0 and args.build:
         bin_path = ROOT / "parity" / bin_name
+        cmd = [str(bin_path), str(args.rom), str(args.run)]
+        if args.variant_rom:
+            cmd.append(str(args.variant_rom))
         try:
             res = subprocess.run(
-                [str(bin_path), str(args.rom), str(args.run)],
+                cmd,
                 capture_output=True, text=True,
                 # Hard cap: a spike that does not finish 100 trials in 20 s
                 # contains an infinite loop. Kill it instead of orphaning it
