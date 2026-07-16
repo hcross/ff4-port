@@ -28,6 +28,13 @@ parity/ff4-parity
 parity/ff4-parity-compare
 parity/ff4-spike-*
 
+# patches/spike_check.py's own spike-suffix (registry/patch_impact.py,
+# ADR-008): mechanically regenerated from the ff4-gnw C source + CONTRACT
+# on every run, and its Makefile rule additions are idempotent
+# (add_makefile_rule skips a rule already present) -- the durable artifact
+# of a variant check is patches/spike_checks.json, not this scratch build.
+parity/src/spike_*_variant.c
+
 # cc65 listings + map files
 **/*.lst
 **/*.map

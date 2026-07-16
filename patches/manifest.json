@@ -1,10 +1,11 @@
 {
-  "comment": "Registry of known translation patches and the canonical variant images they produce. Patch files (files/) and built images (out/) are NOT tracked -- same policy as ROMs; this manifest carries the hashes that make every artifact verifiable and reproducible via apply_ips.py --patch-id <id>. Dispatch-profile validity per variant is recorded here (validation.status), NOT in registry/dispatch_state.jsonl, whose L-levels stay scoped to the vanilla ROM.",
+  "comment": "Registry of known translation patches and the canonical variant images they produce. Patch files (files/) and built images (out/) are NOT tracked -- same policy as ROMs; this manifest carries the hashes that make every artifact verifiable and reproducible via apply_ips.py --patch-id <id>. Dispatch-profile validity per variant is recorded here (validation.status), NOT in registry/dispatch_state.jsonl, whose L-levels stay scoped to the vanilla ROM. rom_identities[*].lineage ('jp' | 'us' | ...) gates spike_check.py's --all-variants mode: the dispatch table's addresses (and TARGET_ADDR_24 in every generated spike) were resolved against the JP disassembly, so only 'jp'-lineage bases preserve addressing for untouched routines -- a foreign lineage (e.g. a future Namingway/US entry) must be excluded from spike-vs-variant re-runs, not just from dispatch gating.",
   "rom_identities": {
     "vanilla-jp11": {
       "crc32": "CAA15E97",
       "size": 1048576,
       "file_hint": "upstream/rom/ff4-jp1.sfc",
+      "lineage": "jp",
       "notes": "Final Fantasy IV (Japan) rev 1.1, unheadered LoROM (No-Intro identity); the ROM every dispatch was proven against."
     }
   },
