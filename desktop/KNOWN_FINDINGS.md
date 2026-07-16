@@ -653,13 +653,18 @@ that a non-zero exit is a real failure, not teardown noise.
 
 **Severity:** high (every field-menu screen partially unrendered) · **Found:**
 2026-07-16 (user report: "big display problems" navigating the field menu
-from `009-first-free-roam.lss`) · **Status:** FIXED — `ff4-gnw 7a2f093`
-(retire-from-dispatch) is the correct, shipped fix and is **NOT reverted**.
-The apparent "crash on device" that seemed to block it (2026-07-16, both fix
-attempts) was a **build/flash-methodology artifact, not a defect in either
-fix** — see "Why both fix attempts *appeared* to crash on device" below. Root
-cause identified and confirmed on device 2026-07-16 (register/RAM/ELF
-evidence). Device left running the known-good `3c57554` firmware.
+from `009-first-free-roam.lss`) · **Status:** FIXED and **DEVICE-CONFIRMED**
+(2026-07-16) — `ff4-gnw 7a2f093` (retire-from-dispatch) is the correct,
+shipped fix. The apparent "crash on device" that seemed to block it
+(2026-07-16, both fix attempts) was a **build/flash-methodology artifact, not
+a defect in either fix** — see "Why both fix attempts *appeared* to crash on
+device" below. Root cause identified via register/RAM/ELF evidence, then the
+device was properly re-flashed with the matching dual-language 8 MB
+overlay/FrogFS config (its actual real-world build, discovered mid-investigation
+to differ from every documented recipe) and the fix verified live: device
+boots, all 5 real user save files were restored byte-identical (sha256
+match) after the flash, and liveness is confirmed (frames advancing, no
+fault). Full flash/restore log in the "Device-confirmed" update below.
 
 ### Symptom
 
@@ -862,6 +867,59 @@ before running, turning this silent desync into an explicit error.
   adds is the overlay-blob lockstep requirement above — an on-device liveness
   check is still worthwhile, but it must be run against a device whose external
   blob matches the internal app, or it reports phantom failures.
+
+### Device-confirmed (2026-07-16) — and a second, bigger discovery along the way
+
+Attempting the save-safe validation (a targeted `gnwmanager push` of just the
+overlay blob) surfaced something more fundamental: **the device's actual
+external-flash layout does not match any documented build recipe.** Read-only
+inspection found the real FrogFS contains BOTH ROMs (`ff4.sfc` + `ff4-j2e.sfc`,
+CRC-verified against the pinned hashes) baked at a size (3.65 MiB) that fits
+inside an `EXTFLASH_SIZE_MB=4` layout — but retro-go-sd's own documentation
+(commit `dfea70bf`) states dual-ROM "does not fit" below `EXTFLASH_SIZE_MB=8`.
+The device was built with an undocumented, one-off local configuration not
+reconstructable from any commit history or transcript on record.
+
+**Worse, a second issue was found along the way**: repeated `flash_intflash`-only
+cycles during this investigation (all using this project's own documented
+`EXTFLASH_SIZE_MB=4` canonical flags) had caused the internal app to
+**auto-format a stray 4 MB LittleFS on top of the tail of the real 8 MB FrogFS**
+on every boot (`gw_littlefs.c`'s format-on-mount-fail behavior, triggered
+because the booting app's expected filesystem layout didn't match the real
+external flash). **`flash_intflash` is not save-safe when the internal app's
+filesystem-size config doesn't match the external flash's actual layout** —
+it can silently trigger an auto-format that overlaps unrelated flash content.
+No save data was lost (the 5 real save files live outside the overlapped
+region), but the external flash was left in a fragile, overlapping dual-layout
+state until repaired.
+
+**Resolution**: all 5 real save files (`ff4-j2e.sfc-{0,1,2}.sav`,
+`ff4.sfc-{0,1}.sav`) plus `/ff4_lang` were backed up read-only
+(`gnwmanager pull`, sha256-verified) from their real location
+(`[0x740000, 0x800000)`, gnwmanager offset `0x3800000`). A full, deliberate
+`make flash` was then done with the config matching the real device
+(`EXTFLASH_SIZE_MB=8`, `SD_CARD=0`, `FF4_AUTOBOOT=1`, both ROMs freshly
+provisioned and CRC-verified, `ff4-gnw 7a2f093`) — this cleanly regenerates a
+correctly-sized FrogFS + LittleFS, resolving the mixed-layout problem as a
+side effect. The 5 saves + `ff4_lang` were then restored via `gnwmanager push`
+(note the CLI's argument order is `push <gnw-path> <local-path> --offset N`,
+device-path first) at the same offset, pulled back, and verified byte-identical
+(sha256 match) to the pre-flash backup. Liveness confirmed: frames advancing,
+no fault. One deliberate omission: the original device FrogFS also had a
+baked `Final Fantasy IV.lss` (paired with `FF4_LOAD_SAVESTATE`) — a dev/
+diagnostic auto-load fixture unrelated to real user progress — which was
+NOT reproduced, in favor of a normal build that boots to the real save slots.
+
+**New lessons from this episode:**
+- **`flash_intflash` is save-safe only when the internal app's filesystem
+  config matches the external flash's actual layout.** A config mismatch can
+  make the app auto-format part of external flash on boot — read the real
+  layout from the device before assuming any documented recipe applies,
+  especially on a device that's accumulated ad hoc local rebuilds over time.
+- **A device's actual build config can silently drift from every documented
+  recipe.** Verify empirically (CRC/size/directory dumps) before reflashing
+  anything with saves at stake — never infer config from docs or commit
+  history alone when the device itself can be read first.
 
 ## F14 — J2e combat bugs (magic animation, text-window artifact): NOT reproduced on vanilla desktop; J2e-specific, blocked on a battle fixture
 
