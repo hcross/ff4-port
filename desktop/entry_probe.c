@@ -14,7 +14,9 @@
  * CONTRACTs.
  *
  * Usage:
- *   ff4-entry-probe <rom.sfc> --load f.lss [--frames N]
+ *   ff4-entry-probe <rom.sfc> --load f.lss [--frames N] [--walk-square START]
+ * --walk-square mirrors harness_headless.c (DPAD square, 30 frames a side):
+ * field movement routines only run while the player walks.
  * Output (stdout): "ENTRY <pc6> dp=<hex4> db=<hex2> m=<0|1> x=<0|1> hits=<n>"
  */
 #include <stdio.h>
@@ -30,6 +32,7 @@ extern bool     ff4_init(const uint8_t *rom_bytes, int rom_length);
 extern void     ff4_step(void);
 extern Snes    *ff4_snes;
 extern void   (*ff4_dispatch_trace)(uint32_t pc);
+extern void     ff4_set_button(int player, int button, bool pressed);
 
 #define CAP 4096
 typedef struct { uint32_t pc; uint16_t dp; uint8_t db, m, x; uint32_t hits; } Entry;
@@ -67,14 +70,15 @@ static int cmp_pc(const void *a, const void *b) {
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        fprintf(stderr, "usage: %s <rom.sfc> --load f.lss [--frames N]\n", argv[0]);
+        fprintf(stderr, "usage: %s <rom.sfc> --load f.lss [--frames N] [--walk-square START]\n", argv[0]);
         return 2;
     }
     const char *load_path = NULL;
-    int frames = 600;
+    int frames = 600, walk_start = 0;
     for (int i = 2; i < argc; i++) {
         if (!strcmp(argv[i], "--load") && i + 1 < argc) load_path = argv[++i];
         else if (!strcmp(argv[i], "--frames") && i + 1 < argc) frames = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--walk-square") && i + 1 < argc) walk_start = atoi(argv[++i]);
         else { fprintf(stderr, "error: bad arg '%s'\n", argv[i]); return 2; }
     }
     long rom_len = 0;
@@ -91,7 +95,17 @@ int main(int argc, char **argv) {
         free(st);
     }
     ff4_dispatch_trace = trace_cb;
-    for (int f = 0; f < frames; f++) ff4_step();
+    static const int walk_btn[4] = { 4 /*up*/, 7 /*right*/, 5 /*down*/, 6 /*left*/ };
+    for (int f = 0; f < frames; f++) {
+        if (walk_start && f + 1 >= walk_start) {
+            const int t = (f + 1 - walk_start) % 120, phase = t / 30;
+            if (t % 30 == 0) {
+                ff4_set_button(1, walk_btn[(phase + 3) & 3], false);
+                ff4_set_button(1, walk_btn[phase], true);
+            }
+        }
+        ff4_step();
+    }
     ff4_dispatch_trace = NULL;
 
     qsort(g_e, (size_t)g_n, sizeof(Entry), cmp_pc);

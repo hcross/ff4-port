@@ -68,6 +68,17 @@
       "detail": null
     },
     {
+      "dispatch_id": "D00AA5A",
+      "name": "CheckTilePass_c",
+      "variant": "j2e-en-v321",
+      "variant_crc32": "F135CAE6",
+      "timestamp": "2026-10-10T11:42:44+00:00",
+      "status": "pass",
+      "trials": 200,
+      "fails": 0,
+      "detail": null
+    },
+    {
       "dispatch_id": "D00BB6A",
       "name": "DrawNpcs_c",
       "variant": "j2e-en-v321",

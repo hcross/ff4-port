@@ -1,0 +1,9 @@
+# D00AA5A CheckTilePass_c strict full-state spike (FF4_SPIKE_STRICT=gate), 2026-10-10, generate_spike.py --spike-suffix chk --target-addr 00AA5A
+CheckTilePass asm vs C : 50000 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+=== summary === trials: 50000, fails: 0
+=== strict === trials: 50000, strict_fails: 0, fields:
+# liveness: reinjecting the old '& 0x0A' constant bug is caught 576/50000 (strict)
+# in-game: 009-first-free-roam, 900 frames --walk-square 30: 122 hits at $00:AA5A (D=0600 DB=00 m=1 x=0); FBCRC stream identical with and without --exclude 00aa5a
