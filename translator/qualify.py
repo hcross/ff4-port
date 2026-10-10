@@ -158,7 +158,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         res = subprocess.run(
             [sys.executable, str(GEN_SPIKE), str(src), "--build", "--run", str(args.trials),
-             "--spike-suffix", "qualify"],
+             "--spike-suffix", "qualify", "--target-addr", rec["pc"]],
             capture_output=True, text=True, timeout=120, cwd=str(PORT_ROOT),
         )
     except subprocess.TimeoutExpired:

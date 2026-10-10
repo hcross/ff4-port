@@ -123,6 +123,17 @@
       "detail": null
     },
     {
+      "dispatch_id": "D00EE37",
+      "name": "TfrInvertPal_c",
+      "variant": "j2e-en-v321",
+      "variant_crc32": "F135CAE6",
+      "timestamp": "2026-10-10T11:09:03+00:00",
+      "status": "pass",
+      "trials": 200,
+      "fails": 0,
+      "detail": null
+    },
+    {
       "dispatch_id": "D00F535",
       "name": "UpdateBG2ScrollSkip_c",
       "variant": "j2e-en-v321",

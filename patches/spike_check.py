@@ -183,7 +183,8 @@ def save_checks(doc: dict) -> None:
 # --------------------------------------------------------------------------
 # Core check
 # --------------------------------------------------------------------------
-def _run_spike(src: Path, trials: int, variant_rom: Path | None) -> tuple[str | None, int, int, str]:
+def _run_spike(src: Path, trials: int, variant_rom: Path | None,
+               target_pc: str | None = None) -> tuple[str | None, int, int, str]:
     """Invoke generate_spike.py --build --run, always booting on VANILLA
     (see swap_variant_rom's docstring in generate_spike.py for why: the
     variant image, if given, is only swapped in AFTER the baseline is
@@ -191,6 +192,11 @@ def _run_spike(src: Path, trials: int, variant_rom: Path | None) -> tuple[str | 
     Returns (error_status_or_None, trials_ran, fails, detail)."""
     cmd = [sys.executable, str(GEN_SPIKE), str(src), "--build", "--run", str(trials),
           "--rom", str(VANILLA_ROM), "--spike-suffix", SPIKE_SUFFIX]
+    if target_pc:
+        # The registry PC is the proven entry; without it generate_spike.py
+        # trusts ca65-bridge, which resolves the off-by-2 annotated address
+        # for that whole class (the old "control_failed" for D009F6E & co).
+        cmd += ["--target-addr", target_pc]
     if variant_rom is not None:
         cmd += ["--variant-rom", str(variant_rom)]
     try:
@@ -235,7 +241,7 @@ def run_one(dispatch_id: str, rec: dict, patch: dict, trials: int) -> dict:
     # any variant (the documented off-by-2 ca65-bridge class, or a
     # custom-spike-bundled routine) -- attribute that to the tool, not to
     # the variant.
-    err, _, ctrl_fails, detail = _run_spike(src, trials, variant_rom=None)
+    err, _, ctrl_fails, detail = _run_spike(src, trials, variant_rom=None, target_pc=rec["pc"])
     if err:
         result["status"] = "control_failed"
         result["detail"] = f"vanilla control run itself errored ({err}): {detail}"
@@ -251,7 +257,7 @@ def run_one(dispatch_id: str, rec: dict, patch: dict, trials: int) -> dict:
     # Variant pass: same baseline (booted on vanilla above), ROM swapped
     # in post-baseline -- isolates the comparison to the variant's code
     # bytes without inheriting its own boot sequence as a confound.
-    err, trials_ran, fails, detail = _run_spike(src, trials, variant_rom=image)
+    err, trials_ran, fails, detail = _run_spike(src, trials, variant_rom=image, target_pc=rec["pc"])
     if err:
         result["status"] = "build_error"
         result["detail"] = detail

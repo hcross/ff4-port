@@ -1,0 +1,8 @@
+# D00EE37 TfrInvertPal_c strict full-state spike incl. VRAM/CGRAM/OAM/DMA regs (FF4_SPIKE_STRICT=gate), 2026-10-10, generate_spike.py --spike-suffix chk --target-addr 00EE37
+TfrInvertPal asm vs C : 2000 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+=== summary === trials: 2000, fails: 0
+=== strict === trials: 2000, strict_fails: 0, fields:
+# liveness: a mutant writing 255 colours and A1T0=$0CDC is caught on cgram/ppureg/dmareg 100/100
