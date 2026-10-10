@@ -204,6 +204,15 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     emit("promote", "pass", f"{args.dispatch_id} -> L2")
 
+    # dispatch_ranges.json mirrors each entry's level: regenerate it, or
+    # `gen_ranges.py --check` (ff4-status step 1) reports drift right after
+    # every promotion (hit 2026-10-10 on D038379).
+    ranges = subprocess.run([sys.executable, str(args.registry_dir / "gen_ranges.py")],
+                            capture_output=True, text=True)
+    if ranges.returncode != 0:
+        emit("ranges", "escalate", T6_INFRA + f" (gen_ranges.py: {ranges.stderr.strip()[-200:]})")
+        return 1
+
     if args.no_variant_check:
         emit("variant_check", "skip", "--no-variant-check given")
         return 0
