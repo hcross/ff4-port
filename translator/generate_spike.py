@@ -601,33 +601,64 @@ def collect_required_helpers(c_body: str) -> list[str]:
 
 def emit_helper(stub: str, module: str) -> Optional[str]:
     """Resolve a stub's asm address and emit a trivial delegation wrapper."""
+    noop = firmware_emu_is_noop(stub)
     for cand in _candidate_asm_names(stub):
         addr = bridge_get_address(module, cand)
         if addr is not None:
+            if noop:
+                return _EMU_NOOP_TEMPLATE.format(stub=stub, asm_name=cand, where=noop)
             return _EMU_HELPER_TEMPLATE.format(stub=stub, asm_name=cand, addr24=addr)
+    if noop:
+        return _EMU_NOOP_TEMPLATE.format(stub=stub, asm_name=stub, where=noop)
     return None
 
 
 _EMU_HELPER_TEMPLATE = """\
 // Auto-emitted delegation wrapper for {asm_name} @ ${addr24:06X} (referenced as {stub}_emu)
+// Same semantics as the firmware's run_emulated_func (ff4-gnw snes/cpu.c):
+// the callee runs on the CALLER's current D/DB/m/x and every register/flag it
+// leaves behind persists, exactly like a real JSR; only K/PC/SP are restored.
+// (Until 2026-10-10 this wrapper forced dp=0/db=$7E/m=8/x=16 and restored
+// A/X/Y/m/x afterwards, so a body reading the callee's result from cpu->a --
+// the F1 convention the firmware uses -- read its own stale A in the spike.)
 static uint16_t {stub}_emu(Snes *snes) {{
     Cpu *c = snes->cpu;
-    uint16_t saved_a=c->a, saved_x=c->x, saved_y=c->y, saved_sp=c->sp;
-    uint16_t saved_pc=c->pc, saved_dp=c->dp;
-    uint8_t saved_k=c->k, saved_db=c->db;
-    bool saved_mf=c->mf, saved_xf=c->xf;
-    c->dp = 0; c->db = 0x7E;
-    c->mf = true; c->xf = false;
+    uint16_t saved_pc = c->pc, saved_sp = c->sp;
+    uint8_t saved_k = c->k;
     run_emulated_func(snes, 0x{addr24:06X}u);
-    uint16_t result = c->a;
-    c->x=saved_x; c->y=saved_y;
-    c->sp=saved_sp; c->pc=saved_pc; c->dp=saved_dp;
-    c->k=saved_k; c->db=saved_db;
-    c->mf=saved_mf; c->xf=saved_xf;
-    c->a = saved_a;
-    return result;
+    c->k = saved_k; c->pc = saved_pc; c->sp = saved_sp;
+    return c->a;
 }}
 """
+
+_EMU_NOOP_TEMPLATE = """\
+// {stub}_emu is a NO-OP in the firmware ({where}): the device never runs
+// {asm_name}. Mirror that, so the spike proves what the device executes --
+// delegating to the asm here would credit a behaviour the G&W does not have.
+static uint16_t {stub}_emu(Snes *snes) {{ (void)snes; return snes->cpu->a; }}
+"""
+
+
+_FFGNW_DIR = ROOT.parent / "ff4-gnw"
+
+
+def firmware_emu_is_noop(stub: str) -> Optional[str]:
+    """Return where the effective firmware definition of <stub>_emu is a no-op
+    (a strong definition anywhere in ff4-gnw beats a weak one), else None."""
+    pat = re.compile(rf"(__attribute__\(\(weak\)\)\s*)?void\s+{re.escape(stub)}_emu\s*\(\s*Snes\s*\*\s*snes\s*\)\s*\{{([^}}]*)\}}")
+    strong, weak = [], []
+    for f in _FFGNW_DIR.rglob("*.c"):
+        if "snes" in f.relative_to(_FFGNW_DIR).parts[:1]:
+            continue
+        for m in pat.finditer(f.read_text(errors="replace")):
+            (weak if m.group(1) else strong).append((f.name, m.group(2)))
+    eff = strong or weak
+    if not eff:
+        return None
+    fname, body = eff[0]
+    if re.fullmatch(r"\s*\(void\)\s*snes\s*;\s*", body):
+        return f"{fname}, {'weak' if not strong else 'strong'} stub"
+    return None
 
 
 # ---------------------------------------------------------------------------

@@ -1277,3 +1277,40 @@ for the first time — oracle + device validation needed); (3) hook
 whole ROM (false positives possible on data, never false negatives for a real
 direct call); entries reached only through an indirect `jsr (abs,x)` are
 correctly reported dead — the hook cannot see them either.
+
+## F17 — spike `_emu` wrappers did not mirror the firmware: false failures, false passes, and a live Rand99_c bug
+
+**Severity:** medium (one live device bug; two L2 verdicts wrong) · **Found:**
+2026-10-10 (triage of the strict audit's CONTRACT_FAIL rows) · **Status:**
+FIXED (generator + 3 bodies).
+
+`generate_spike.py` auto-emits a `<stub>_emu` wrapper when a body calls a
+helper. That wrapper forced `dp=0/db=$7E/m=8/x=16` before delegating and
+restored A/X/Y/m/x afterwards, returning the result as a C value. The
+firmware does neither: `ff4_helpers.c` either calls the native body or
+`run_emulated_func`, which restores only K/PC/SP (snes/cpu.c), and since F1
+bodies read the callee's result from `cpu->a`. Two consequences:
+
+- **False failure**: `CalcHits_c` (live, 12 fixture hits) read its own stale
+  A in the spike and failed 751/2000 although its logic is right. With a
+  firmware-faithful wrapper the contract passes; the strict compare then
+  needed only Y=0 / Z / N / C after the `dey` loop and A=0 on the early exit.
+- **False pass (class)**: a helper that is a *no-op* in the firmware
+  (`RandAITarget_emu`, `SkipAITurn_emu`, ...) was delegated to the real asm in
+  the spike, crediting a behaviour the device does not have. Wrappers are now
+  emitted as no-ops when the effective firmware definition is one.
+
+Exposed while checking `CalcHits_c`'s native callee: **`Rand99_c` omitted the
+`tax` of `clr_ax`**, so RandXA's lower bound X was stale — rolls in
+`[X..98]` instead of `[0..98]`. Its spike compared nothing (no output declared)
+and passed vacuously. In `CalcHits` the stale X is the caller's on the first
+roll and, before this session's `Div16_c` fix, the previous roll on every
+later one (Div16_c left X untouched): a systematic bias toward misses on the
+device. Fixed (`x = 0`), region-compare + strict 20000/0.
+
+`UpdatePlayerSpeed_c` (static callers only, not on the fixtures) was wrong
+end to end: table read from WRAM `$00C0` instead of ROM `$00:830C`, store to
+`$00AC` instead of `[D+$AC]` (D=$0600 at both callers), `db=0x83`, 8-bit
+`tax`. Rewritten; strict 20000/0.
+
+FB/WRAM signatures on the 14 fixtures and `regress.sh` verdicts unchanged.
