@@ -1314,3 +1314,16 @@ end to end: table read from WRAM `$00C0` instead of ROM `$00:830C`, store to
 `tax`. Rewritten; strict 20000/0.
 
 FB/WRAM signatures on the 14 fixtures and `regress.sh` verdicts unchanged.
+
+**Addendum (same day) — the spike's own `run_emulated_func` used a 2-byte
+JSR frame.** It waited for SP to return exactly to its saved value, so an
+RTL-terminated routine (every JSL entry: `*_ext`, the bank-$15 field code)
+never returned: the asm side ran on into arbitrary bytes until `max_ops`.
+`_15c23d_c` (a bare `rtl`, L3) and `UpdateCtrlField_ext_c` diverged in strict
+mode on `$0002` and the PPU/DMA registers purely from that. The template now
+mirrors the firmware (3-byte frame, exit once 2 or 3 bytes are pulled, SP
+restored); both are strict-clean. Contract-mode verdicts of JSL routines
+whose output slot is written before the RTL were unaffected, which is why
+this went unnoticed. Also fixed in this pass: the 11 `entry_mode` lines the
+game contradicts (ENTRY_STATE.md), and `Add16_c`'s `shorta0` exit
+(A=D, m=8, C=V=0) — strict 20000/0.

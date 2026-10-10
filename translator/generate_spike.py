@@ -753,18 +753,26 @@ static inline uint32_t stack_addr(const Cpu *cpu) {{
     return cpu->e ? (0x0100u | (cpu->sp & 0xFFu)) : cpu->sp;
 }}
 
+// Firmware semantics (ff4-gnw snes/cpu.c run_emulated_func): push a 3-byte
+// JSL-style frame and stop once 2 (RTS) or 3 (RTL) of those bytes have been
+// pulled, then restore SP. The former 2-byte JSR frame never returned from an
+// RTL-terminated routine (every JSL entry: *_ext, bank-$15 field code): the
+// asm side ran on into arbitrary bytes until max_ops (found 2026-10-10 on
+// _15c23d, a bare `rtl`, whose spike diverged on $0002 and the PPU regs).
 static void run_emulated_func(Snes *snes, uint32_t pc24) {{
     Cpu *cpu = snes->cpu;
     uint16_t sp_save = cpu->sp;
     snes->ram[stack_addr(cpu)] = 0x12; cpu->sp--;
     snes->ram[stack_addr(cpu)] = 0x34; cpu->sp--;
+    snes->ram[stack_addr(cpu)] = 0x56; cpu->sp--;
     cpu->k = (uint8_t)(pc24 >> 16);
     cpu->pc = (uint16_t)(pc24 & 0xFFFF);
     long max_ops = 200000;
-    while (cpu->sp != sp_save && max_ops-- > 0) {{
+    while ((uint16_t)(sp_save - cpu->sp) >= 2u && max_ops-- > 0) {{
         cpu_runOpcode(cpu);
         if (cpu->waiting || cpu->stopped) break;
     }}
+    cpu->sp = sp_save;
 }}
 
 typedef struct {{
