@@ -1235,8 +1235,8 @@ the same blind spot. A strict re-audit of the L2 population is the follow-up
 
 **Severity:** high (registry levels overstate native coverage; several "fixes"
 never ran in game) · **Found:** 2026-10-10 (takeover session) · **Status:**
-CHARACTERISED — table NOT modified; remediation is an architecture decision
-(see below). Generated evidence: umbrella `registry/DEAD_ENTRIES.md`
+REMEDIATION IN PROGRESS per ADR-009 (retire padding entries — done, 9;
+re-key proven ones progressively; hook jump tables only after measuring). Generated evidence: umbrella `registry/DEAD_ENTRIES.md`
 (`registry/check_dead_entries.py`), `registry/ENTRY_STATE.md`.
 
 `cpu.c` hooks exactly two opcodes: `JSR abs` (0x20) and `JSL long` (0x22). An
