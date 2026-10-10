@@ -123,3 +123,8 @@ proof_cyc: proof_cyc.c $(GNW_SRC)
 
 miss_profiler: miss_profiler.c $(GNW_SRC)
 	$(CC) $(CFLAGS) -o $@ miss_profiler.c $(GNW_SRC) $(LDFLAGS)
+
+# Real CPU entry state (D/DB/m/x) of every dispatched routine -- cross-checked
+# against the CONTRACTs by registry/check_entry_state.py.
+ff4-entry-probe: entry_probe.c $(GNW_SRC)
+	$(CC) $(CFLAGS) -o $@ entry_probe.c $(GNW_SRC) $(LDFLAGS)

@@ -1230,3 +1230,50 @@ as this class (ESCALATION T4), not as a functional regression.
 **Generalisation.** Every L2 credited by a contract-only spike is suspect for
 the same blind spot. A strict re-audit of the L2 population is the follow-up
 (see BACKLOG §3).
+
+## F16 — 129 of 204 dispatch-table entries can never fire (112 of them credited L2)
+
+**Severity:** high (registry levels overstate native coverage; several "fixes"
+never ran in game) · **Found:** 2026-10-10 (takeover session) · **Status:**
+CHARACTERISED — table NOT modified; remediation is an architecture decision
+(see below). Generated evidence: umbrella `registry/DEAD_ENTRIES.md`
+(`registry/check_dead_entries.py`), `registry/ENTRY_STATE.md`.
+
+`cpu.c` hooks exactly two opcodes: `JSR abs` (0x20) and `JSL long` (0x22). An
+entry runs only if a JSR/JSL targets **exactly** its PC. Cross-checking every
+entry against (a) all direct JSR/JSL targets in the ROM, (b) dispatch hits on
+the 14 fixtures (`ff4-entry-probe`), (c) by-name calls from ported C parents:
+
+| Class | Entries | Example |
+|---|---|---|
+| Jump-table targets (`jsr (abs,x)` / `jmp (abs,x)` are not hooked) | 47 | `AITarget_*`, `MagicEffect_*`, `TimerDur_*`, `Cmd_21/22` |
+| Wrong bank, PC holds `$FF` padding | 9 | `D12EE35 TfrInvertPal_c`: real entry `$00:EE37` (off-by-2), sole caller `JSR $EE37` @ `$00:92D1` |
+| Off-by-2 (a direct caller targets PC±2) | 5 | `CheckTilePass_c`, `SetPlayerNPCMap_c`, `ClearPlayerNPCMap_c`, `CheckVehicleBlock_c`, `MagicEffect_21_c` |
+| Same address called in another bank, or caller at PC±3..16 | ~19 | `TfrVRAM_c` `$01:CA85` (the live copy is `_15ca85_c`, 10 `JSL $15:CA85`), `Sub16_c` (+16), `FadeIn_c` (bank $13) |
+| No direct caller at all (JMP/JML/fallthrough entries, data-modeled banks $12-$16) | ~49 | `FieldMain_c`, `AfterBattle_c`, `UpdateMode7Regs_c`, `CloseYesNoWindow_c` |
+
+Levels of the never-firing entries: L2 = 112, DELEG = 12, L1 = 5. Consequences:
+
+- The registry's L2 count measures **spiked C bodies**, not native coverage —
+  only 43 entries were hit on the fixtures, 31 more have direct callers that
+  the fixtures do not exercise.
+- Several documented fixes never executed in game: the 2026-06-29 DMA-class
+  `TfrInvertPal` manual loop (hence "no repro scene"), `TfrVRAM_c`'s
+  delegation fix (the title reaches `_15ca85_c`), `CloseYesNoWindow`,
+  `TfrLavaGfx`.
+- Every JSR/JSL miss scans the whole table linearly (`ff4_dispatch_try`):
+  dead entries are pure interpreter-side overhead on the device.
+- Two fixable L1s (`TfrVRAM_c`, `TfrBGAnimGfx_c`) are dead entries — closing
+  their L1 has no in-game value until they are re-keyed.
+
+**Remediation options (decision pending, record as an ADR):** (1) retire the
+dead entries (honest registry, shorter scan); (2) re-key the off-by-N /
+wrong-bank ones to their true PC and requalify each (they would run natively
+for the first time — oracle + device validation needed); (3) hook
+`jsr (abs,x)`/`jmp (abs,x)` in `cpu.c` behind a per-routine gate to bring the
+47 jump-table targets to life. Not mutually exclusive.
+
+**Method caveat.** "No direct caller" is proven by an opcode scan over the
+whole ROM (false positives possible on data, never false negatives for a real
+direct call); entries reached only through an indirect `jsr (abs,x)` are
+correctly reported dead — the hook cannot see them either.

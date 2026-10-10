@@ -294,6 +294,9 @@ _DELEGATED_RE = re.compile(
 )
 
 
+TARGET_ADDR_OVERRIDE: Optional[int] = None   # set by --target-addr
+
+
 def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Contract]:
     """Parse the C source's CONTRACT block.
 
@@ -340,8 +343,20 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
                          "and no REVERSED_FUNCTION line found.\n")
         return None
 
-    true_addr = bridge_get_address(module, name)
-    if true_addr is None:
+    if TARGET_ADDR_OVERRIDE is not None:
+        # --target-addr (the registry's PC, proven against the ROM call sites)
+        # beats both the bridge and REVERSED_FUNCTION: the off-by-2 annotation
+        # class (D009F6E, D00BB6A, ...) makes the bridge resolve a mid-routine
+        # address from the label, and REVERSED_FUNCTION lines are LLM-written
+        # (Div16's says $84:0007). Replaces the old "rename the port file to
+        # <Name>Entry.c" workaround, which left those spikes unreproducible.
+        addr24 = TARGET_ADDR_OVERRIDE
+        true_addr = None
+    else:
+        true_addr = bridge_get_address(module, name)
+    if TARGET_ADDR_OVERRIDE is not None:
+        pass
+    elif true_addr is None:
         # The port name may differ from the asm label (e.g. DrawMonsterSprite_c
         # ports UpdateCharPalette @da73). Fall back to the REVERSED_FUNCTION
         # address when the name doesn't resolve.
@@ -399,6 +414,21 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
                         out[k] = None
         return out
 
+    def wram_addr(tok: str) -> int:
+        """'0x393D' | '$393D' | '393D' | '$7E:F42B' | '$00:0300' -> WRAM offset.
+        A bare '$' prefix used to raise and the part was skipped with only a
+        stderr note, leaving e.g. Mult16's inputs unfuzzed (2026-10-10)."""
+        tok = tok.strip().replace("$", "")
+        if ":" in tok:
+            bank_s, off_s = tok.split(":", 1)
+            bank, off = int(bank_s, 16), int(off_s, 16)
+            if bank in (0x7E, 0x7F):
+                return ((bank - 0x7E) << 16) | off
+            if off < 0x2000:              # low-RAM mirror in banks $00-$3F/$80-$BF
+                return off
+            raise ValueError(tok)
+        return int(tok, 16)
+
     def parse_ram(spec: str) -> list[tuple[int, int]]:
         # "0x38FA=1, 0x38FB=1"
         # Strip any trailing `#` comment (LLMs sometimes add inline notes).
@@ -423,7 +453,7 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
             if ".." in addr_s:
                 lo_s, hi_s = [x.strip() for x in addr_s.split("..", 1)]
                 try:
-                    lo, hi = int(lo_s, 16), int(hi_s, 16)
+                    lo, hi = wram_addr(lo_s), wram_addr(hi_s)
                 except ValueError:
                     sys.stderr.write(f"[gen] skipping malformed RAM range: {part!r}\n")
                     continue
@@ -433,7 +463,7 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
                     sys.stderr.write(f"[gen] skipping implausible RAM range: {part!r}\n")
                 continue
             try:
-                out.append((int(addr_s, 16), int(width_s)))
+                out.append((wram_addr(addr_s), int(width_s)))
             except ValueError:
                 sys.stderr.write(f"[gen] skipping malformed RAM spec part: {part!r}\n")
         return out
@@ -617,6 +647,8 @@ SPIKE_SKELETON = r"""// AUTO-GENERATED parity spike for {module}::{func_name} @ 
 
 #include "snes.h"
 #include "cpu.h"
+#include "ppu.h"
+#include "dma.h"
 
 #define TARGET_ADDR_24 0x{addr24:06X}u
 
@@ -746,9 +778,67 @@ void write16(uint8_t *ram, int addr, uint16_t v) {{
 
 enum {{ STRICT_WRAM, STRICT_A, STRICT_X, STRICT_Y, STRICT_DP, STRICT_DB,
        STRICT_MF, STRICT_XF, STRICT_C, STRICT_Z, STRICT_V, STRICT_N,
+       STRICT_VRAM, STRICT_CGRAM, STRICT_OAM, STRICT_PPUREG, STRICT_DMAREG,
        STRICT_NFIELDS }};
 static const char *strict_field_name[STRICT_NFIELDS] = {{
-    "wram", "a", "x", "y", "dp", "db", "mf", "xf", "c", "z", "v", "n" }};
+    "wram", "a", "x", "y", "dp", "db", "mf", "xf", "c", "z", "v", "n",
+    "vram", "cgram", "oam", "ppureg", "dmareg" }};
+
+/* Hardware side of the strict compare: snap_restore() only rewinds WRAM and
+ * the CPU, so the bus-visible state a DMA/MMIO routine produces (VRAM, CGRAM,
+ * OAM, the PPU access pointers, the DMA channel registers it leaves behind)
+ * is saved/restored around the two runs here. Without it a manual-loop C
+ * port of a DMA routine "passes" a WRAM-only spike by construction (the
+ * TfrVRAM_c / DMA_TRIGGER class, F6/F15). */
+typedef struct {{
+    uint16_t vram[0x8000], cgram[0x100], oam[0x100];
+    uint8_t highOam[0x20];
+    uint16_t vramPointer, vramIncrement;
+    uint8_t cgramPointer, oamAdr;
+    DmaChannel ch[8];
+}} HwSnap;
+
+static void hw_take(HwSnap *h, Snes *snes) {{
+    Ppu *p = snes->ppu;
+    memcpy(h->vram, p->vram, sizeof(h->vram));
+    memcpy(h->cgram, p->cgram, sizeof(h->cgram));
+    memcpy(h->oam, p->oam, sizeof(h->oam));
+    memcpy(h->highOam, p->highOam, sizeof(h->highOam));
+    h->vramPointer = p->vramPointer; h->vramIncrement = p->vramIncrement;
+    h->cgramPointer = p->cgramPointer; h->oamAdr = p->oamAdr;
+    memcpy(h->ch, snes->dma->channel, sizeof(h->ch));
+}}
+
+static void hw_restore(const HwSnap *h, Snes *snes) {{
+    Ppu *p = snes->ppu;
+    memcpy(p->vram, h->vram, sizeof(h->vram));
+    memcpy(p->cgram, h->cgram, sizeof(h->cgram));
+    memcpy(p->oam, h->oam, sizeof(h->oam));
+    memcpy(p->highOam, h->highOam, sizeof(h->highOam));
+    p->vramPointer = h->vramPointer; p->vramIncrement = h->vramIncrement;
+    p->cgramPointer = h->cgramPointer; p->oamAdr = h->oamAdr;
+    memcpy(snes->dma->channel, h->ch, sizeof(h->ch));
+}}
+
+static int dma_regs_differ(const DmaChannel *x, const DmaChannel *y) {{
+    for (int i = 0; i < 8; i++)
+        if (x[i].bAdr != y[i].bAdr || x[i].aAdr != y[i].aAdr || x[i].aBank != y[i].aBank ||
+            x[i].size != y[i].size || x[i].mode != y[i].mode || x[i].fixed != y[i].fixed ||
+            x[i].decrement != y[i].decrement || x[i].fromB != y[i].fromB) return 1;
+    return 0;
+}}
+
+static void strict_hw_diff(const HwSnap *x, const HwSnap *y, long *hist, int *any) {{
+#define HW_CHK(F, cond) do {{ if (cond) {{ hist[F]++; *any = 1; }} }} while (0)
+    HW_CHK(STRICT_VRAM, memcmp(x->vram, y->vram, sizeof(x->vram)) != 0);
+    HW_CHK(STRICT_CGRAM, memcmp(x->cgram, y->cgram, sizeof(x->cgram)) != 0);
+    HW_CHK(STRICT_OAM, memcmp(x->oam, y->oam, sizeof(x->oam)) != 0 ||
+                       memcmp(x->highOam, y->highOam, sizeof(x->highOam)) != 0);
+    HW_CHK(STRICT_PPUREG, x->vramPointer != y->vramPointer || x->vramIncrement != y->vramIncrement ||
+                          x->cgramPointer != y->cgramPointer || x->oamAdr != y->oamAdr);
+    HW_CHK(STRICT_DMAREG, dma_regs_differ(x->ch, y->ch));
+#undef HW_CHK
+}}
 
 /* Strict mode also seeds the registers the CONTRACT does NOT declare as
  * inputs with per-trial noise (identical on both sides), instead of the
@@ -866,7 +956,8 @@ int main(int argc, char **argv) {{
 
     // Strict full-state mode (opt-in, FF4_SPIKE_STRICT=1|gate): in addition
     // to the contract compare above, diff the WHOLE post-call state -- WRAM
-    // (stack page + SPIKE_MASK excluded) and every CPU register/flag the
+    // (stack page + SPIKE_MASK excluded), VRAM/CGRAM/OAM + PPU pointers + DMA
+    // channel registers, and every CPU register/flag the
     // dispatch hook leaves to the caller (cpu.c does no state fixup after a
     // dispatched body). The contract compare alone observes one slot, or the
     // registers, or the WRAM -- never all three -- so a body can pass it while
@@ -877,6 +968,7 @@ int main(int argc, char **argv) {{
     int strict = strict_env && *strict_env && strcmp(strict_env, "0") != 0;
     int strict_gate = strict && strcmp(strict_env, "gate") == 0;
     static Snap strict_asm, strict_c;
+    static HwSnap hw_pre, hw_asm, hw_c;
     int strict_fails = 0;
     long strict_hist[STRICT_NFIELDS] = {{0}};
     int strict_first_wram = -1;
@@ -900,19 +992,21 @@ int main(int argc, char **argv) {{
         snap_take(&pre, snes);
 
         // Run ASM
+        if (strict) hw_take(&hw_pre, snes);
         run_asm(snes{asm_args_pass});
 {capture_asm_output}
-        if (strict) snap_take(&strict_asm, snes);
+        if (strict) {{ snap_take(&strict_asm, snes); hw_take(&hw_asm, snes); hw_restore(&hw_pre, snes); }}
 
         // Restore and run C
         snap_restore(&pre, snes);
 {c_call}
 {capture_c_output}
-        if (strict) snap_take(&strict_c, snes);
+        if (strict) {{ snap_take(&strict_c, snes); hw_take(&hw_c, snes); }}
 
 {compare_block}
         if (strict) {{
             int w = strict_diff(&strict_asm, &strict_c, pre.sp, strict_hist);
+            strict_hw_diff(&hw_asm, &hw_c, strict_hist, &w);
             if (w) {{
                 strict_fails++;
                 if (strict_first_wram < 0 && strict_hist[STRICT_WRAM] > 0)
@@ -1237,12 +1331,19 @@ def main(argv: list[str] | None = None) -> int:
                     help="Suffix used for the generated spike file "
                          "(parity/src/spike_<name>_<suffix>.c). Set per "
                          "model when running parallel benches.")
+    ap.add_argument("--target-addr", default=None,
+                    help="24-bit SNES entry address (hex, e.g. 009F6E) overriding "
+                         "the ca65-bridge/REVERSED_FUNCTION resolution -- pass the "
+                         "registry PC for the off-by-2 annotation class.")
     ap.add_argument("--run-timeout", type=int, default=20,
                     help="Hard timeout in seconds on the spike binary "
                          "execution. A binary that does not finish N trials "
                          "in this budget is killed (likely infinite loop).")
     args = ap.parse_args(argv)
 
+    global TARGET_ADDR_OVERRIDE
+    if args.target_addr:
+        TARGET_ADDR_OVERRIDE = int(args.target_addr.lstrip("$").replace(":", ""), 16)
     text = args.source.read_text()
     contract = parse_contract(text, source_path=args.source.resolve())
     if contract is None:

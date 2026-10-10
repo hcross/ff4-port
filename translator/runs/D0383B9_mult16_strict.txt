@@ -1,0 +1,7 @@
+# D0383B9 strict full-state spike (FF4_SPIKE_STRICT=gate), 2026-10-10, generate_spike.py --spike-suffix chk --target-addr 0383B9 (inputs $393D/$393F now parsed and fuzzed)
+Mult16 asm vs C : 50000 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+=== summary === trials: 50000, fails: 0
+=== strict === trials: 50000, strict_fails: 0, fields:
