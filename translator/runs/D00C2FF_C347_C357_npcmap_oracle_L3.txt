@@ -1,0 +1,13 @@
+# NPC-map cluster isolated oracle (ff4-desktop-oracle --only <pc>, 600 frames, cycle charging on), 2026-10-10, after the exit-state fix (strict 50000/0 each)
+00c2ff 009-first-free-roam identical -1 ['00C2FF']
+dispatch A    : 4800 hits / 17400 miss
+00c2ff 014-baron-castle-exterior identical -1 ['00C2FF']
+dispatch A    : 6600 hits / 17400 miss
+00c347 009-first-free-roam identical -1 ['00C347']
+dispatch A    : 4800 hits / 17400 miss
+00c347 014-baron-castle-exterior identical -1 ['00C347']
+dispatch A    : 6600 hits / 17400 miss
+00c357 009-first-free-roam identical -1 ['00C357']
+dispatch A    : 9600 hits / 17400 miss
+00c357 014-baron-castle-exterior identical -1 ['00C357']
+dispatch A    : 13200 hits / 17400 miss
