@@ -1186,3 +1186,47 @@ remaining gate** (WF-RELEASE / F13) — but this is the *safe* retirement
 direction (interpret, no added `run_emulated_func` nesting), unlike F13's
 delegation crashes, and mirrors the already-device-validated `ExecInterrupt_c`
 retirement.
+
+## F15 — contract-only spikes miss exit-state divergence: `Div16_c` (L2) left A/X/m/NZV, remainder and dividend wrong
+
+**Severity:** medium (latent fidelity bug in a dispatched L2 routine) ·
+**Found:** 2026-10-10 (takeover session, closing `RandXA_c`'s L1) ·
+**Status:** FIXED in `ff4-gnw/battle/Div16.c` + `RandXA.c`; tooling hardened.
+
+`RandXA_c` (D038379) sat at L1 for months because its spike could not link
+`Div16_c`. Reading `Div16`'s asm to wire it in showed its C body — L2 since the
+2026-06-27 spike batch — only reproduced the quotient. Its CONTRACT compared
+`output_ram: 0x3949` alone, so the spike was structurally blind to:
+
+- the remainder `$394B` (exactly what `RandXA` reads next);
+- `rol $3945` rotating the dividend out to `$0000`;
+- the `shorta0` exit: `tdc` → A = D (Z/N from D), `sep #$20` → m=8;
+- `ldx #$10 … dex` → X=0, C=0 and V from the last `sbc`/`adc` on the loop path.
+
+The dispatch hook (`cpu.c`) restores no CPU state, so all of this reaches
+interpreted callers. `RandXA_c` had the same class of gap: the high byte B of
+A clobbered on every path (m=8 `lda` keeps B), no NZVC at exit, and its RNG
+table input `0x1900..19FF` silently skipped by the CONTRACT parser.
+
+**Fix.** Both bodies rewritten to the full asm exit state; strict-equivalent on
+200k (`Div16`) / 400k (`RandXA`) trials (`translator/runs/D038407_div16_strict.txt`,
+`D038379_randxa_strict.txt`). Tooling: `generate_spike.py` strict mode
+(`FF4_SPIKE_STRICT`, WF-DECOMP §4), byte-range inputs fuzzed, Makefile rules
+upserted when `SPIKE_EXTRA_SRC` changes (the stale rule was the actual link
+failure), `qualify.py` records umbrella-relative evidence paths.
+
+**In-game.** FB/WRAM signatures change on 005/006/012 only (the combat
+fixtures that run these routines); `regress.sh` verdicts unchanged 14/14.
+`--only 038407` / `--only 038379` still diverge at the first call (frames
+25-28) **identically before and after the fix**, and the fix removes `$3945`
+from the diverging set. That residual is an oracle artifact, not a body bug:
+at the diverging frame the interpreter side is snapshotted *inside*
+`Div16`'s 16-iteration loop (`B pc=03:8435`) while the native side completed
+the routine atomically — a frame boundary landing mid-routine (cycle Δ +6774
+charged / −4 with `--no-charge`). Any multi-thousand-cycle leaf hits this;
+treat a first divergence whose interpreter PC sits inside the hooked routine
+as this class (ESCALATION T4), not as a functional regression.
+
+**Generalisation.** Every L2 credited by a contract-only spike is suspect for
+the same blind spot. A strict re-audit of the L2 population is the follow-up
+(see BACKLOG §3).

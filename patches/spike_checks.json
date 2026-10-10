@@ -244,6 +244,17 @@
       "detail": "vanilla control run itself errored (build_error): [gen] CONTRACT_MMIO_MISMATCH: /Users/hoanicross/devel/perso/retrogaming/ff4/ff4-gnw/field/InitHWRegs.c: asm stores to $2100, $2101, $2102, $2105, $2106, $2107, $2108, $2109, $210A, $210B, $210C, $210D, $210E, $210F, $2110, $2111, $2112, $2113, $2114, $2115, $2123, $2124, $2125, $2126, $2127, $2128, $2129, $212A, $212C, $212D, $212E, $212F, $2130, $2131, $2133, $4200, $420B, $420C but mmio_effects declares (none). Add every hardware-register address to `// CONTRACT: mmio_effects:` (Pitfall 13/16, prompts/reverser_system.md) and re-run \u2014 a spike cannot prove correctness for an undeclared bus/VRAM/OAM/CGRAM effect."
     },
     {
+      "dispatch_id": "D038379",
+      "name": "RandXA_c",
+      "variant": "j2e-en-v321",
+      "variant_crc32": "F135CAE6",
+      "timestamp": "2026-10-10T08:45:51+00:00",
+      "status": "pass",
+      "trials": 200,
+      "fails": 0,
+      "detail": null
+    },
+    {
       "dispatch_id": "D0383B9",
       "name": "Mult16_c",
       "variant": "j2e-en-v321",

@@ -416,8 +416,22 @@ def parse_contract(text: str, source_path: Optional[Path] = None) -> Optional[Co
             # semantic annotation, e.g. "1(incremented)" → "1".
             width_s = re.sub(r"#.*$", "", width_s).strip()
             width_s = re.sub(r"\(.*$", "", width_s).strip()
-            # A range address ("0x1900..19FF") has no single width to fuzz here.
-            addr_s = addr_s.split("..", 1)[0].strip()
+            # A range address ("0x1900..19FF=RNG_table") is fuzzed byte by
+            # byte over its whole extent. It used to be silently skipped
+            # (the value is a label, not a width), leaving e.g. RandXA's RNG
+            # table at its post-boot contents for every trial (2026-10-10).
+            if ".." in addr_s:
+                lo_s, hi_s = [x.strip() for x in addr_s.split("..", 1)]
+                try:
+                    lo, hi = int(lo_s, 16), int(hi_s, 16)
+                except ValueError:
+                    sys.stderr.write(f"[gen] skipping malformed RAM range: {part!r}\n")
+                    continue
+                if lo <= hi and hi - lo < 0x1000:
+                    out.extend((a, 1) for a in range(lo, hi + 1))
+                else:
+                    sys.stderr.write(f"[gen] skipping implausible RAM range: {part!r}\n")
+                continue
             try:
                 out.append((int(addr_s, 16), int(width_s)))
             except ValueError:
@@ -727,6 +741,71 @@ void write16(uint8_t *ram, int addr, uint16_t v) {{
 }}
 
 // ---------------------------------------------------------------------------
+// Strict full-state diff (FF4_SPIKE_STRICT) -- see main()
+// ---------------------------------------------------------------------------
+
+enum {{ STRICT_WRAM, STRICT_A, STRICT_X, STRICT_Y, STRICT_DP, STRICT_DB,
+       STRICT_MF, STRICT_XF, STRICT_C, STRICT_Z, STRICT_V, STRICT_N,
+       STRICT_NFIELDS }};
+static const char *strict_field_name[STRICT_NFIELDS] = {{
+    "wram", "a", "x", "y", "dp", "db", "mf", "xf", "c", "z", "v", "n" }};
+
+/* Strict mode also seeds the registers the CONTRACT does NOT declare as
+ * inputs with per-trial noise (identical on both sides), instead of the
+ * fixed 0 the contract path uses -- otherwise "the C never sets X=0 on exit"
+ * is invisible whenever X happened to be 0 at entry. Index registers stay
+ * 8-bit-clean under xf=1, as on hardware. */
+static int strict_noise;
+static uint16_t strict_na, strict_nx, strict_ny;
+static void strict_apply_noise(Cpu *c) {{
+    if (!strict_noise) return;
+    c->a = strict_na;
+    c->x = c->xf ? (strict_nx & 0xFF) : strict_nx;
+    c->y = c->xf ? (strict_ny & 0xFF) : strict_ny;
+}}
+
+static int strict_wram_masked(int a, uint16_t pre_sp) {{
+    int sp_page = pre_sp & 0xFF00;
+    if (a >= sp_page && a < sp_page + 0x100) return 1;
+{strict_mask_lines}    return 0;
+}}
+
+static int strict_first_wram_diff(const Snap *x, const Snap *y, uint16_t pre_sp) {{
+    for (int a = 0; a < 0x20000; a++)
+        if (!strict_wram_masked(a, pre_sp) && x->ram[a] != y->ram[a]) return a;
+    return -1;
+}}
+
+static int strict_diff(const Snap *x, const Snap *y, uint16_t pre_sp, long *hist) {{
+    int any = 0;
+#define STRICT_CHK(F, cond) do {{ if (cond) {{ hist[F]++; any = 1; }} }} while (0)
+    STRICT_CHK(STRICT_WRAM, strict_first_wram_diff(x, y, pre_sp) >= 0);
+    STRICT_CHK(STRICT_A, x->a != y->a);
+    STRICT_CHK(STRICT_X, x->x != y->x);
+    STRICT_CHK(STRICT_Y, x->y != y->y);
+    STRICT_CHK(STRICT_DP, x->dp != y->dp);
+    STRICT_CHK(STRICT_DB, x->db != y->db);
+    STRICT_CHK(STRICT_MF, x->mf != y->mf);
+    STRICT_CHK(STRICT_XF, x->xf != y->xf);
+    STRICT_CHK(STRICT_C, x->c != y->c);
+    STRICT_CHK(STRICT_Z, x->z != y->z);
+    STRICT_CHK(STRICT_V, x->v != y->v);
+    STRICT_CHK(STRICT_N, x->n != y->n);
+#undef STRICT_CHK
+    return any;
+}}
+
+static void strict_print(int trial, const Snap *x, const Snap *y, uint16_t pre_sp) {{
+    int w = strict_first_wram_diff(x, y, pre_sp);
+    printf("strict %4d : a=%04X/%04X x=%04X/%04X y=%04X/%04X mf=%d/%d xf=%d/%d "
+           "czvn=%d%d%d%d/%d%d%d%d",
+           trial, x->a, y->a, x->x, y->x, x->y, y->y, x->mf, y->mf, x->xf, y->xf,
+           x->c, x->z, x->v, x->n, y->c, y->z, y->v, y->n);
+    if (w >= 0) printf(" wram@$%05X=%02X/%02X", w, x->ram[w], y->ram[w]);
+    printf("  (asm/c)\n");
+}}
+
+// ---------------------------------------------------------------------------
 // asm wrapper from the contract
 // ---------------------------------------------------------------------------
 
@@ -737,6 +816,7 @@ static void run_asm(Snes *snes{asm_args_decl}) {{
     c->mf = {entry_mf};
     c->xf = {entry_xf};
     c->a = 0; c->x = 0; c->y = 0;
+    strict_apply_noise(c);
 {asm_reg_setup}
 {asm_flags_setup}
     run_emulated_func(snes, TARGET_ADDR_24);
@@ -784,6 +864,23 @@ int main(int argc, char **argv) {{
 
     fprintf(stderr, "{func_name} asm vs C : %d trials\n", n_trials);
 
+    // Strict full-state mode (opt-in, FF4_SPIKE_STRICT=1|gate): in addition
+    // to the contract compare above, diff the WHOLE post-call state -- WRAM
+    // (stack page + SPIKE_MASK excluded) and every CPU register/flag the
+    // dispatch hook leaves to the caller (cpu.c does no state fixup after a
+    // dispatched body). The contract compare alone observes one slot, or the
+    // registers, or the WRAM -- never all three -- so a body can pass it while
+    // leaving A/X/m/a neighbouring byte different from the asm (found
+    // 2026-10-10 on Div16_c: remainder, rotated dividend, A=D, X=0, m=8 all
+    // unobserved). =1 reports only; =gate also fails the exit code.
+    const char *strict_env = getenv("FF4_SPIKE_STRICT");
+    int strict = strict_env && *strict_env && strcmp(strict_env, "0") != 0;
+    int strict_gate = strict && strcmp(strict_env, "gate") == 0;
+    static Snap strict_asm, strict_c;
+    int strict_fails = 0;
+    long strict_hist[STRICT_NFIELDS] = {{0}};
+    int strict_first_wram = -1;
+
     int fails = 0;
     for (int trial = 0; trial < n_trials; trial++) {{
         snap_restore(&baseline, snes);
@@ -792,6 +889,12 @@ int main(int argc, char **argv) {{
 {ram_input_setup}
 {reg_input_random}
 
+        if (strict) {{
+            strict_noise = 1;
+            strict_na = (uint16_t)host_rng(); strict_nx = (uint16_t)host_rng();
+            strict_ny = (uint16_t)host_rng();
+        }}
+
         // Pre-call snapshot for replaying C with the exact same state.
         Snap pre;
         snap_take(&pre, snes);
@@ -799,17 +902,36 @@ int main(int argc, char **argv) {{
         // Run ASM
         run_asm(snes{asm_args_pass});
 {capture_asm_output}
+        if (strict) snap_take(&strict_asm, snes);
 
         // Restore and run C
         snap_restore(&pre, snes);
 {c_call}
 {capture_c_output}
+        if (strict) snap_take(&strict_c, snes);
 
 {compare_block}
+        if (strict) {{
+            int w = strict_diff(&strict_asm, &strict_c, pre.sp, strict_hist);
+            if (w) {{
+                strict_fails++;
+                if (strict_first_wram < 0 && strict_hist[STRICT_WRAM] > 0)
+                    strict_first_wram = strict_first_wram_diff(&strict_asm, &strict_c, pre.sp);
+                if (strict_fails <= 3) strict_print(trial, &strict_asm, &strict_c, pre.sp);
+            }}
+        }}
     }}
 
     printf("\n=== summary === trials: %d, fails: %d\n", n_trials, fails);
+    if (strict) {{
+        printf("=== strict === trials: %d, strict_fails: %d, fields:", n_trials, strict_fails);
+        for (int f = 0; f < STRICT_NFIELDS; f++)
+            if (strict_hist[f]) printf(" %s=%ld", strict_field_name[f], strict_hist[f]);
+        if (strict_first_wram >= 0) printf(" first_wram=$%05X", strict_first_wram);
+        printf("\n");
+    }}
     free(rom);
+    if (strict_gate && strict_fails) return 1;
     return fails == 0 ? 0 : 1;
 }}
 """
@@ -1006,6 +1128,7 @@ def render_spike(c_translation: str, contract: Contract) -> str:
         f"        snes->cpu->mf = {'true' if contract.entry_mf else 'false'};",
         f"        snes->cpu->xf = {'true' if contract.entry_xf else 'false'};",
         "        snes->cpu->a = 0; snes->cpu->x = 0; snes->cpu->y = 0;",
+        "        strict_apply_noise(snes->cpu);",
     ]
     if contract.inputs_reg.get("a") is not None:
         c_entry_lines.append("        snes->cpu->a = arg_a;")
@@ -1015,7 +1138,13 @@ def render_spike(c_translation: str, contract: Contract) -> str:
         c_entry_lines.append("        snes->cpu->y = arg_y;")
     c_call = "\n".join(c_entry_lines) + "\n" + f"        {contract.func_name}_c(snes);"
 
+    strict_mask_lines = "".join(
+        f"    if (a >= 0x{lo:05X} && a <= 0x{hi:05X}) return 1;  /* SPIKE_MASK */\n"
+        for (lo, hi) in contract.mask_ranges
+    )
+
     return SPIKE_SKELETON.format(
+        strict_mask_lines=strict_mask_lines,
         module=contract.module,
         func_name=contract.func_name,
         bank=bank,
@@ -1061,13 +1190,22 @@ def add_makefile_rule(name: str, suffix: str = "auto", extra_src: list = None) -
     slug = name.lower()
     bin_name = f"ff4-spike-{suffix}-{slug}"
     text = PARITY_MAKEFILE.read_text()
-    if bin_name in text:
-        return bin_name
     extra = " " + " ".join(extra_src) if extra_src else ""
+    target = f"{bin_name}: src/spike_{slug}_{suffix}.c $(CORE_SRC){extra}"
+    recipe = f"\t$(CC) $(CFLAGS) -o $@ src/spike_{slug}_{suffix}.c $(CORE_SRC){extra} $(LDFLAGS)"
+    # Upsert, not append-once: a rule written before the CONTRACT gained a
+    # SPIKE_EXTRA_SRC line must pick the new sources up, or the stale rule
+    # keeps failing to link forever (hit 2026-10-10 on RandXA -> Div16_c).
+    existing = re.compile(rf"^{re.escape(bin_name)}:[^\n]*\n\t[^\n]*$", re.MULTILINE)
+    m = existing.search(text)
+    if m:
+        if m.group(0) != f"{target}\n{recipe}":
+            PARITY_MAKEFILE.write_text(text[:m.start()] + f"{target}\n{recipe}" + text[m.end():])
+        return bin_name
     rule = f"""
 # AUTO ({suffix}): spike for {name}
-{bin_name}: src/spike_{slug}_{suffix}.c $(CORE_SRC){extra}
-\t$(CC) $(CFLAGS) -o $@ src/spike_{slug}_{suffix}.c $(CORE_SRC){extra} $(LDFLAGS)
+{target}
+{recipe}
 """
     PARITY_MAKEFILE.write_text(text + rule)
     return bin_name

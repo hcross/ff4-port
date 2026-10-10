@@ -1,0 +1,11 @@
+[gen] wrote parity/src/spike_randxa_qualify.c (target ff4-spike-qualify-randxa)
+[gen] built parity/ff4-spike-qualify-randxa
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+
+=== summary === trials: 5000, fails: 0
+
+
+[gen] skipping malformed RAM spec part: '0x1900..19FF=RNG_table'
+RandXA asm vs C : 5000 trials

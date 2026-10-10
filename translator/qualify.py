@@ -47,6 +47,16 @@ FFGNW = UMBRELLA / "ff4-gnw"
 GEN_SPIKE = HERE / "generate_spike.py"
 SPIKE_CHECK = PORT_ROOT / "patches" / "spike_check.py"
 
+def _umbrella_rel(p: Path) -> str:
+    """Evidence path as recorded in the (public) registry: umbrella-relative,
+    like every hand-written record (ff4-port/translator/runs/...). An absolute
+    path leaks the author's home directory and breaks on any other clone."""
+    try:
+        return str(p.resolve().relative_to(UMBRELLA.resolve()))
+    except ValueError:
+        return str(p)
+
+
 MODULE_DIRS = ["battle", "field", "menu", "cutscene", "sound", "btlgfx"]
 
 # ESCALATION.md T-codes this stage machine can hit. Kept here as a single
@@ -184,7 +194,7 @@ def main(argv: list[str] | None = None) -> int:
 
     promote = subprocess.run(
         [sys.executable, str(args.registry_dir / "registry_promote.py"), args.dispatch_id,
-         "--to", "L2", "--evidence", str(evidence_path),
+         "--to", "L2", "--evidence", _umbrella_rel(evidence_path),
          "--note", f"fuzzed spike, {trials}/{trials} pass (qualify.py)",
          "--state", str(args.registry_dir / "dispatch_state.jsonl")],
         capture_output=True, text=True,

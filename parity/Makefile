@@ -5784,3 +5784,11 @@ ff4-spike-auto-resetallsprites: src/spike_resetallsprites_auto.c $(CORE_SRC)
 # AUTO (auto): spike for DrawNpcsEntry
 ff4-spike-auto-drawnpcsentry: src/spike_drawnpcsentry_auto.c $(CORE_SRC) ../../ff4-gnw/field/CalcObjScreenPos.c
 	$(CC) $(CFLAGS) -o $@ src/spike_drawnpcsentry_auto.c $(CORE_SRC) ../../ff4-gnw/field/CalcObjScreenPos.c $(LDFLAGS)
+
+# AUTO (qualify): spike for RandXA
+ff4-spike-qualify-randxa: src/spike_randxa_qualify.c $(CORE_SRC) ../../ff4-gnw/battle/Div16.c
+	$(CC) $(CFLAGS) -o $@ src/spike_randxa_qualify.c $(CORE_SRC) ../../ff4-gnw/battle/Div16.c $(LDFLAGS)
+
+# AUTO (variant): spike for RandXA
+ff4-spike-variant-randxa: src/spike_randxa_variant.c $(CORE_SRC) ../../ff4-gnw/battle/Div16.c
+	$(CC) $(CFLAGS) -o $@ src/spike_randxa_variant.c $(CORE_SRC) ../../ff4-gnw/battle/Div16.c $(LDFLAGS)

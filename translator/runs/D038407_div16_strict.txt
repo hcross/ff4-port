@@ -1,0 +1,7 @@
+# D038407 strict full-state spike (FF4_SPIKE_STRICT=gate), 2026-10-10, generate_spike.py --spike-suffix strict
+Div16 asm vs C : 200000 trials
+Loaded LoROM rom (NTSC)
+"FINAL FANTASY 4      "
+32K banks: 32, ramsize: 8192
+=== summary === trials: 200000, fails: 0
+=== strict === trials: 200000, strict_fails: 0, fields:
