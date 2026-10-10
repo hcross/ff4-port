@@ -34,6 +34,16 @@ parity/ff4-spike-*
 # (add_makefile_rule skips a rule already present) -- the durable artifact
 # of a variant check is patches/spike_checks.json, not this scratch build.
 parity/src/spike_*_variant.c
+# Same reasoning for the other scratch suffixes: qualify.py (durable artifact:
+# translator/runs/qualify_evidence/), strict_audit.py (durable artifact:
+# translator/runs/strict_audit/), and ad-hoc strict/hardware checks. Spikes
+# that are the ONLY reproducible copy of a proof (C bodies extracted to a
+# port/ file that no longer exists) are committed as spike_*_auto.c instead.
+parity/src/spike_*_qualify.c
+parity/src/spike_*_strict.c
+parity/src/spike_*_chk.c
+parity/src/spike_*_hw.c
+parity/src/spike_*_tgt.c
 
 # cc65 listings + map files
 **/*.lst
@@ -55,6 +65,9 @@ desktop/wram_diff
 desktop/wram_diff_dbg
 desktop/miss_profiler
 desktop/ff4-entry-probe
+desktop/ff4-state-inject
+# orphan June build of a debug oracle whose source never landed in the tree
+desktop/ff4-dbg-oracle
 desktop/ppmdiff
 desktop/trace_interp.txt
 desktop/trace_native.txt

@@ -1,6 +1,10 @@
 [submodule "upstream"]
 	path = upstream
 	url = https://github.com/everything8215/ff4.git
+	# The disassembly's extraction step writes */data, */gfx, */text from the
+	# local ROM: derived, licensed assets that must never be committed
+	# anywhere. Hide them from `git status`; real edits still show.
+	ignore = untracked
 [submodule "LakeSnes"]
 	path = LakeSnes
 	url = https://github.com/elzo-d/LakeSnes.git

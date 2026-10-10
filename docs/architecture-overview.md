@@ -62,6 +62,18 @@ a small program that runs the candidate C and the original interpreted
 assembly from an identical entry state and compares the results. A
 passing spike is what earns a routine level **L2** on the maturity ladder.
 
+What gets committed under `parity/src/`: a `spike_<name>_auto.c` is kept in
+the tree when it is the **only reproducible copy of a proof** — e.g. the
+btlgfx routines whose bodies were extracted to a `port/` file that no longer
+exists (the spike inlines the C verbatim, so it still rebuilds and reruns).
+Every other suffix (`_qualify`, `_variant`, `_strict`, ad-hoc checks) is a
+scratch build regenerated from the ff4-gnw source on each run and is
+gitignored; their durable outputs live in `translator/runs/`
+(`qualify_evidence/`, `strict_audit/`) and `patches/spike_checks.json`.
+Pass `--target-addr <registry PC>` rather than renaming a port file when the
+disassembly label is offset from the true entry, and run the strict mode
+(`FF4_SPIKE_STRICT`, umbrella WF-DECOMP §4) before trusting a green result.
+
 ## `desktop/` — proving the whole game still agrees
 
 Individual spikes can't see cross-routine interactions. `desktop/` builds
